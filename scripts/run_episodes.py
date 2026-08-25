@@ -68,10 +68,12 @@ def main():
     ap.add_argument("--method", required=True)
     ap.add_argument("--tasks", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--agent-model", default="kimi-k2.7-code")
+    # defaults follow the endpoint policy: development runs on Ollama Cloud;
+    # pass --agent-provider openai --agent-model gpt-4.1 only for paper runs
+    ap.add_argument("--agent-model", default="deepseek-v4-flash:0731")
     ap.add_argument("--agent-provider", default="ollama")
-    ap.add_argument("--comp-model", default="gpt-4.1-mini")
-    ap.add_argument("--comp-provider", default="openai")
+    ap.add_argument("--comp-model", default="deepseek-v4-flash:0731")
+    ap.add_argument("--comp-provider", default="ollama")
     ap.add_argument("--budget", type=int, default=4096)
     ap.add_argument("--max-steps", type=int, default=50)
     ap.add_argument("--workers", type=int, default=1)

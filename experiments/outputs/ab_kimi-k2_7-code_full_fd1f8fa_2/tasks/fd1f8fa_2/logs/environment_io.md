@@ -1059,3 +1059,283 @@ print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_liked_songs'
 }
 ```
 
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+liked_song_ids = set()
+page_index = 0
+while True:
+    page = apis.spotify.show_liked_songs(access_token=access_token, page_index=page_index, page_limit=20)
+    if not page:
+        break
+    for song in page:
+        liked_song_ids.add(song['song_id'])
+    if len(page) < 20:
+        break
+    page_index += 1
+print(len(liked_song_ids))
+print(liked_song_ids)
+```
+
+```
+12
+{1, 5, 102, 295, 104, 136, 206, 15, 176, 214, 283, 60}
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+queue = apis.spotify.show_song_queue(access_token=access_token)
+print([song['position'] for song in queue if song['song_id'] not in liked_song_ids])
+```
+
+```
+[0, 1, 2, 3, 6, 7, 12, 14, 17, 19, 20, 23]
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='remove_song_from_queue'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "remove_song_from_queue",
+ "path": "/music_player/song_queue/{position}",
+ "method": "DELETE",
+ "description": "Remove a song at the given position from the music player song queue.",
+ "parameters": [
+  {
+   "name": "position",
+   "type": "integer",
+   "required": true,
+   "description": "The 0-indexed position of the song in the queue.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+queue = apis.spotify.show_song_queue(access_token=access_token)
+positions_to_remove = [song['position'] for song in queue if song['song_id'] not in liked_song_ids]
+print(positions_to_remove)
+
+for pos in positions_to_remove:
+    result = apis.spotify.remove_song_from_queue(position=pos, access_token=access_token)
+    print(f"Removed position {pos}: {result}")
+
+new_queue = apis.spotify.show_song_queue(access_token=access_token)
+print([song['song_id'] for song in new_queue])
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 6, in <module>
+    result = apis.spotify.remove_song_from_queue(position=pos, access_token=access_token)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"The song queue has 16 songs. So the position should be >= 0 and < 16."}
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+queue = apis.spotify.show_song_queue(access_token=access_token)
+positions_to_remove = [song['position'] for song in queue if song['song_id'] not in liked_song_ids]
+print(positions_to_remove)
+
+for pos in positions_to_remove:
+    result = apis.spotify.remove_song_from_queue(position=pos, access_token=access_token)
+    print(f"Removed position {pos}: {result}")
+    queue = apis.spotify.show_song_queue(access_token=access_token)
+    positions_to_remove = [song['position'] for song in queue if song['song_id'] not in liked_song_ids]
+
+new_queue = apis.spotify.show_song_queue(access_token=access_token)
+print([song['song_id'] for song in new_queue])
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 6, in <module>
+    result = apis.spotify.remove_song_from_queue(position=pos, access_token=access_token)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"The song queue has 11 songs. So the position should be >= 0 and < 11."}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+queue = apis.spotify.show_song_queue(access_token=access_token)
+positions_to_remove = sorted([song['position'] for song in queue if song['song_id'] not in liked_song_ids], reverse=True)
+print(positions_to_remove)
+
+for pos in positions_to_remove:
+    result = apis.spotify.remove_song_from_queue(position=pos, access_token=access_token)
+    print(f"Removed position {pos}: {result}")
+
+new_queue = apis.spotify.show_song_queue(access_token=access_token)
+print([{'position': song['position'], 'song_id': song['song_id'], 'title': song['title']} for song in new_queue])
+```
+
+```
+[9, 8, 5, 1, 0]
+Removed position 9: {'message': 'Removed song at position 9 from the song queue.'}
+Removed position 8: {'message': 'Removed song at position 8 from the song queue.'}
+Removed position 5: {'message': 'Removed song at position 5 from the song queue.'}
+Removed position 1: {'message': 'Removed song at position 1 from the song queue.'}
+Removed position 0: {'message': 'Removed song at position 0 from the song queue.'}
+[
+ {
+  "position": 0,
+  "song_id": 1,
+  "title": "Painting Shadows on the Wall"
+ },
+ {
+  "position": 1,
+  "song_id": 136,
+  "title": "Finding Solace in the Abyss"
+ },
+ {
+  "position": 2,
+  "song_id": 5,
+  "title": "Chasing the Ghosts of Yesterday"
+ },
+ {
+  "position": 3,
+  "song_id": 283,
+  "title": "Bitter Haze"
+ },
+ {
+  "position": 4,
+  "song_id": 206,
+  "title": "Escaping the Chains of Fate"
+ },
+ {
+  "position": 5,
+  "song_id": 214,
+  "title": "The Sweet Pain of Reminiscence"
+ }
+]
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='play_music'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "play_music",
+ "path": "/music_player/play",
+ "method": "POST",
+ "description": "Play music based on various criteria. You can pass, at most, any one of queue_position, song_id, album_id or playlist_id. If one of song_id, album_id or playlist_id is passed, that song, album or playlist will be added to the queue and played. Otherwise, the queue will remain unchanged. If queue_position is passed, the song at that position in the queue will be played. If none is passed, the current song in the queue will be played.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "song_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the song to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "album_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the album to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "playlist_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the playlist to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "queue_position",
+   "type": "integer",
+   "required": false,
+   "description": "Position of the song in the queue to play.",
+   "default": null,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "song_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+print(apis.spotify.play_music(access_token=access_token, queue_position=0))
+```
+
+```
+{"message": "Song (Painting Shadows on the Wall) is now playing.", "song_id": 1}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+
