@@ -614,3 +614,166 @@ Exception: Response status code is 422:
 {"message":"Validation error. Reason: \ndirectory_path: field required"}
 ```
 
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# The error indicates that the parameter name for directory path in create_directory is `directory_path` not `path`.
+# I will fix the parameter name and try again.
+
+for old_path in files:
+    filename = os.path.basename(old_path)
+    if '__' in filename:
+        date_part, rest = filename.split('__', 1)
+        file_name, extension = os.path.splitext(rest)
+        new_dir = os.path.join("/home/catherine/documents/work/meetings", file_name)
+        # Create the new directory with correct parameter name
+        print(apis.file_system.create_directory(access_token=access_token, directory_path=new_dir, recursive=True))
+        new_file_path = os.path.join(new_dir, date_part + extension)
+        print(apis.file_system.move_file(access_token=access_token, source_path=old_path, destination_path=new_file_path))
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 13, in <module>
+    print(apis.file_system.move_file(access_token=access_token, source_path=old_path, destination_path=new_file_path))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"Validation error. Reason: \nsource_file_path: field required\ndestination_file_path: field required"}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The error indicates that the parameter names for move_file are `source_file_path` and `destination_file_path` instead of `source_path` and `destination_path`.
+# I will fix the parameter names and try again.
+
+for old_path in files:
+    filename = os.path.basename(old_path)
+    if '__' in filename:
+        date_part, rest = filename.split('__', 1)
+        file_name, extension = os.path.splitext(rest)
+        new_dir = os.path.join("/home/catherine/documents/work/meetings", file_name)
+        print(apis.file_system.create_directory(access_token=access_token, directory_path=new_dir, recursive=True))
+        new_file_path = os.path.join(new_dir, date_part + extension)
+        print(apis.file_system.move_file(access_token=access_token, source_file_path=old_path, destination_file_path=new_file_path))
+```
+
+```
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-apr-05.ppt"
+}
+{"message": "Directory created."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-apr-05.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-apr-12.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-apr-12.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-apr-19.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-apr-19.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-apr-26.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-apr-26.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-mar-08.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-mar-08.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-mar-15.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-mar-15.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-mar-22.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-mar-22.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-mar-29.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-mar-29.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-may-03.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-may-03.mp4"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\slides\\2023-may-10.ppt"
+}
+{"message": "Directory already exists."}
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings\\video_recording\\2023-may-10.mp4"
+}
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# The files have been successfully moved and reorganized as requested.
+# Now I will mark the task as complete without any answer since the task was to reorganize files.
+
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

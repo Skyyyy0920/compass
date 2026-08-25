@@ -9,6 +9,7 @@ bounds runaway API loops, and the environment is discarded after each rollout.
 """
 from __future__ import annotations
 
+import os
 import sys
 import threading
 from typing import Any, Callable
@@ -39,6 +40,11 @@ def _thread_timeout_call(function: Callable[..., Any], timeout_seconds: int | No
 
 
 def install() -> None:
+    # child processes (ProcessPoolExecutor) must open AppWorld's log files as UTF-8:
+    # agents occasionally emit non-GBK characters (emoji) in code, which crashes
+    # a locale-encoded write on Windows
+    os.environ.setdefault("PYTHONUTF8", "1")
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
     if not sys.platform.startswith("win"):
         return
     import appworld.environment as env_mod

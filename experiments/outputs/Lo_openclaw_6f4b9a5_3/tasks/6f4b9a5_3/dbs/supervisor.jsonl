@@ -16,3 +16,4 @@
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["0LBjbyJFkIE=",1,"todoist","cO0f)9V"],false]
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["6GJthmU6T8c=",1,"venmo","+REx^]2"],false]
 ["INSERT INTO tasks (status, record_hash, supervisor_id, instruction, answer) VALUES (?, ?, ?, ?, ?)",[null,"oT3SrZXbcuw=",1,"I keep a log of all my liked songs and respective artists in a note in simple_note. I want to add release month information for them as well. I have added it for the first few songs. Add it for the rest.","\"<<NOT_GIVEN>>\""],false]
+["UPDATE tasks SET status=?, record_hash=?, answer=? WHERE tasks.id = ?",["success","YXeqZ2eoPzI=","null",1],false]

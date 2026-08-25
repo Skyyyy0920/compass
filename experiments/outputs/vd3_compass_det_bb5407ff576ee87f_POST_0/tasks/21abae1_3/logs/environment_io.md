@@ -760,3 +760,98 @@ print(login_response)
 }
 ```
 
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# I have successfully logged in and obtained a valid access token. Now I will get the current date and the first day of this month to set the time boundaries for this month's transactions.
+from datetime import datetime
+
+now = datetime.now()
+first_day_of_month = datetime(now.year, now.month, 1)
+min_created_at = first_day_of_month.isoformat()
+max_created_at = now.isoformat()
+
+print(min_created_at, max_created_at)
+```
+
+```
+2023-05-01T00:00:00 2023-05-18T12:00:00
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# Now I will fetch all transactions from Venmo for this month so far using pagination.
+all_transactions = []
+page_index = 0
+page_limit = 20
+
+while True:
+    response = apis.venmo.show_transactions(
+        access_token=login_response["access_token"],
+        user_email=venmo_email,
+        min_created_at=min_created_at,
+        max_created_at=max_created_at,
+        page_index=page_index,
+        page_limit=page_limit,
+    )
+    if not response:
+        break
+    all_transactions.extend(response)
+    if len(response) < page_limit:
+        break
+    page_index += 1
+
+print(f"Total transactions fetched: {len(all_transactions)}")
+```
+
+```
+Total transactions fetched: 0
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# No transactions were fetched with the user_email filter. I will try fetching transactions without the user_email filter to get all transactions for this account this month.
+all_transactions = []
+page_index = 0
+page_limit = 20
+
+while True:
+    response = apis.venmo.show_transactions(
+        access_token=login_response["access_token"],
+        min_created_at=min_created_at,
+        max_created_at=max_created_at,
+        page_index=page_index,
+        page_limit=page_limit,
+    )
+    if not response:
+        break
+    all_transactions.extend(response)
+    if len(response) < page_limit:
+        break
+    page_index += 1
+
+print(f"Total transactions fetched: {len(all_transactions)}")
+```
+
+```
+Total transactions fetched: 21
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# I have fetched 21 transactions for this month. Now I will calculate the total amount of money sent or received by summing the amounts of all these transactions.
+total_amount = sum(txn["amount"] for txn in all_transactions)
+print(total_amount)
+```
+
+```
+1592.0
+```
+
