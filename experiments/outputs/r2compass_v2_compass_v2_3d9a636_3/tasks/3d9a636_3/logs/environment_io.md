@@ -983,3 +983,355 @@ Friend emails: {'ja-solomon@gmail.com', 'mir-powe@gmail.com', 'alexwhite@gmail.c
 Friend phones: {'3654328626', '9876546221', '8683971586', '3707865891', '2125442118', '4885870260', '6279200672', '7826309761', '8346699249', '7763361246'}
 ```
 
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# Next, let's log in to Venmo using the stored password so we can access the friends list and make changes.
+venmo_password = next(p["password"] for p in phone_passwords if p["account_name"] == "venmo")
+venmo_login = apis.venmo.login(username="carbrown@gmail.com", password=venmo_password)
+print(venmo_login)
+```
+
+```
+{
+ "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbytjYXJicm93bkBnbWFpbC5jb20iLCJleHAiOjE2ODQ0MTI3NDF9.nOks5vxZHO0LuXmEs6HuytZxNJlS7Bh0a7TUuLMCV5M",
+ "token_type": "Bearer"
+}
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Now let's retrieve the current friends list from Venmo.
+# We'll need to handle pagination in case there are many friends.
+venmo_friends = []
+page_index = 0
+while True:
+    page = apis.venmo.search_friends(
+        access_token=venmo_login["access_token"],
+        page_index=page_index,
+        page_limit=50
+    )
+    venmo_friends.extend(page)
+    if len(page) < 50:
+        break
+    page_index += 1
+print(venmo_friends)
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 6, in <module>
+    page = apis.venmo.search_friends(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"Validation error. Reason: \npage_limit: ensure this value is less than or equal to 20"}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# The error message says that page_limit must be less than or equal to 20.
+# Let's adjust the page_limit to 20 and try again.
+venmo_friends = []
+page_index = 0
+while True:
+    page = apis.venmo.search_friends(
+        access_token=venmo_login["access_token"],
+        page_index=page_index,
+        page_limit=20
+    )
+    venmo_friends.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+print(venmo_friends)
+```
+
+```
+[
+ {
+  "first_name": "Chelsea",
+  "last_name": "Burch",
+  "email": "chelsea-burch@gmail.com",
+  "registered_at": "2023-01-29T10:18:37",
+  "friends_since": "2023-05-14T05:09:01"
+ },
+ {
+  "first_name": "Miranda",
+  "last_name": "Weber",
+  "email": "mir-powe@gmail.com",
+  "registered_at": "2022-08-14T08:39:56",
+  "friends_since": "2023-05-16T05:24:54"
+ },
+ {
+  "first_name": "Denise",
+  "last_name": "Maldonado",
+  "email": "deniseburch@gmail.com",
+  "registered_at": "2022-12-25T17:37:24",
+  "friends_since": "2023-05-08T01:18:39"
+ },
+ {
+  "first_name": "Alex",
+  "last_name": "White",
+  "email": "alexwhite@gmail.com",
+  "registered_at": "2023-01-17T16:28:47",
+  "friends_since": "2023-05-09T12:22:02"
+ },
+ {
+  "first_name": "Kevin",
+  "last_name": "Blackburn",
+  "email": "kevin.blac@gmail.com",
+  "registered_at": "2022-05-15T18:48:46",
+  "friends_since": "2023-05-18T00:57:48"
+ },
+ {
+  "first_name": "Adam",
+  "last_name": "Blackburn",
+  "email": "ad.blackburn@gmail.com",
+  "registered_at": "2022-08-22T10:21:36",
+  "friends_since": "2023-05-04T07:40:56"
+ },
+ {
+  "first_name": "Marcus",
+  "last_name": "Smith",
+  "email": "ma_smith@gmail.com",
+  "registered_at": "2022-05-02T18:24:11",
+  "friends_since": "2023-05-02T10:36:55"
+ },
+ {
+  "first_name": "Hunter",
+  "last_name": "Weaver",
+  "email": "hun.weaver@gmail.com",
+  "registered_at": "2022-12-23T12:14:35",
+  "friends_since": "2023-05-09T15:41:29"
+ },
+ {
+  "first_name": "Joseph",
+  "last_name": "Weber",
+  "email": "joseph.webe@gmail.com",
+  "registered_at": "2023-02-18T10:55:16",
+  "friends_since": "2023-04-29T13:08:32"
+ },
+ {
+  "first_name": "William",
+  "last_name": "Martinez",
+  "email": "william_mart@gmail.com",
+  "registered_at": "2023-01-09T09:09:20",
+  "friends_since": "2023-05-06T15:09:55"
+ }
+]
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Let's compare the Venmo friends' emails to the phone friends' emails to determine:
+# - Who to unfriend (in Venmo but not in phone contacts)
+# - Who to add (in phone contacts but not in Venmo)
+venmo_friend_emails = set(f["email"] for f in venmo_friends if f.get("email"))
+
+to_unfriend_emails = venmo_friend_emails - phone_friend_emails
+to_befriend_emails = phone_friend_emails - venmo_friend_emails
+
+print("To unfriend:", to_unfriend_emails)
+print("To befriend:", to_befriend_emails)
+```
+
+```
+To unfriend: {'william_mart@gmail.com', 'ma_smith@gmail.com', 'joseph.webe@gmail.com', 'hun.weaver@gmail.com', 'ad.blackburn@gmail.com'}
+To befriend: {'ja-solomon@gmail.com', 'clmiller@gmail.com', 'alexander-ridd@gmail.com', 'gl.moore@gmail.com', 'cod.smith@gmail.com'}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# Let's unfriend the users on Venmo whose emails are in the "to_unfriend_emails" set.
+# We'll search for each user by email and remove them as a friend.
+for email in to_unfriend_emails:
+    # Search for the user by email
+    users = apis.venmo.search_users(
+        access_token=venmo_login["access_token"],
+        query=email,
+        page_index=0,
+        page_limit=1
+    )
+    if users:
+        user_id = users[0]["user_id"]
+        apis.venmo.remove_friend(
+            access_token=venmo_login["access_token"],
+            user_id=user_id
+        )
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 12, in <module>
+    user_id = users[0]["user_id"]
+              ~~~~~~~~^^^^^^^^^^^
+KeyError: 'user_id'
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# It seems the user objects returned by venmo.search_users do not have a "user_id" field, or the structure is different.
+# Let's print out the result of searching for one of the emails to inspect the structure.
+test_email = list(to_unfriend_emails)[0]
+users = apis.venmo.search_users(
+    access_token=venmo_login["access_token"],
+    query=test_email,
+    page_index=0,
+    page_limit=1
+)
+print(users)
+```
+
+```
+[
+ {
+  "first_name": "William",
+  "last_name": "Martinez",
+  "email": "william_mart@gmail.com",
+  "registered_at": "2023-01-09T09:09:20",
+  "friends_since": "2023-01-09T09:09:20"
+ }
+]
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# The user object returned by venmo.search_users does not include a "user_id" field.
+# Let's print the API documentation for venmo.remove_friend to see what identifier it expects.
+print(apis.api_docs.show_api_doc(app_name="venmo", api_name="remove_friend"))
+```
+
+```
+{
+ "app_name": "venmo",
+ "api_name": "remove_friend",
+ "path": "/friends/{user_email}",
+ "method": "DELETE",
+ "description": "Remove a friend from your friend list.",
+ "parameters": [
+  {
+   "name": "user_email",
+   "type": "string",
+   "required": true,
+   "description": "Email address of the friend to remove.",
+   "default": null,
+   "constraints": [
+    "value is email address"
+   ]
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The venmo.remove_friend API expects the friend's email address, not a user_id.
+# Let's call remove_friend directly for each email in to_unfriend_emails.
+for email in to_unfriend_emails:
+    apis.venmo.remove_friend(
+        access_token=venmo_login["access_token"],
+        user_email=email
+    )
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# Now let's add (befriend) users whose emails are in the "to_befriend_emails" set.
+# The add_friend API likely works similarly to remove_friend, so let's check its documentation to confirm the parameters.
+print(apis.api_docs.show_api_doc(app_name="venmo", api_name="add_friend"))
+```
+
+```
+{
+ "app_name": "venmo",
+ "api_name": "add_friend",
+ "path": "/friends/{user_email}",
+ "method": "POST",
+ "description": "Add a friend to your friend list.",
+ "parameters": [
+  {
+   "name": "user_email",
+   "type": "string",
+   "required": true,
+   "description": "Email address of the friend to add.",
+   "default": null,
+   "constraints": [
+    "value is email address"
+   ]
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# The add_friend API takes user_email and access_token, just like remove_friend.
+# Let's add each friend whose email is in to_befriend_emails.
+for email in to_befriend_emails:
+    apis.venmo.add_friend(
+        access_token=venmo_login["access_token"],
+        user_email=email
+    )
+# Task is now complete. Mark it as complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+
