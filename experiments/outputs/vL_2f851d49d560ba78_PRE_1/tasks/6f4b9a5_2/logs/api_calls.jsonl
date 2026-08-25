@@ -1,0 +1,28 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "ce-maldonado@gmail.com", "password": "nT]NcWO"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_profile"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ce-maldonado@gmail.com", "password": "nT]NcWO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI", "query": "liked songs"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lost in the Embrace of Night Noah Bennett", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lonely Skies Aria Sterling", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Caught in a Web of Lies Hazel Winter Ava Morgan", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "On the Border of Reality Lily Moon Zoey James", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "A Love That Never Was Mia Sullivan Carter Knight", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Astral Serenity Orion Steele", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Between Reality and Reverie Aria Sterling", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Strangers Again Oceanic Odyssey", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "The Mirage of a Perfect Life Soulful Reverie", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Roses on the Vine Velvet Echo", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "When All Words Fail Us Marcus Lane", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Final Echo Hazel Winter", "page_limit": 3}}
+{"method": "patch", "url": "/simple_note/notes/3084", "data": {"content": "\n1. \"Lost in the Embrace of Night\" by Noah Bennett - RELEASED_AT 03/2021\n2. \"Lonely Skies\" by Aria Sterling - RELEASED_AT 11/2022\n3. \"Caught in a Web of Lies\" by Hazel Winter & Ava Morgan - RELEASED_AT 03/2021\n4. \"On the Border of Reality\" by Lily Moon & Zoey James - RELEASED_AT 08/2022\n5. \"A Love That Never Was\" by Mia Sullivan & Carter Knight - RELEASED_AT 10/2020\n6. \"Astral Serenity\" by Orion Steele - RELEASED_AT 12/2019\n7. \"Between Reality and Reverie\" by Aria Sterling - RELEASED_AT 03/2020\n8. \"Strangers Again\" by Oceanic Odyssey - RELEASED_AT 06/2022\n9. \"The Mirage of a Perfect Life\" by Soulful Reverie - RELEASED_AT 11/2020\n10. \"Wilted Roses on the Vine\" by Velvet Echo - RELEASED_AT 02/2020\n11. \"When All Words Fail Us\" by Marcus Lane - RELEASED_AT 07/2020\n12. \"Final Echo\" by Hazel Winter - RELEASED_AT 07/2022\n", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI"}}
+{"method": "post", "url": "/supervisor/message", "data": {}}

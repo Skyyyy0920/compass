@@ -112,7 +112,7 @@ VARIANTS = {
     "compass_det": {"use_llm": False},                                    # A1 deterministic only
     "compass_nospec": {"hide_sections": ("API DOCS ALREADY READ",)},      # A3 no API signatures
     "compass_novars": {"hide_sections": ("LIVE VARIABLES",)},             # A4 no live variables
-    "compass_nodone": {"hide_sections": ("APIS ALREADY CALLED", "API DOCS ALREADY READ")},  # A5 no history
+    "compass_nodone": {"hide_sections": ("CALL FORMS THAT", "API DOCS ALREADY READ", "RESULTS ALREADY")},  # A5 no history
     "compass_noplan": {"hide_sections": ("PLAN (", "NEXT", "CONSTRAINTS", "FACTS")},        # A2 no intent layer
     "compass_llmneeds": {"det_needs": False},                             # A4b LLM-only needs
 }

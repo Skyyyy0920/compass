@@ -62,6 +62,8 @@ class Graph:
         self.facts: list[dict] = []             # {id, kind, text, steps}
         self.step_intent: dict[str, str] = {}   # REALIZES
         self.legacy_summary: str | None = None  # a non-graph previous summary, kept verbatim-ish
+        self.calls_ok: dict[str, int] = {}       # call form -> times it executed without error
+        self.calls_failed: dict[str, str] = {}   # call form -> last error line (cleared on later success)
         self._n_info = 0
         self._n_intent = 0
         self._n_fact = 0
@@ -79,6 +81,17 @@ class Graph:
         s["produces"] = []
         s["consumes"] = []
         self.steps[sid] = s
+        # call forms: which argument shapes worked, which failed
+        forms = [f for f in s.get("call_forms", []) if not f.startswith("api_docs.")]
+        if s["status"] == "ok":
+            for f in forms:
+                self.calls_ok[f] = self.calls_ok.get(f, 0) + 1
+                self.calls_failed.pop(f, None)
+        elif forms and s.get("error_line"):
+            # attribute the error to the call named in the traceback when possible, else the last call
+            culprit = next((f for f in forms if f.split("(")[0].split(".")[-1] in s["observation"]), forms[-1])
+            if culprit not in self.calls_ok:
+                self.calls_failed[culprit] = s["error_line"]
         # CONSUMES: free loads bound by an earlier cell
         for name in s["uses"]:
             info = self._latest_info_for(name)
@@ -88,13 +101,19 @@ class Graph:
         # PRODUCES: module-level defs
         api_by_var = _assigned_api_calls(s["code"])
         literals = _literal_assignments(s["code"])
+        derived = _derived_from(s["code"])
         for name in s["defs"]:
             prev = self._latest_info_for(name)
             if prev is not None:
                 prev.superseded = True
+            src = api_by_var.get(name)
+            if src is None and name in derived:
+                base = self._latest_info_for(derived[name])
+                if base is not None and base.source_api:
+                    src = base.source_api + f"[{derived[name]}]"
             self._n_info += 1
             info = Info(id=f"i{self._n_info}", kind="runtime_reference", name=name, producer=sid,
-                        source_api=api_by_var.get(name),
+                        source_api=src,
                         value_hint=literals.get(name) or _value_hint(s, name))
             self.infos[info.id] = info
             s["produces"].append(info.id)
@@ -304,6 +323,7 @@ class Graph:
         return {"goal": self.goal, "steps": self.steps, "infos": {k: asdict(v) for k, v in self.infos.items()},
                 "intents": {k: asdict(v) for k, v in self.intents.items()}, "facts": self.facts,
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
+                "calls_ok": self.calls_ok, "calls_failed": self.calls_failed,
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
@@ -315,6 +335,8 @@ class Graph:
         g.facts = d["facts"]
         g.step_intent = d["step_intent"]
         g.legacy_summary = d.get("legacy_summary")
+        g.calls_ok = d.get("calls_ok", {})
+        g.calls_failed = d.get("calls_failed", {})
         g._n_info, g._n_intent, g._n_fact = d["counters"]
         g.log = d.get("log", [])
         return g
@@ -334,6 +356,25 @@ def _assigned_api_calls(code: str) -> dict[str, str]:
             m = re.search(r"apis\.(\w+)\.(\w+)\(", src)
             if m:
                 out[node.targets[0].id] = f"{m.group(1)}.{m.group(2)}"
+    return out
+
+
+def _derived_from(code: str) -> dict[str, str]:
+    """{var: base_var} for ``var = base[...]`` / ``base.get(...)`` / ``base['k']['j']``."""
+    out: dict[str, str] = {}
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return out
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            v = node.value
+            while isinstance(v, (ast.Subscript, ast.Attribute, ast.Call)):
+                v = v.value if not isinstance(v, ast.Call) else (v.func.value if isinstance(v.func, ast.Attribute) else None)
+                if v is None:
+                    break
+            if isinstance(v, ast.Name) and v.id != node.targets[0].id:
+                out[node.targets[0].id] = v.id
     return out
 
 

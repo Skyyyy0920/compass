@@ -101,11 +101,12 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
                 if prod:
                     L.append(f"{ind}    -> " + "; ".join(f"{i.name} = {_short(i.value_hint, 80)}" for i in prod))
 
-    all_ok_apis = _executed_apis(g, sorted(g.steps, key=lambda s: int(s[1:])))
-    all_ok_apis = [a for a in all_ok_apis if not a.startswith("api_docs.")]
-    if all_ok_apis and level <= 2:
-        L += ["", "APIS ALREADY CALLED SUCCESSFULLY (do not re-login; results are in LIVE VARIABLES)",
-              ", ".join(all_ok_apis[:40])]
+    if g.calls_ok and level <= 2:
+        L += ["", "CALL FORMS THAT WORKED (exact argument names; reuse them, do not re-login)"]
+        L += [f"- {f}" for f in list(g.calls_ok)[-30:]]
+    if g.calls_failed and level <= 2:
+        L += ["", "CALL FORMS THAT FAILED (do not repeat as written)"]
+        L += [f"- {f} -> {e}" for f, e in list(g.calls_failed.items())[-8:]]
     lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
     specs = [i for i in g.infos.values() if i.kind == "api_spec"]
     if lists or specs:
@@ -151,11 +152,11 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
     if other:
         L += ["", "FACTS"] + [f"- {f['text']}" for f in other[-15:]]
 
-    warn = [g.steps[s] for s in g.steps if g.steps[s]["status"] == "blocked"]
+    warn = [g.steps[s] for s in g.steps if g.steps[s]["status"] == "blocked" and not g.steps[s].get("call_forms")]
     if warn and level <= 2:
-        L += ["", "WARNINGS (errors seen; avoid repeating)"]
-        for s in warn[-5:]:
-            L.append(f"- {s['id']} {s['error_class']}: {compact_step_view(s, 120).split('->', 1)[-1].strip()}")
+        L += ["", "WARNINGS (non-API errors seen; avoid repeating)"]
+        for s in warn[-4:]:
+            L.append(f"- {s['id']} {s['error_class']}: {s.get('error_line') or ''}")
 
     front = g.frontier()
     if front:

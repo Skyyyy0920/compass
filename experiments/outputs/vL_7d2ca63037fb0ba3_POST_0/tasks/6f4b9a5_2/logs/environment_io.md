@@ -1328,3 +1328,327 @@ print(apis.spotify.search_songs(query="Lonely Skies Aria Sterling", page_limit=3
 ]
 ```
 
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# The first result matches the title and artist exactly.
+# Its release_date is "2022-11-11T09:54:16", so the release month is 11/2022.
+# Next, let's search for "Caught in a Web of Lies" by "Hazel Winter" and "Ava Morgan".
+print(apis.spotify.search_songs(query="Caught in a Web of Lies Hazel Winter Ava Morgan", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 64,
+  "title": "Caught in a Web of Lies",
+  "album_id": 13,
+  "duration": 280,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   },
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ],
+  "release_date": "2021-03-02T14:08:32",
+  "genre": "EDM",
+  "play_count": 468,
+  "rating": 0.0,
+  "like_count": 11,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/64"
+ },
+ {
+  "song_id": 65,
+  "title": "Eternal Solitude",
+  "album_id": 13,
+  "duration": 206,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   },
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ],
+  "release_date": "2021-03-02T14:08:32",
+  "genre": "EDM",
+  "play_count": 818,
+  "rating": 2.0,
+  "like_count": 13,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/65"
+ },
+ {
+  "song_id": 66,
+  "title": "Phantom Pain",
+  "album_id": 13,
+  "duration": 223,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   },
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ],
+  "release_date": "2021-03-02T14:08:32",
+  "genre": "EDM",
+  "play_count": 975,
+  "rating": 0.0,
+  "like_count": 7,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/66"
+ }
+]
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# The first result matches the title and both artists exactly.
+# Its release_date is "2021-03-02T14:08:32", so the release month is 03/2021.
+# Next, let's search for "On the Border of Reality" by "Lily Moon" and "Zoey James".
+print(apis.spotify.search_songs(query="On the Border of Reality Lily Moon Zoey James", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 74,
+  "title": "On the Border of Reality",
+  "album_id": 16,
+  "duration": 296,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "release_date": "2022-08-02T08:03:50",
+  "genre": "rock",
+  "play_count": 846,
+  "rating": 4.0,
+  "like_count": 14,
+  "review_count": 3,
+  "shareable_link": "https://spotify.com/songs/74"
+ },
+ {
+  "song_id": 76,
+  "title": "Whispers of the Heart",
+  "album_id": 16,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "release_date": "2022-08-02T08:03:50",
+  "genre": "rock",
+  "play_count": 330,
+  "rating": 3.0,
+  "like_count": 14,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/76"
+ },
+ {
+  "song_id": 69,
+  "title": "Whispers of a Forgotten Love",
+  "album_id": 14,
+  "duration": 285,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "release_date": "2022-02-21T17:34:33",
+  "genre": "rock",
+  "play_count": 645,
+  "rating": 4.0,
+  "like_count": 17,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/69"
+ }
+]
+```
+
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+# The first result matches the title and both artists exactly.
+# Its release_date is "2022-08-02T08:03:50", so the release month is 08/2022.
+# Next, let's search for "A Love That Never Was" by "Mia Sullivan" and "Carter Knight".
+print(apis.spotify.search_songs(query="A Love That Never Was Mia Sullivan Carter Knight", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 78,
+  "title": "A Love That Never Was",
+  "album_id": 17,
+  "duration": 237,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 479,
+  "rating": 3.0,
+  "like_count": 18,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/78"
+ },
+ {
+  "song_id": 79,
+  "title": "Fleeting Touch",
+  "album_id": 17,
+  "duration": 222,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 126,
+  "rating": 0.0,
+  "like_count": 11,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/79"
+ },
+ {
+  "song_id": 77,
+  "title": "Whispers of the Soul",
+  "album_id": 17,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 505,
+  "rating": 2.0,
+  "like_count": 11,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/77"
+ }
+]
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# The first result matches the title and both artists exactly.
+# Its release_date is "2020-10-15T13:57:09", so the release month is 10/2020.
+# Next, let's search for "Astral Serenity" by "Orion Steele".
+print(apis.spotify.search_songs(query="Astral Serenity Orion Steele", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 121,
+  "title": "Astral Serenity",
+  "album_id": null,
+  "duration": 200,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2019-12-15T09:11:57",
+  "genre": "pop",
+  "play_count": 321,
+  "rating": 0.0,
+  "like_count": 4,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/121"
+ },
+ {
+  "song_id": 118,
+  "title": "Lost Hopes",
+  "album_id": null,
+  "duration": 240,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2022-05-24T04:31:08",
+  "genre": "pop",
+  "play_count": 660,
+  "rating": 0.0,
+  "like_count": 6,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/118"
+ },
+ {
+  "song_id": 119,
+  "title": "Urban Jungle",
+  "album_id": null,
+  "duration": 287,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2021-07-17T15:17:27",
+  "genre": "pop",
+  "play_count": 568,
+  "rating": 3.0,
+  "like_count": 6,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/119"
+ }
+]
+```
+

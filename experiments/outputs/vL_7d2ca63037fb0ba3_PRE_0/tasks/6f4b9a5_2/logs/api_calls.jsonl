@@ -16,3 +16,5 @@
 {"method": "get", "url": "/spotify/songs", "data": {"query": "Lonely Skies Aria Sterling", "page_limit": 3}}
 {"method": "get", "url": "/spotify/songs", "data": {"query": "Caught in a Web of Lies Hazel Winter Ava Morgan", "page_limit": 3}}
 {"method": "get", "url": "/spotify/songs", "data": {"query": "On the Border of Reality Lily Moon Zoey James", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "A Love That Never Was Mia Sullivan Carter Knight", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Astral Serenity Orion Steele", "page_limit": 3}}

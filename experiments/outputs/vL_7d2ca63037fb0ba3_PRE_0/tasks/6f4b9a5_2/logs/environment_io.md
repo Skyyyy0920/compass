@@ -1496,3 +1496,159 @@ print(apis.spotify.search_songs(query="On the Border of Reality Lily Moon Zoey J
 ]
 ```
 
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+# The first result is an exact match for "On the Border of Reality" by "Lily Moon" and "Zoey James", with a release date of "2022-08-02T08:03:50".
+# The release month and year is 08/2022.
+# Next, let's search for "A Love That Never Was" by "Mia Sullivan" and "Carter Knight".
+print(apis.spotify.search_songs(query="A Love That Never Was Mia Sullivan Carter Knight", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 78,
+  "title": "A Love That Never Was",
+  "album_id": 17,
+  "duration": 237,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 479,
+  "rating": 3.0,
+  "like_count": 18,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/78"
+ },
+ {
+  "song_id": 79,
+  "title": "Fleeting Touch",
+  "album_id": 17,
+  "duration": 222,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 126,
+  "rating": 0.0,
+  "like_count": 11,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/79"
+ },
+ {
+  "song_id": 77,
+  "title": "Whispers of the Soul",
+  "album_id": 17,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 505,
+  "rating": 2.0,
+  "like_count": 11,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/77"
+ }
+]
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# The first result is an exact match for "A Love That Never Was" by "Mia Sullivan" and "Carter Knight", with a release date of "2020-10-15T13:57:09".
+# The release month and year is 10/2020.
+# Next, let's search for "Astral Serenity" by "Orion Steele".
+print(apis.spotify.search_songs(query="Astral Serenity Orion Steele", page_limit=3))
+```
+
+```
+[
+ {
+  "song_id": 121,
+  "title": "Astral Serenity",
+  "album_id": null,
+  "duration": 200,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2019-12-15T09:11:57",
+  "genre": "pop",
+  "play_count": 321,
+  "rating": 0.0,
+  "like_count": 4,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/121"
+ },
+ {
+  "song_id": 118,
+  "title": "Lost Hopes",
+  "album_id": null,
+  "duration": 240,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2022-05-24T04:31:08",
+  "genre": "pop",
+  "play_count": 660,
+  "rating": 0.0,
+  "like_count": 6,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/118"
+ },
+ {
+  "song_id": 119,
+  "title": "Urban Jungle",
+  "album_id": null,
+  "duration": 287,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "release_date": "2021-07-17T15:17:27",
+  "genre": "pop",
+  "play_count": 568,
+  "rating": 3.0,
+  "like_count": 6,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/119"
+ }
+]
+```
+

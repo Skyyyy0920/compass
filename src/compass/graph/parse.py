@@ -249,6 +249,37 @@ def api_specs(observation: str) -> tuple[list[str], dict[str, list[str]]]:
     return specs, lists
 
 
+def call_forms(code: str) -> list[str]:
+    """``app.api(kw1, kw2, *2)`` for every apis.* call: keyword argument names in
+    source order plus the number of positional arguments. Values are dropped, so
+    the form is what a later call must reproduce."""
+    out = []
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return out
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            src = ast.unparse(node.func)
+            m = re.fullmatch(r"apis\.(\w+)\.(\w+)", src)
+            if not m:
+                continue
+            parts = [k.arg for k in node.keywords if k.arg]
+            if node.args:
+                parts.append(f"*{len(node.args)}")
+            out.append(f"{m.group(1)}.{m.group(2)}({', '.join(parts)})")
+    return list(dict.fromkeys(out))
+
+
+def error_line(observation: str) -> str:
+    """The most informative last line of a failed observation."""
+    lines = [l.strip() for l in (observation or "").strip().splitlines() if l.strip()]
+    for l in reversed(lines):
+        if l.startswith("{") or "Error" in l or "Exception" in l or "message" in l:
+            return l[:160]
+    return lines[-1][:160] if lines else ""
+
+
 def parse_step(turn: dict) -> dict:
     code = turn.get("code") or ""
     obs = turn.get("observation") or ""
@@ -268,6 +299,8 @@ def parse_step(turn: dict) -> dict:
         elif "?" in lists:
             lists = {"apps": lists.pop("?")} if "show_app_descriptions" in code else {}
     return {
+        "call_forms": call_forms(code),
+        "error_line": error_line(obs) if is_error(obs) else None,
         "api_specs": specs,
         "api_lists": lists,
         "api_list_truncated": truncated,
