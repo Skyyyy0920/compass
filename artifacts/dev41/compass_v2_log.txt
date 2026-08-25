@@ -1,0 +1,3 @@
+3d9a636_1  success=False score=0.40 steps=19 bnd=2 blocked=0 refetch=1 peak=6649 task_completed 
+3d9a636_2  success=True score=1.00 steps=23 bnd=2 blocked=1 refetch=2 peak=6740 task_completed 
+fd1f8fa_1  success=False score=0.20 steps=6 bnd=1 blocked=0 refetch=1 peak=6060 task_completed 

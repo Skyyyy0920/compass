@@ -1,0 +1,11 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "habit tracking log"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/simple_note/account", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "anita.burch@gmail.com", "password": "]ic5XP5"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "anita.burch", "password": "]ic5XP5"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

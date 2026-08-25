@@ -1,0 +1,39 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/simple_note/account", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU", "query": "liked songs"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_album"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/11", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/11", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Walking Through the Valley of Shadows", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/16", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Where Shadows Come to Life", "page_limit": 5}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Eternal Melancholy", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/5", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Crimson Veil", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/12", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Elusive Joy", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/1", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Ephemeral Beauty", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/1", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Stardust Serenade", "page_limit": 5}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Veiled Behind a Mask of Joy", "page_limit": 5}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "In the Wake of Unspoken Promises", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/8", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wading Through the Ashes of Love", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/6", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Fading Like a Distant Star", "page_limit": 5}}
+{"method": "get", "url": "/spotify/albums/8", "data": {}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Grace", "page_limit": 5}}

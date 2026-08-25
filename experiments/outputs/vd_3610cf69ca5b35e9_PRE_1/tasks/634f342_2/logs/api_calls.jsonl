@@ -1,0 +1,26 @@
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/spotify/library/playlists", "data": {}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "vicpowe@gmail.com", "password": "MG}]ZZ9"}}
+{"method": "get", "url": "/spotify/library/playlists", "data": {}}
+{"method": "get", "url": "/spotify/library/playlists", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "login"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_playlist_library"}}
+{"method": "get", "url": "/spotify/library/playlists", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K3ZpY3Bvd2VAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.idhGRJkHzxyYhU-Y-BETJurmIMNgnRedLoX32Gwu6Y4", "page_index": 0, "page_limit": 20}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "file_system"}}
+{"method": "get", "url": "/file_system/file", "data": {"file_path": "~/documents/personal/songs_to_archive.txt"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/file_system/auth/token", "data": {"username": "vicpowe@gmail.com", "password": "*AbZz@R"}}
+{"method": "get", "url": "/file_system/file", "data": {"file_path": "~/documents/personal/songs_to_archive.txt", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbSt2aWNwb3dlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.YSnnbTAEq7NGdW5tWQtW_ljyt7Sn2m4p0HER_AHBvsc"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "vicpowe@gmail.com", "password": "MG}]ZZ9"}}
+{"method": "get", "url": "/spotify/library/playlists", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K3ZpY3Bvd2VAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzMxfQ.NXbP6lS_xcSVzFzM9QXI_u_Klg8tdXyb3vZsVVcntC0", "page_index": 0, "page_limit": 20}}
+{"method": "post", "url": "/spotify/playlists", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K3ZpY3Bvd2VAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzMxfQ.NXbP6lS_xcSVzFzM9QXI_u_Klg8tdXyb3vZsVVcntC0", "name": "Old Songs", "description": "Playlist for archived old songs"}}
+{"method": "post", "url": "/spotify/playlists", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K3ZpY3Bvd2VAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzMxfQ.NXbP6lS_xcSVzFzM9QXI_u_Klg8tdXyb3vZsVVcntC0", "title": "Old Songs", "description": "Playlist for archived old songs"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_playlist"}}
+{"method": "get", "url": "/spotify/playlists/None", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K3ZpY3Bvd2VAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzMxfQ.NXbP6lS_xcSVzFzM9QXI_u_Klg8tdXyb3vZsVVcntC0"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

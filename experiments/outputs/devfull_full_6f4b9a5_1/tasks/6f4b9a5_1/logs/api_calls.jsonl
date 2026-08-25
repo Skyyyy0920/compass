@@ -1,0 +1,14 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "la-mcco@gmail.com", "password": ""}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "la-mcco@gmail.com", "password": "Cq2M9XO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "la-mcco@gmail.com", "password": "Cq2M9XO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "post", "url": "/simple_note/auth/logout", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "la-mcco@gmail.com", "password": "Cq2M9XO"}}
+{"method": "post", "url": "/simple_note/notes", "data": {"title": "test note for token", "content": "test content"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

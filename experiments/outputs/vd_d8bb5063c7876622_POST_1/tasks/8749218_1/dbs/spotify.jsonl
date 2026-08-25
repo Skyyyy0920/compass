@@ -1,0 +1,2 @@
+["INSERT INTO playlists (created_at, record_hash, title, user_id, is_public, rating, like_count, review_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","IhYaNI2lZHQ=","Temporary Queue",55,0,0.0,0,0],false]
+["INSERT INTO playlists_fts (id, saved_search_text) VALUES (?, ?)",[654,"temporary queue"],false]

@@ -1,0 +1,10 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "sab-brown@gmail.com", "password": "l(&[w*s"}}
+{"method": "get", "url": "/simple_note/notes", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStzYWItYnJvd25AZ21haWwuY29tIiwiZXhwIjoxNjg0NDQ2MjM5fQ.YmnyWdWVx21vih3z5QqI-6WsP5Z4b0qSh-UHNmfsBw8", "sort_by": "-created_at", "page_limit": 10}}
+{"method": "get", "url": "/simple_note/notes/2578", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStzYWItYnJvd25AZ21haWwuY29tIiwiZXhwIjoxNjg0NDQ2MjM5fQ.YmnyWdWVx21vih3z5QqI-6WsP5Z4b0qSh-UHNmfsBw8"}}

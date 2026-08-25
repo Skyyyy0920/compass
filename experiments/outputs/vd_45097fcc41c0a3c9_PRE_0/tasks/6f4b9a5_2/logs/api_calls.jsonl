@@ -1,0 +1,31 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"password": "nT]NcWO"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ce-maldonado@gmail.com", "password": "nT]NcWO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ce-maldonado@gmail.com", "password": "nT]NcWO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ.G7sPt8GAM3OSKDtH82M3bZxO7f5G683HKIK2EcdgXVI"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ.G7sPt8GAM3OSKDtH82M3bZxO7f5G683HKIK2EcdgXVI"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lost in the Embrace of Night Noah Bennett"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lost in the Embrace of Night Noah Bennett"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lonely Skies Aria Sterling"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Caught in a Web of Lies Hazel Winter, Ava Morgan"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "On the Border of Reality Lily Moon, Zoey James"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "A Love That Never Was Mia Sullivan, Carter Knight"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Astral Serenity Orion Steele"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Between Reality and Reverie Aria Sterling"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Strangers Again Oceanic Odyssey"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "The Mirage of a Perfect Life Soulful Reverie"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Roses on the Vine Velvet Echo"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "When All Words Fail Us Marcus Lane"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Final Echo Hazel Winter"}}
+{"method": "patch", "url": "/simple_note/notes/3084", "data": {"content": "# Songs I have Liked\n- The Fragrance of Fading Roses BY Jasper Skye, Isabella Cruz, Seraphina Dawn RELEASED_AT 10/2022\n- The Puzzle of My Heart BY Jasper Skye, Isabella Cruz, Seraphina Dawn RELEASED_AT 10/2022\n- Lost in a Moment's Grace BY Apollo Serenade, Phoenix Rivers RELEASED_AT 11/2022\n- In the Depths of Despair BY Apollo Serenade, Phoenix Rivers RELEASED_AT 11/2022\n- Lost in the Embrace of Night BY Noah Bennett RELEASED_AT 03/2021\n- Lonely Skies BY Aria Sterling RELEASED_AT 11/2022\n- Caught in a Web of Lies BY Hazel Winter, Ava Morgan RELEASED_AT 03/2021\n- On the Border of Reality BY Lily Moon, Zoey James RELEASED_AT 08/2022\n- A Love That Never Was BY Mia Sullivan, Carter Knight RELEASED_AT 10/2020\n- Astral Serenity BY Orion Steele RELEASED_AT 12/2019\n- Between Reality and Reverie BY Aria Sterling RELEASED_AT 03/2020\n- Strangers Again BY Oceanic Odyssey RELEASED_AT 06/2022\n- The Mirage of a Perfect Life BY Soulful Reverie RELEASED_AT 11/2020\n- Wilted Roses on the Vine BY Velvet Echo RELEASED_AT 02/2020\n- When All Words Fail Us BY Marcus Lane RELEASED_AT 07/2020\n- Final Echo BY Hazel Winter RELEASED_AT 07/2022\n", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ.G7sPt8GAM3OSKDtH82M3bZxO7f5G683HKIK2EcdgXVI"}}
+{"method": "post", "url": "/supervisor/message", "data": {}}

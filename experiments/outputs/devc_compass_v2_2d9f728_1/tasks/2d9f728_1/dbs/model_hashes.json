@@ -1,0 +1,10 @@
+{
+    "venmo": {
+        "User": 42,
+        "Transaction": 21,
+        "Notification": 21
+    },
+    "supervisor": {
+        "Task": 1
+    }
+}

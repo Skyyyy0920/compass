@@ -1,0 +1,10 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "recommend"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "shuffle"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "playback"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}
