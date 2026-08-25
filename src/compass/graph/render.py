@@ -78,7 +78,7 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
                 L.append(line)
                 continue
             if it.note and it.status in ("blocked", "active", "invalidated"):
-                line += f"  -- {it.note}"
+                line += f"  -- {it.note}" + ("  [agent's own conclusion; re-verify]" if it.status == "invalidated" else "")
             if it.needs and it.status not in ("done", "invalidated"):
                 names = [g.infos[n].name for n in it.needs if n in g.infos]
                 if names:

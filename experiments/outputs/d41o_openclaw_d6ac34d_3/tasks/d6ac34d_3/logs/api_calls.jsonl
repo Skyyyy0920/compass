@@ -1,0 +1,41 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_account_passwords"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "ma_smith@gmail.com", "password": "=&wdfjd"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ma_smith", "password": "=&wdfjd"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_account"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_profile"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_account"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "marcus_smith", "password": "=&wdfjd"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "Marcus Smith", "password": "=&wdfjd"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "MarcusSmith", "password": "=&wdfjd"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "send_password_reset_code"}}
+{"method": "post", "url": "/simple_note/send_password_reset_code", "data": {"email": "ma_smith@gmail.com"}}
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "gmail"}}
+{"method": "get", "url": "/gmail/email_threads/category/inbox", "data": {"query": "Simple Note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "gmail", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/gmail/auth/token", "data": {"username": "ma_smith@gmail.com", "password": "$p[zM!u"}}
+{"method": "get", "url": "/gmail/email_threads/category/inbox", "data": {"query": "Simple Note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "gmail", "api_name": "show_inbox_threads"}}
+{"method": "get", "url": "/gmail/email_threads/category/inbox", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnbWFpbCttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDUxNjl9.LVzgjytkKTgZ-BmgFi36gGL1HdghM-FSS8jcVKYrIWo", "query": "Simple Note", "page_limit": 5}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "gmail"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "gmail", "api_name": "show_thread"}}
+{"method": "get", "url": "/gmail/email_threads/47821", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJnbWFpbCttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDUxNjl9.LVzgjytkKTgZ-BmgFi36gGL1HdghM-FSS8jcVKYrIWo"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "reset_password"}}
+{"method": "post", "url": "/simple_note/reset_password", "data": {"email": "ma_smith@gmail.com", "password_reset_code": "f3a3c57", "new_password": "=&wdfjd"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ma_smith@gmail.com", "password": "=&wdfjd"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDU2MTZ9.8CheR_DtRbVFCOBTmNwEzm-LurSqCGueuJx8kjpNo-Y", "sort_by": "-updated_at", "page_index": 0, "page_limit": 5}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/simple_note/notes/1879", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDU2MTZ9.8CheR_DtRbVFCOBTmNwEzm-LurSqCGueuJx8kjpNo-Y"}}
+{"method": "post", "url": "/simple_note/notes", "data": {"title": "Habit Log -- 2023-05-13", "content": "# Daily Habit Tracker (yes/no questions to answer daily)\n\nexercised_atleast_30_mins: yes\nate_homemade_meals: yes\npracticed_meditation: yes\nread_atleast_30_mins: no\ndrank_adequate_water: yes\nslept_over_7_hrs: yes\nwrote_gratitude_journal: yes\nlimited_screen_time_to_1_hr: yes\npracticed_good_posture: no\nconnected_with_friends: no", "tags": ["habit-tracker"], "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDU2MTZ9.8CheR_DtRbVFCOBTmNwEzm-LurSqCGueuJx8kjpNo-Y"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "Habit Log -- 2023-05-13", "sort": "-updated_at", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDU2MTZ9.8CheR_DtRbVFCOBTmNwEzm-LurSqCGueuJx8kjpNo-Y"}}
+{"method": "get", "url": "/simple_note/notes/1878", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSttYV9zbWl0aEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDU2MTZ9.8CheR_DtRbVFCOBTmNwEzm-LurSqCGueuJx8kjpNo-Y"}}
+{"method": "post", "url": "/supervisor/message", "data": {}}

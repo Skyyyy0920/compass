@@ -362,3 +362,281 @@ print(apis.simple_note.login(username="anita.burch@gmail.com", password="]ic5XP5
 }
 ```
 
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Successfully logged in! Now, let's search for notes that are likely to be habit tracking logs.
+# I'll search for notes with "habit" in the title or tags to find yesterday's log.
+notes_search = apis.simple_note.search_notes(query="habit")
+print(notes_search)
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 3, in <module>
+    notes_search = apis.simple_note.search_notes(query="habit")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 401:
+{"message":"You are either not authorized to access this simple_note API endpoint or your access token is missing, invalid or expired."}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# It seems the access token is not being used automatically for subsequent API calls.
+# Let's check the documentation for the search_notes API to see if it requires the access token to be passed explicitly.
+print(apis.api_docs.show_api_doc(app_name='simple_note', api_name='search_notes'))
+```
+
+```
+{
+ "app_name": "simple_note",
+ "api_name": "search_notes",
+ "path": "/notes",
+ "method": "GET",
+ "description": "Search your notes. This will not show contents of the notes. Pinned notes will be shown first by default, except when dont_reorder_pinned is true.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from simple_note app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "query",
+   "type": "string",
+   "required": false,
+   "description": "Search query for the notes.",
+   "default": "",
+   "constraints": []
+  },
+  {
+   "name": "tags",
+   "type": "list[string]",
+   "required": false,
+   "description": "Tags to filter the notes by. Notes not having any of these tags will be filtered out.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "pinned",
+   "type": "boolean",
+   "required": false,
+   "description": "Filter notes by pinned status.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "dont_reorder_pinned",
+   "type": "boolean",
+   "required": false,
+   "description": "If true, pinned notes will not be reordered to be shown at the top.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "page_index",
+   "type": "integer",
+   "required": false,
+   "description": "The index of the page to return.",
+   "default": 0,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  },
+  {
+   "name": "page_limit",
+   "type": "integer",
+   "required": false,
+   "description": "The maximum number of results to return per page.",
+   "default": 5,
+   "constraints": [
+    "value >= 1.0, <= 20.0"
+   ]
+  },
+  {
+   "name": "sort_by",
+   "type": "string",
+   "required": false,
+   "description": "The attribute to sort the notes by prefixed with +/- to reflect ascending/descending. Valid attributes: created_at and updated_at. If both query and sort_by are given and non-empty, results will be first ranked by query relevance, then paginated, and will then be sorted by the given attribute within each page. If both query and sort_by are not given, null, or empty, sort_by will default to -updated_at.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   {
+    "note_id": 1,
+    "title": "string",
+    "tags": [
+     "string"
+    ],
+    "created_at": "2019-01-01T00:00:00",
+    "updated_at": "2019-01-01T00:00:00",
+    "pinned": true
+   }
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# The search_notes API requires the access_token to be passed explicitly.
+# Let's retry searching for habit notes, passing the access_token from the login response.
+access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbml0YS5idXJjaEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0NDUwNjZ9.lty9RseUcfgLtWSGGpZjfrDDvYqA7BfRt4T5xdXSCPw"
+notes_search = apis.simple_note.search_notes(access_token=access_token, query="habit")
+print(notes_search)
+```
+
+```
+[
+ {
+  "note_id": 1066,
+  "title": "Habit Tracking Log for 2023-05-17",
+  "tags": [
+   "habit-tracker"
+  ],
+  "created_at": "2023-05-17T21:29:37",
+  "updated_at": "2023-05-18T12:00:00",
+  "pinned": true
+ },
+ {
+  "note_id": 1067,
+  "title": "Habit Tracking Log for 2023-05-16",
+  "tags": [
+   "habit-tracker"
+  ],
+  "created_at": "2023-05-16T21:51:09",
+  "updated_at": "2023-05-18T12:00:00",
+  "pinned": true
+ },
+ {
+  "note_id": 1068,
+  "title": "Habit Tracking Log for 2023-05-15",
+  "tags": [
+   "habit-tracker"
+  ],
+  "created_at": "2023-05-15T20:45:42",
+  "updated_at": "2023-05-18T12:00:00",
+  "pinned": true
+ },
+ {
+  "note_id": 1069,
+  "title": "Habit Tracking Log for 2023-05-14",
+  "tags": [
+   "habit-tracker"
+  ],
+  "created_at": "2023-05-14T22:04:53",
+  "updated_at": "2023-05-18T12:00:00",
+  "pinned": true
+ },
+ {
+  "note_id": 1070,
+  "title": "Habit Tracking Log for 2023-05-13",
+  "tags": [
+   "habit-tracker"
+  ],
+  "created_at": "2023-05-13T20:41:51",
+  "updated_at": "2023-05-18T12:00:00",
+  "pinned": true
+ }
+]
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The most recent habit tracking log is for 2023-05-17 (note_id: 1066).
+# Let's get the content of this note to use as a template for today's log.
+yesterday_note_id = 1066
+yesterday_note = apis.simple_note.show_note(access_token=access_token, note_id=yesterday_note_id)
+print(yesterday_note)
+```
+
+```
+{
+ "note_id": 1066,
+ "title": "Habit Tracking Log for 2023-05-17",
+ "content": "# Daily Habit Tracker (yes/no questions to answer daily)\n\nexercised_atleast_30_mins: yes\nate_homemade_meals: yes\npracticed_meditation: no\nread_atleast_30_mins: yes\ndrank_adequate_water: yes\nslept_over_7_hrs: yes\nwrote_gratitude_journal: yes\nlimited_screen_time_to_1_hr: yes\npracticed_good_posture: no\nconnected_with_friends: yes",
+ "tags": [
+  "habit-tracker"
+ ],
+ "created_at": "2023-05-17T21:29:37",
+ "updated_at": "2023-05-18T12:00:00",
+ "pinned": true
+}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Now, let's prepare the new note for today.
+# We'll update the title to today's date and change "practiced_good_posture: no" to "practiced_good_posture: yes" in the content.
+from datetime import datetime
+
+# Get today's date in the same format as the previous note
+today_str = datetime.now().strftime("%Y-%m-%d")
+new_title = f"Habit Tracking Log for {today_str}"
+
+# Update the content for good posture
+new_content = yesterday_note["content"].replace("practiced_good_posture: no", "practiced_good_posture: yes")
+
+# Prepare tags (reuse yesterday's tags)
+tags = yesterday_note["tags"]
+
+print({"title": new_title, "content": new_content, "tags": tags})
+```
+
+```
+{
+ "title": "Habit Tracking Log for 2023-05-18",
+ "content": "# Daily Habit Tracker (yes/no questions to answer daily)\n\nexercised_atleast_30_mins: yes\nate_homemade_meals: yes\npracticed_meditation: no\nread_atleast_30_mins: yes\ndrank_adequate_water: yes\nslept_over_7_hrs: yes\nwrote_gratitude_journal: yes\nlimited_screen_time_to_1_hr: yes\npracticed_good_posture: yes\nconnected_with_friends: yes",
+ "tags": [
+  "habit-tracker"
+ ]
+}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Now, let's create the new habit tracking log note for today in Simple Note using the prepared title, content, and tags.
+create_response = apis.simple_note.create_note(
+    access_token=access_token,
+    title="Habit Tracking Log for 2023-05-18",
+    content="# Daily Habit Tracker (yes/no questions to answer daily)\n\nexercised_atleast_30_mins: yes\nate_homemade_meals: yes\npracticed_meditation: no\nread_atleast_30_mins: yes\ndrank_adequate_water: yes\nslept_over_7_hrs: yes\nwrote_gratitude_journal: yes\nlimited_screen_time_to_1_hr: yes\npracticed_good_posture: yes\nconnected_with_friends: yes",
+    tags=["habit-tracker"]
+)
+print(create_response)
+```
+
+```
+{"message": "Note created.", "note_id": 3084}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The new habit tracking log note for today has been created successfully.
+# Now, I will mark the task as complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

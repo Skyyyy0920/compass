@@ -248,10 +248,16 @@ def parse_step(turn: dict) -> dict:
     code = turn.get("code") or ""
     obs = turn.get("observation") or ""
     defs, uses, ok = defs_uses(code)
-    specs, lists = ([], {})
+    specs, lists, truncated = [], {}, False
     if "api_docs." in code and not is_error(obs):
         specs, lists = api_specs(obs)
         m = re.search(r"show_api_descriptions\(\s*app_name\s*=\s*['\"](\w+)['\"]", code)
+        if not lists and ("show_api_descriptions" in code or "show_app_descriptions" in code):
+            # truncated JSON (observation limit): recover the names by regex
+            names = re.findall(r"\"name\":\s*\"(\w+)\"", obs)
+            if names:
+                lists = {"?": names}
+                truncated = len(obs) >= 3990
         if m and "?" in lists:
             lists = {m.group(1): lists.pop("?")}
         elif "?" in lists:
@@ -259,6 +265,7 @@ def parse_step(turn: dict) -> dict:
     return {
         "api_specs": specs,
         "api_lists": lists,
+        "api_list_truncated": truncated,
         "step": turn["step"],
         "code": code,
         "observation": obs,

@@ -16,3 +16,4 @@
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["VAmfEmBeLl8=",1,"todoist","sKQhVbc"],false]
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["tnRj295YB28=",1,"venmo","U9oI6gC"],false]
 ["INSERT INTO tasks (status, record_hash, supervisor_id, instruction, answer) VALUES (?, ?, ?, ?, ?)",[null,"W3xYb8yitmQ=",1,"Go through all my Spotify playlists and remove all the songs from them that are in \"~/documents/personal/list_of_old_songs.txt\" from my file system and put them in a new playlist named \"Archived Playlist Songs\".","\"<<NOT_GIVEN>>\""],false]
+["UPDATE tasks SET status=?, record_hash=?, answer=? WHERE tasks.id = ?",["fail","7P7xDjpmK+Y=","null",1],false]

@@ -514,3 +514,64 @@ print(note_details)
 }
 ```
 
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Now, let's modify the content by changing "practiced_meditation: yes" to "practiced_meditation: no".
+note_content_today = note_details["content"].replace("practiced_meditation: yes", "practiced_meditation: no")
+print(note_content_today)
+```
+
+```
+# Daily Habit Tracker (yes/no questions to answer daily)
+
+exercised_atleast_30_mins: yes
+ate_homemade_meals: no
+practiced_meditation: no
+read_atleast_30_mins: yes
+drank_adequate_water: yes
+slept_over_7_hrs: yes
+wrote_gratitude_journal: yes
+limited_screen_time_to_1_hr: yes
+practiced_good_posture: yes
+connected_with_friends: no
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# Now, let's create a new note for today with the modified content.
+from datetime import datetime
+
+today_str = datetime.now().strftime("%Y-%m-%d")
+note_title_today = f"Habit Tracker Log for {today_str}"
+
+create_note_response = apis.simple_note.create_note(
+    access_token=access_token,
+    title=note_title_today,
+    content=note_content_today,
+    tags=[],
+    pinned=True
+)
+print(create_note_response)
+```
+
+```
+{"message": "Note created.", "note_id": 3084}
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# The new habit tracking log note for today has been created successfully.
+# Now, I will mark the task as complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

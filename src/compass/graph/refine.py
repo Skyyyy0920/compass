@@ -56,7 +56,10 @@ Rules:
 - needs = variable ids the sub-goal will read (tokens, id lists, computed sets). Only ids from LIVE VARIABLES.
 - facts: constraints from the goal or observations that future steps must respect (definitions like which contacts
   count as 'friends', pagination limits, note strings, amounts), and failures worth not repeating. Keep each <= 200 chars.
-- Do not restate steps as sub-goals; sub-goals are outcomes."""
+- Do not restate steps as sub-goals; sub-goals are outcomes.
+- NEVER conclude that an API or capability does not exist unless a COMPLETE, untruncated API listing for that app
+  was observed. A failed guess of an API name (404 / "No API named ...") only proves that name is wrong.
+  Record such attempts as failures ("tried spotify.play -> no such API"), not as absence of capability."""
 
 
 def _plan_lines(g: Graph) -> str:

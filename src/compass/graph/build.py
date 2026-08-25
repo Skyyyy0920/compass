@@ -110,6 +110,9 @@ class Graph:
         for app, names in (s.get("api_lists") or {}).items():
             old = next((i for i in self.infos.values() if i.kind == "api_list" and i.name == app), None)
             hint = ", ".join(names[:60])
+            if s.get("api_list_truncated"):
+                hint += " ... (listing was TRUNCATED by the output limit: more APIs exist; " \
+                        "query api_docs.show_api_doc for specific names or use page_limit/keywords)"
             if old is not None:
                 old.value_hint, old.producer = hint, sid
                 continue
@@ -161,6 +164,11 @@ class Graph:
             if not bad:
                 self.log.append({"drop": "blocked_without_error_evidence", "intent": iid})
                 status = "active"
+        if status in ("blocked", "invalidated") and note and self.NEGATIVE.search(note) \
+                and re.search(r"\bapi|endpoint|function|feature\b", note, re.I) and not self.complete_listing_seen():
+            # "no API exists" style conclusions need a complete API listing as evidence
+            self.log.append({"drop": "ungrounded_negative_status", "intent": iid, "note": note[:80]})
+            status, note = "active", "route attempted so far failed; API listing seen was incomplete -- look for other APIs"
         it.status = status
         it.evidence = list(dict.fromkeys(it.evidence + ev))
         if note:
@@ -211,7 +219,23 @@ class Graph:
             added += len(it.needs) - before
         return added
 
+    NEGATIVE = re.compile(r"\b(no|not|cannot|can't|missing|unavailable|does not exist|doesn't exist|impossible|"
+                          r"unsupported|lack|absent|none)\b", re.I)
+
+    def complete_listing_seen(self, steps: list[str] | None = None) -> bool:
+        """True if some step observed an API listing that was not truncated."""
+        for sid, st in self.steps.items():
+            if steps and sid not in steps:
+                continue
+            if st.get("api_lists") and not st.get("api_list_truncated"):
+                return True
+        return False
+
     def add_fact(self, text: str, kind: str = "fact", steps: list[str] | None = None) -> dict | None:
+        if self.NEGATIVE.search(text) and re.search(r"\bapi|endpoint|function|feature|way to\b", text, re.I) \
+                and not self.complete_listing_seen():
+            self.log.append({"drop": "ungrounded_negative_fact", "text": text[:100]})
+            return None
         norm = re.sub(r"\W+", " ", text.lower()).strip()
         for f in self.facts:
             if re.sub(r"\W+", " ", f["text"].lower()).strip() == norm:
