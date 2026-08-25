@@ -166,11 +166,12 @@ class Graph:
             if not bad:
                 self.log.append({"drop": "blocked_without_error_evidence", "intent": iid})
                 status = "active"
-        if status in ("blocked", "invalidated") and note and self.NEGATIVE.search(note) \
-                and re.search(r"\bapi|endpoint|function|feature\b", note, re.I) and not self.complete_listing_seen():
+        if self.ungrounded_negative(note):
             # "no API exists" style conclusions need a complete API listing as evidence
-            self.log.append({"drop": "ungrounded_negative_status", "intent": iid, "note": note[:80]})
-            status, note = "active", "route attempted so far failed; API listing seen was incomplete -- look for other APIs"
+            self.log.append({"drop": "ungrounded_negative_status", "intent": iid, "note": (note or "")[:80]})
+            if status in ("blocked", "invalidated"):
+                status = "active"
+            note = "guessed API names failed; the API listing seen was incomplete -- look for other APIs"
         it.status = status
         it.evidence = list(dict.fromkeys(it.evidence + ev))
         if note:
@@ -224,18 +225,30 @@ class Graph:
     NEGATIVE = re.compile(r"\b(no|not|cannot|can't|missing|unavailable|does not exist|doesn't exist|impossible|"
                           r"unsupported|lack|absent|none)\b", re.I)
 
-    def complete_listing_seen(self, steps: list[str] | None = None) -> bool:
-        """True if some step observed an API listing that was not truncated."""
-        for sid, st in self.steps.items():
-            if steps and sid not in steps:
-                continue
-            if st.get("api_lists") and not st.get("api_list_truncated"):
-                return True
-        return False
+    def complete_listing_seen(self, text: str = "") -> bool:
+        """True if the app(s) the text talks about had a complete (untruncated)
+        API listing observed. With no app named, any complete per-app listing counts."""
+        complete, apps = set(), set()
+        for st in self.steps.values():
+            for app in (st.get("api_lists") or {}):
+                if app == "apps":
+                    apps.update(st["api_lists"][app])
+                    continue
+                apps.add(app)
+                if not st.get("api_list_truncated"):
+                    complete.add(app)
+        named = {a for a in apps if re.search(rf"\b{re.escape(a)}\b", text, re.I)}
+        if named:
+            return named <= complete
+        return bool(complete)
+
+    def ungrounded_negative(self, text: str | None) -> bool:
+        return bool(text) and bool(self.NEGATIVE.search(text)) \
+            and bool(re.search(r"\bapi|endpoint|function|feature|way to|capabilit", text, re.I)) \
+            and not self.complete_listing_seen(text)
 
     def add_fact(self, text: str, kind: str = "fact", steps: list[str] | None = None) -> dict | None:
-        if self.NEGATIVE.search(text) and re.search(r"\bapi|endpoint|function|feature|way to\b", text, re.I) \
-                and not self.complete_listing_seen():
+        if self.ungrounded_negative(text):
             self.log.append({"drop": "ungrounded_negative_fact", "text": text[:100]})
             return None
         norm = re.sub(r"\W+", " ", text.lower()).strip()

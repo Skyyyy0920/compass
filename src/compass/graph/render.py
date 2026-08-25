@@ -95,13 +95,17 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
     if all_ok_apis and level <= 2:
         L += ["", "APIS ALREADY CALLED SUCCESSFULLY (do not re-login; results are in LIVE VARIABLES)",
               ", ".join(all_ok_apis[:40])]
-    lists = [i for i in g.infos.values() if i.kind == "api_list"]
+    lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
     specs = [i for i in g.infos.values() if i.kind == "api_spec"]
     if lists or specs:
         L += ["", "API DOCS ALREADY READ (exact signatures; do not call api_docs again for these)"]
-        for i in lists[-8:]:
-            L.append(f"- {i.name} apis: {i.value_hint}")
-        for i in specs[-25:]:
+        if level <= 2:
+            for i in lists[-6:]:
+                hint = i.value_hint or ""
+                if level == 2 and len(hint) > 300:
+                    hint = hint[:300] + " ... (more; listing shortened here)"
+                L.append(f"- {i.name} apis: {hint}")
+        for i in specs[-(25 if level <= 1 else 12):]:
             L.append(f"- {i.value_hint}")
 
     if level <= 1:
@@ -124,7 +128,7 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
             L += ["", "LIVE VARIABLES: " + ", ".join(i.name for i in rt[-30:])]
 
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
-    if results:
+    if results and level <= 2:
         seen: dict[str, Info] = {}
         for i in results:
             seen[i.name] = i          # latest observation per api
@@ -151,9 +155,15 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
     return "\n".join(L)
 
 
+def live_variable_line(g: Graph) -> str:
+    rt = [i for i in g.live_infos(recent_steps=2) if i.kind == "runtime_reference"]
+    return "LIVE VARIABLES (still bound in the Python session): " + ", ".join(i.name for i in rt[-40:]) if rt else ""
+
+
 def render_to_budget(g: Graph, budget: int, recent_ids: list[str]) -> tuple[str, int]:
-    for level in (0, 1, 2):
+    """Levels 0-3 are deterministic folds; 4 means 'still over budget, caller degrades'."""
+    for level in (0, 1, 2, 3):
         text = render(g, level, recent_ids)
         if count_tokens(text) <= budget:
             return text, level
-    return render(g, 2, recent_ids), 3
+    return render(g, 3, recent_ids), 4

@@ -1,0 +1,17 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "phone"}}
+{"method": "get", "url": "/phone/contacts", "data": {"name": "Nancy"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "venmo"}}
+{"method": "get", "url": "/venmo/friends", "data": {"name": "Nancy"}}
+{"method": "get", "url": "/supervisor/payment_cards", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/venmo/auth/token", "data": {"email": "tr_solo@gmail.com", "password": "z*@]t]Q"}}
+{"method": "post", "url": "/venmo/auth/token", "data": {"username": "tr_solo@gmail.com", "password": "z*@]t]Q"}}
+{"method": "get", "url": "/venmo/friends", "data": {"name": "Nancy"}}
+{"method": "get", "url": "/venmo/account", "data": {}}
+{"method": "post", "url": "/venmo/auth/token", "data": {"email": "tr_solo@gmail.com", "password": "z*@]t]Q"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/venmo/auth/token", "data": {"email": "tr_solo@gmail.com", "password": "z*@]t]Q", "username": "tr_solo@gmail.com"}}
+{"method": "get", "url": "/venmo/friends", "data": {"name": "Nancy"}}

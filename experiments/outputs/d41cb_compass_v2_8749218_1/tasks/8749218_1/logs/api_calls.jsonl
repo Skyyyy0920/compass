@@ -1,0 +1,70 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "recommend"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_liked_songs"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "search": "song"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_genres"}}
+{"method": "get", "url": "/spotify/genres", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"genre": "pop", "sort_by": "-play_count", "page_limit": 10}}
+{"method": "get", "url": "/spotify/songs", "data": {"genre": "rock", "sort_by": "-play_count", "page_limit": 10}}
+{"method": "get", "url": "/spotify/songs", "data": {"genre": "EDM", "sort_by": "-play_count", "page_limit": 10}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "create_playlist"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "gl.moore@gmail.com", "password": "+=)+0kx"}}
+{"method": "post", "url": "/spotify/playlists", "data": {"title": "AI Recommended Queue", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE", "is_public": false}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "add_song_to_playlist"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/276", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/275", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/118", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/119", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/278", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/279", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/73", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/120", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/121", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/71", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/311", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/67", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/137", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/59", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/313", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/74", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/61", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/75", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/60", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/310", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/257", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/66", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/109", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/113", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/294", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/106", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/98", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/114", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/108", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "post", "url": "/spotify/playlists/654/songs/54", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2dsLm1vb3JlQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.1-auY1iwWfor4_lD-JwFuaGPDvlyBbJk_gvylHLc1LE"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "start_playlist_playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "shuffle"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "start"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "control"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "shuffle"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "control"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

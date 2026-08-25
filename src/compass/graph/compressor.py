@@ -22,7 +22,7 @@ from ..harness.llm import LLM
 from ..harness.prompt import count_tokens, load_prompt
 from .build import Graph
 from .refine import refine_graph
-from .render import render_to_budget
+from .render import live_variable_line, render_to_budget
 
 
 def _h(text: str | None) -> str:
@@ -68,11 +68,12 @@ class CompassCompressor(Compressor):
             g.augment_needs(new_ids[-3:])
         text, level = render_to_budget(g, self.summary_budget, new_ids[-3:])
         degraded = False
-        if level == 3 and self.llm is not None:
+        if level == 4 and self.llm is not None:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
             try:
                 text = self.llm.chat([{"role": "system", "content": load_prompt("openclaw_system.jinja")},
                                      {"role": "user", "content": user}], tag="fallback").strip()
+                text += "\n\n" + live_variable_line(g)
                 degraded = True
             except Exception:  # noqa: BLE001
                 pass
