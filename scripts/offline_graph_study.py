@@ -36,7 +36,16 @@ def load_corpus(extra: list[str]) -> list[dict]:
             r = json.loads(line)
             steps = [{"step": s["step_id"], "code": s.get("code") or "", "observation": s.get("observation") or "",
                       "reasoning": s.get("reasoning") or ""} for s in r["trajectory_steps"]]
-            eps.append({"id": f"v1full::{r['task_id']}", "goal": r.get("instruction"), "steps": steps})
+            goal = r.get("instruction")
+            if not goal:
+                try:
+                    from compass import compat
+                    compat.install()
+                    from appworld.task import Task
+                    goal = Task.load(task_id=r["task_id"]).instruction
+                except Exception:  # noqa: BLE001
+                    goal = None
+            eps.append({"id": f"v1full::{r['task_id']}", "goal": goal, "steps": steps})
     best: dict[str, dict] = {}
     for f in glob.glob(str(V1 / "inputs/diagnostic/packets/*.json")):
         p = json.loads(Path(f).read_text(encoding="utf-8"))
@@ -103,11 +112,15 @@ def main():
                 continue
             ex = comp.last_extra or {}
             g = Graph.from_dict(comp._graphs[list(comp._graphs)[-1]])
+            # GT: infos produced before the boundary that a step at/after it reads
             future_names = set()
             for s in steps[k - 1:]:
                 st = g_full.steps.get(f"s{s['step']}")
                 if st:
-                    future_names.update(g_full.infos[c].name for c in st["consumes"])
+                    for c in st["consumes"]:
+                        info = g_full.infos[c]
+                        if int(info.producer[1:]) < k:
+                            future_names.add(info.name)
             open_needs = set()
             for it in g.intents.values():
                 if it.status not in ("done", "invalidated"):
@@ -129,6 +142,7 @@ def main():
                 "needs_pred": sorted(open_needs), "needs_gt": sorted(future_names),
                 "needs_P": P, "needs_R": R, "needs_F1": F, "live_recall": live_R,
                 "done_total": len(dones), "done_grounded": dg, "handover": text,
+                "drop_reasons": [d.get("drop") for d in g.log],
             })
             prev, absorbed = text, k - 1
         report["episodes"].append(rec)
@@ -153,6 +167,8 @@ def main():
         "mean_needs_F1": sum(f1s) / max(1, len(f1s)), "n_F1": len(f1s),
         "mean_live_recall": sum(lr) / max(1, len(lr)),
         "total_drops": sum(b["drops"] or 0 for b in allb),
+        "drop_reasons": dict(__import__("collections").Counter(
+            r for e in report["episodes"] for b in e["boundaries"][-1:] for r in b.get("drop_reasons", []))),
         "done_grounded_rate": sum(b["done_grounded"] for b in allb) / max(1, sum(b["done_total"] for b in allb)),
         "llm_usage": llm.usage.to_dict() if llm else None,
     }

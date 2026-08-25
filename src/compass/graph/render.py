@@ -91,9 +91,18 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
                         L.append(f"{ind}    - {compact_step_view(g.steps[e], 70)}")
 
     all_ok_apis = _executed_apis(g, sorted(g.steps, key=lambda s: int(s[1:])))
+    all_ok_apis = [a for a in all_ok_apis if not a.startswith("api_docs.")]
     if all_ok_apis and level <= 2:
-        L += ["", "APIS ALREADY CALLED SUCCESSFULLY (do not re-read docs or re-login unless needed)",
+        L += ["", "APIS ALREADY CALLED SUCCESSFULLY (do not re-login; results are in LIVE VARIABLES)",
               ", ".join(all_ok_apis[:40])]
+    lists = [i for i in g.infos.values() if i.kind == "api_list"]
+    specs = [i for i in g.infos.values() if i.kind == "api_spec"]
+    if lists or specs:
+        L += ["", "API DOCS ALREADY READ (exact signatures; do not call api_docs again for these)"]
+        for i in lists[-8:]:
+            L.append(f"- {i.name} apis: {i.value_hint}")
+        for i in specs[-25:]:
+            L.append(f"- {i.value_hint}")
 
     if level <= 1:
         infos = g.live_infos(recent_steps=3 if level == 1 else 8)

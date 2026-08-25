@@ -33,11 +33,12 @@ class CompassCompressor(Compressor):
     name = "compass_v2"
 
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
-                 use_llm: bool = True, hide_done: bool = False):
+                 use_llm: bool = True, hide_done: bool = False, det_needs: bool = True):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, budget // 3)
         self.use_llm = use_llm and llm is not None
         self.hide_done = hide_done
+        self.det_needs = det_needs
         self._graphs: dict[str, dict] = {}
         self.last_extra: dict | None = None
 
@@ -63,6 +64,8 @@ class CompassCompressor(Compressor):
             except Exception as e:  # noqa: BLE001
                 stats = {"error": str(e)[:200]}
                 g.log.append({"drop": "refine_call_failed", "err": str(e)[:200]})
+        if self.det_needs:
+            g.augment_needs(new_ids[-3:])
         text, level = render_to_budget(g, self.summary_budget, new_ids[-3:])
         degraded = False
         if level == 3 and self.llm is not None:
@@ -104,6 +107,8 @@ def make_compass(method: str, llm: LLM, budget: int) -> CompassCompressor:
         c = CompassCompressor(None, budget, use_llm=False)
     elif method == "compass_nodone":
         c = CompassCompressor(llm, budget, hide_done=True)
+    elif method == "compass_llmneeds":
+        c = CompassCompressor(llm, budget, det_needs=False)
     else:
         raise ValueError(f"unknown compass variant {method}")
     c.name = method

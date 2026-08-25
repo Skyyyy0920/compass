@@ -96,8 +96,29 @@ class Graph:
                         source_api=api_by_var.get(name), value_hint=_value_hint(s, name))
             self.infos[info.id] = info
             s["produces"].append(info.id)
-        # api results not bound to a variable but printed (docs, lists) -> api_result info
-        if s["status"] == "ok" and s["api_names"] and not s["defs"]:
+        # API documentation read by the agent -> api_spec / api_list infos (deduped by name)
+        for spec in s.get("api_specs", []):
+            name = spec.split("(", 1)[0]
+            old = next((i for i in self.infos.values() if i.kind == "api_spec" and i.name == name), None)
+            if old is not None:
+                old.value_hint, old.producer = spec, sid
+                continue
+            self._n_info += 1
+            self.infos[f"i{self._n_info}"] = Info(id=f"i{self._n_info}", kind="api_spec", name=name, producer=sid,
+                                                  source_api="api_docs.show_api_doc", value_hint=spec)
+            s["produces"].append(f"i{self._n_info}")
+        for app, names in (s.get("api_lists") or {}).items():
+            old = next((i for i in self.infos.values() if i.kind == "api_list" and i.name == app), None)
+            hint = ", ".join(names[:60])
+            if old is not None:
+                old.value_hint, old.producer = hint, sid
+                continue
+            self._n_info += 1
+            self.infos[f"i{self._n_info}"] = Info(id=f"i{self._n_info}", kind="api_list", name=app, producer=sid,
+                                                  source_api="api_docs.show_api_descriptions", value_hint=hint)
+            s["produces"].append(f"i{self._n_info}")
+        # api results not bound to a variable but printed (non-doc calls) -> api_result info
+        if s["status"] == "ok" and s["api_names"] and not s["defs"] and not s.get("api_specs") and not s.get("api_lists"):
             for api in s["api_names"]:
                 self._n_info += 1
                 info = Info(id=f"i{self._n_info}", kind="api_result", name=api, producer=sid, source_api=api,
@@ -163,6 +184,32 @@ class Graph:
             if i in self.infos and i not in it.needs:
                 it.needs.append(i)
                 self.infos[i].needed_by.append(iid)
+
+    def augment_needs(self, recent_ids: list[str]) -> int:
+        """Deterministic NEEDS: every open intent is assumed to need the current
+        credentials/tokens, everything consumed by the recent steps, and every
+        variable consumed by two or more distinct steps so far (reused state)."""
+        open_intents = [it for it in self.frontier()]
+        if not open_intents:
+            return 0
+        cand = []
+        recent = set(recent_ids)
+        for i in self.infos.values():
+            if i.kind != "runtime_reference" or i.superseded:
+                continue
+            n = i.name.lower()
+            if re.search(r"token|password|login|session|auth|cred", n):
+                cand.append(i.id)
+            elif any(c in recent for c in i.consumers):
+                cand.append(i.id)
+            elif len(set(i.consumers)) >= 2:
+                cand.append(i.id)
+        added = 0
+        for it in open_intents:
+            before = len(it.needs)
+            self.set_needs(it.id, cand)
+            added += len(it.needs) - before
+        return added
 
     def add_fact(self, text: str, kind: str = "fact", steps: list[str] | None = None) -> dict | None:
         norm = re.sub(r"\W+", " ", text.lower()).strip()

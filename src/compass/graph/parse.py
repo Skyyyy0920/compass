@@ -191,11 +191,74 @@ def printed_values(observation: str) -> dict:
     return out
 
 
+def _json_blocks(text: str) -> list:
+    """Parse the observation as JSON, or as several printed JSON values."""
+    try:
+        return [json.loads(text)]
+    except Exception:  # noqa: BLE001
+        pass
+    out, dec, i = [], json.JSONDecoder(), 0
+    while i < len(text):
+        j = text.find("{", i)
+        k = text.find("[", i)
+        starts = [x for x in (j, k) if x >= 0]
+        if not starts:
+            break
+        s = min(starts)
+        try:
+            obj, end = dec.raw_decode(text, s)
+            out.append(obj)
+            i = end
+        except Exception:  # noqa: BLE001
+            i = s + 1
+    return out
+
+
+def api_specs(observation: str) -> tuple[list[str], dict[str, list[str]]]:
+    """(compact api signatures, {app: [api names]}) recovered from api_docs output."""
+    specs, lists = [], {}
+    for obj in _json_blocks(observation or ""):
+        if isinstance(obj, dict) and "api_name" in obj and "app_name" in obj:
+            params = []
+            for p in obj.get("parameters") or []:
+                if not isinstance(p, dict):
+                    continue
+                s = p.get("name", "?")
+                if p.get("type"):
+                    s += f":{p['type']}"
+                if not p.get("required", True):
+                    s += "?"
+                params.append(s)
+            desc = (obj.get("description") or "").strip().rstrip(".")[:90]
+            resp = obj.get("response_schemas", {}).get("success") if isinstance(obj.get("response_schemas"), dict) else None
+            rs = ""
+            if isinstance(resp, dict):
+                rs = " -> {" + ", ".join(list(resp.keys())[:8]) + "}"
+            elif isinstance(resp, list) and resp and isinstance(resp[0], dict):
+                rs = " -> [{" + ", ".join(list(resp[0].keys())[:8]) + "}]"
+            specs.append(f"{obj['app_name']}.{obj['api_name']}({', '.join(params)}){rs}  # {desc}")
+        elif isinstance(obj, list) and obj and all(isinstance(x, dict) and "name" in x for x in obj):
+            names = [x["name"] for x in obj]
+            if "description" in obj[0] and not any("app_name" in x for x in obj):
+                lists["?"] = names
+    return specs, lists
+
+
 def parse_step(turn: dict) -> dict:
     code = turn.get("code") or ""
     obs = turn.get("observation") or ""
     defs, uses, ok = defs_uses(code)
+    specs, lists = ([], {})
+    if "api_docs." in code and not is_error(obs):
+        specs, lists = api_specs(obs)
+        m = re.search(r"show_api_descriptions\(\s*app_name\s*=\s*['\"](\w+)['\"]", code)
+        if m and "?" in lists:
+            lists = {m.group(1): lists.pop("?")}
+        elif "?" in lists:
+            lists = {"apps": lists.pop("?")} if "show_app_descriptions" in code else {}
     return {
+        "api_specs": specs,
+        "api_lists": lists,
         "step": turn["step"],
         "code": code,
         "observation": obs,
