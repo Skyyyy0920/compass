@@ -33,11 +33,11 @@ class CompassCompressor(Compressor):
     name = "compass_v2"
 
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
-                 use_llm: bool = True, hide_done: bool = False, det_needs: bool = True):
+                 use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, budget // 3)
         self.use_llm = use_llm and llm is not None
-        self.hide_done = hide_done
+        self.hide_sections = tuple(hide_sections)
         self.det_needs = det_needs
         self._graphs: dict[str, dict] = {}
         self.last_extra: dict | None = None
@@ -76,17 +76,8 @@ class CompassCompressor(Compressor):
                 degraded = True
             except Exception:  # noqa: BLE001
                 pass
-        if self.hide_done:
-            lines, out, skip = text.splitlines(), [], False
-            for l in lines:
-                if l.startswith("APIS ALREADY CALLED"):
-                    skip = True
-                    continue
-                if skip:
-                    skip = False
-                    continue
-                out.append(l)
-            text = "\n".join(out)
+        if self.hide_sections:
+            text = _drop_sections(text, self.hide_sections)
         self._graphs[_h(text)] = g.to_dict()
         self.last_extra = {"level": level, "degraded": degraded, "rebuilt_from_legacy": rebuilt,
                            "n_steps": len(g.steps), "n_intents": len(g.intents), "n_infos": len(g.infos),
@@ -100,16 +91,37 @@ class CompassCompressor(Compressor):
                 f"{summary}\n</history_summary>\n\n")
 
 
+def _drop_sections(text: str, headers: tuple[str, ...]) -> str:
+    """Remove rendered sections whose header line starts with one of ``headers``.
+    A section ends at the next blank line."""
+    out, skip = [], False
+    for line in text.splitlines():
+        if any(line.startswith(h) for h in headers):
+            skip = True
+            continue
+        if skip and line.strip() == "":
+            skip = False
+        if not skip:
+            out.append(line)
+    return "\n".join(out)
+
+
+VARIANTS = {
+    "compass_v2": {},                                                     # the method
+    "compass_det": {"use_llm": False},                                    # A1 deterministic only
+    "compass_nospec": {"hide_sections": ("API DOCS ALREADY READ",)},      # A3 no API signatures
+    "compass_novars": {"hide_sections": ("LIVE VARIABLES",)},             # A4 no live variables
+    "compass_nodone": {"hide_sections": ("APIS ALREADY CALLED", "API DOCS ALREADY READ")},  # A5 no history
+    "compass_noplan": {"hide_sections": ("PLAN (", "NEXT", "CONSTRAINTS", "FACTS")},        # A2 no intent layer
+    "compass_llmneeds": {"det_needs": False},                             # A4b LLM-only needs
+}
+
+
 def make_compass(method: str, llm: LLM, budget: int) -> CompassCompressor:
-    if method == "compass_v2":
-        c = CompassCompressor(llm, budget)
-    elif method == "compass_det":
-        c = CompassCompressor(None, budget, use_llm=False)
-    elif method == "compass_nodone":
-        c = CompassCompressor(llm, budget, hide_done=True)
-    elif method == "compass_llmneeds":
-        c = CompassCompressor(llm, budget, det_needs=False)
-    else:
-        raise ValueError(f"unknown compass variant {method}")
+    if method not in VARIANTS:
+        raise ValueError(f"unknown compass variant {method}; known: {sorted(VARIANTS)}")
+    kw = dict(VARIANTS[method])
+    c = CompassCompressor(None if kw.pop("use_llm", True) is False else llm, budget, **kw,
+                          **({"use_llm": False} if VARIANTS[method].get("use_llm") is False else {}))
     c.name = method
     return c
