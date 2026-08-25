@@ -126,8 +126,9 @@ class Graph:
         if s["status"] == "ok" and s["api_names"] and not s["defs"] and not s.get("api_specs") and not s.get("api_lists"):
             for api in s["api_names"]:
                 self._n_info += 1
+                obs = s["observation"]
                 info = Info(id=f"i{self._n_info}", kind="api_result", name=api, producer=sid, source_api=api,
-                            value_hint=_excerpt(s["observation"], 240))
+                            value_hint=_excerpt(obs, SMALL_VALUE_CHARS if len(obs) <= SMALL_VALUE_CHARS else 240))
                 self.infos[info.id] = info
                 s["produces"].append(info.id)
         return s
@@ -352,8 +353,13 @@ def _value_hint(step: dict, name: str) -> str | None:
     printed = re.findall(r"print\(([^)]*)\)", code)
     hits = [pp for pp in printed if re.search(rf"\b{re.escape(name)}\b", pp)]
     if hits or (len(step["defs"]) == 1 and printed):
-        return _excerpt(obs, 120)
+        # small structured results (credential lists, profiles, short id lists) are kept whole:
+        # an excerpt of them is exactly what makes the agent re-fetch
+        return _excerpt(obs, SMALL_VALUE_CHARS if len(obs) <= SMALL_VALUE_CHARS else 120)
     return None
+
+
+SMALL_VALUE_CHARS = 900
 
 
 def _excerpt(text: str, n: int) -> str:

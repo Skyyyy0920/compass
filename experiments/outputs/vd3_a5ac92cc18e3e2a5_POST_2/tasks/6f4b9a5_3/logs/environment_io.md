@@ -969,3 +969,138 @@ print(apis.api_docs.show_api_descriptions(app_name='spotify'))
 ]
 ```
 
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# The spotify app has `search_songs` and `show_song` APIs.
+# I will use `search_songs` with song title and artist name to find the song and get its id.
+# Then I will use `show_song` with the song id to get detailed info including release date.
+# I will try this for one song first to verify the approach.
+
+song_to_search = songs_to_update[0]  # ("Silver Lining", "Ava Morgan")
+query = f"{song_to_search[0]} {song_to_search[1]}"
+search_result = apis.spotify.search_songs(query=query, page_index=0, page_limit=1)
+print(search_result)  # To see the structure and if it returns the song info needed
+```
+
+```
+[
+ {
+  "song_id": 57,
+  "title": "Silver Lining",
+  "album_id": 11,
+  "duration": 287,
+  "artists": [
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ],
+  "release_date": "2022-12-11T06:22:44",
+  "genre": "EDM",
+  "play_count": 421,
+  "rating": 0.0,
+  "like_count": 15,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/57"
+ }
+]
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The search_songs API returned the song with release_date "2022-12-11T06:22:44".
+# I will extract the release month as MM/YYYY from this date.
+release_date = search_result[0]["release_date"]
+from datetime import datetime
+release_dt = datetime.fromisoformat(release_date)
+release_month_str = release_dt.strftime("%m/%Y")
+print(release_month_str)  # Expected "12/2022" for Silver Lining
+```
+
+```
+12/2022
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# I will now get release month info for all songs missing it by searching each song on spotify.
+# I will store the results in a dictionary for easy update of the note content.
+release_months = {}
+for song, artists in songs_to_update:
+    query = f"{song} {artists}"
+    search_result = apis.spotify.search_songs(query=query, page_index=0, page_limit=1)
+    if search_result:
+        release_date = search_result[0]["release_date"]
+        release_dt = datetime.fromisoformat(release_date)
+        release_month_str = release_dt.strftime("%m/%Y")
+        release_months[song] = release_month_str
+    else:
+        release_months[song] = "UNKNOWN"  # fallback if not found
+
+print(release_months)  # To verify all release months obtained
+```
+
+```
+{
+ "Silver Lining": "12/2022",
+ "Walking Through the Valley of Shadows": "08/2022",
+ "Where Shadows Come to Life": "01/2023",
+ "Eternal Melancholy": "04/2023",
+ "Crimson Veil": "01/2020",
+ "Elusive Joy": "03/2021",
+ "Ephemeral Beauty": "01/2020",
+ "Stardust Serenade": "04/2019",
+ "Veiled Behind a Mask of Joy": "10/2022",
+ "In the Wake of Unspoken Promises": "07/2022",
+ "Wading Through the Ashes of Love": "09/2020",
+ "Fading Like a Distant Star": "01/2019",
+ "Wilted Grace": "01/2022"
+}
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# I have the release month info for all songs missing it.
+# Now I will update the note content by replacing "RELEASED_AT TODO" with the correct release month for each song.
+updated_content = note_content
+for song, release_month in release_months.items():
+    # Replace the line with RELEASED_AT TODO for this song with RELEASED_AT <release_month>
+    updated_content = re.sub(
+        rf"(- {re.escape(song)} BY .+? RELEASED_AT TODO)",
+        lambda m: m.group(1).replace("RELEASED_AT TODO", f"RELEASED_AT {release_month}"),
+        updated_content
+    )
+
+print(updated_content)  # To verify the updated note content before saving back to simple_note
+```
+
+```
+# Spotify Liked Songs
+- When Angels Weep for Us BY Lucas Grey, Velvet Echo RELEASED_AT 07/2022
+- Unspoken Words BY Aria Sterling RELEASED_AT 06/2021
+- Time's Hold BY Aria Sterling RELEASED_AT 11/2022
+- Bleeding Sun BY Aria Sterling RELEASED_AT 11/2022
+- Distant Love BY Ava Morgan RELEASED_AT 12/2022
+- Silver Lining BY Ava Morgan RELEASED_AT 12/2022
+- Walking Through the Valley of Shadows BY Lily Moon, Zoey James RELEASED_AT 08/2022
+- Where Shadows Come to Life BY Olivia Roberts RELEASED_AT 01/2023
+- Eternal Melancholy BY Olivia Roberts RELEASED_AT 04/2023
+- Crimson Veil BY Phoenix Rivers RELEASED_AT 01/2020
+- Elusive Joy BY Orion Steele RELEASED_AT 03/2021
+- Ephemeral Beauty BY Eliana Harper RELEASED_AT 01/2020
+- Stardust Serenade BY Violet Cascade RELEASED_AT 04/2019
+- Veiled Behind a Mask of Joy BY Liam Palmer RELEASED_AT 10/2022
+- In the Wake of Unspoken Promises BY Isabella Cruz RELEASED_AT 07/2022
+- Wading Through the Ashes of Love BY Marcus Lane RELEASED_AT 09/2020
+- Fading Like a Distant Star BY Hazel Winter RELEASED_AT 01/2019
+- Wilted Grace BY Felix Blackwood RELEASED_AT 01/2022
+```
+

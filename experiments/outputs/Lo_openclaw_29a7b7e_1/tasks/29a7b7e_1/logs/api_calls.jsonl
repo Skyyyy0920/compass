@@ -1,0 +1,15 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "file_system"}}
+{"method": "get", "url": "/file_system/directory", "data": {"path": "~/documents/work/meetings/", "recursive": false}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/file_system/auth/token", "data": {"username": "ca-smit@gmail.com", "password": "JJub3%w"}}
+{"method": "get", "url": "/file_system/directory", "data": {"path": "~/documents/work/meetings/", "recursive": false}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "show_directory"}}
+{"method": "get", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE", "directory_path": "~/documents/work/meetings/", "recursive": false}}
+{"method": "post", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE", "directory_path": "~/documents/work/meetings/video_recording/", "recursive": true}}
+{"method": "post", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE", "directory_path": "~/documents/work/meetings/slides/", "recursive": true}}
+{"method": "post", "url": "/file_system/file/move", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE", "source_path": "/home/catherine/documents/work/meetings/2023-apr-05__slides.ppt", "destination_path": "~/documents/work/meetings/slides/2023-apr-05.ppt"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "move_file"}}
+{"method": "post", "url": "/file_system/file/move", "data": {"source_file_path": "/home/catherine/documents/work/meetings/2023-apr-05__slides.ppt", "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE"}}
+{"method": "post", "url": "/file_system/file/move", "data": {"source_file_path": "/home/catherine/documents/work/meetings/2023-apr-05__video_recording.mp4", "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.u80UJ5mTBeA1Of6_EpfSb_0ZU6VpiWOWHJ-2nkkC5CE"}}
+{"method": "post", "url": "/supervisor/message", "data": {}}
