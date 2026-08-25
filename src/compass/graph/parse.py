@@ -231,8 +231,9 @@ def api_specs(observation: str) -> tuple[list[str], dict[str, list[str]]]:
                 d = str(p.get("description") or "")
                 m = re.search(r"(between \d+ and \d+|max(?:imum)? (?:of )?\d+|at most \d+|one of [^.]+|"
                               r"in (?:the )?format[^.]*|e\.g\.[^.]*)", d, re.I)
-                if m:
-                    s += f"[{m.group(1).strip()[:50]}]"
+                cons = [str(c) for c in (p.get("constraints") or []) if c]
+                if m or cons:
+                    s += "[" + "; ".join(([m.group(1).strip()[:50]] if m else []) + cons[:3])[:80] + "]"
                 params.append(s)
             desc = (obj.get("description") or "").strip().rstrip(".")[:90]
             resp = obj.get("response_schemas", {}).get("success") if isinstance(obj.get("response_schemas"), dict) else None

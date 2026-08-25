@@ -42,7 +42,12 @@ def job(args):
     if arm == "POST" and post_method:
         from run_episodes import make_compressor
         comp = make_compressor(post_method, comp_model, comp_provider, budget)
-        summary = comp.compress(spec["instruction"], spec["prev_summary"], spec["absorbable_turns"])
+        if post_method.startswith("compass") and spec["prev_summary"] is not None:
+            # a graph compressor keeps state across boundaries; on a cohort recorded under
+            # another compressor it gets the whole prefix instead of a foreign summary
+            summary = comp.compress(spec["instruction"], None, spec["prefix_turns"])
+        else:
+            summary = comp.compress(spec["instruction"], spec["prev_summary"], spec["absorbable_turns"])
         render = comp.render_context
         extra = getattr(comp, "last_extra", None)
     r = rollout(spec, arm, agent, summary=summary, render_context=render, sample=sample,

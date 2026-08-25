@@ -57,6 +57,9 @@ def boundary_specs(ep: dict) -> list[dict]:
             "pre": {"summary": b["prev_summary"], "turns": pre_turns},
             "post": {"summary": b["summary"], "turns": post_turns},
             "absorbable_turns": absorbable, "prev_summary": b["prev_summary"],
+            # every recorded step before the boundary except the retained turn(s): what a
+            # compressor that had been running all along would have absorbed by now
+            "prefix_turns": [steps[j] for j in range(1, n) if j in steps and j not in retained],
             "historical_exact": sorted(hist),
         })
         prev_retained_lo = retained[0] if retained else n
