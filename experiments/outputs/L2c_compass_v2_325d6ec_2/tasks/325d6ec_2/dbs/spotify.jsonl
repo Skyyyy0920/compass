@@ -4,3 +4,7 @@
 ["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["nBppBXkgaMU=",3,90],false]
 ["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["zIjUmpMabnA=",4,90],false]
 ["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["OGkwOmjxpzA=",5,90],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["WYU1qN8Mm5s=",6,90],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["jmMrKNBRr7k=",7,90],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["MXliiFIgvbs=",8,90],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["16/+rRgt/o0=",9,90],false]

@@ -1,0 +1,20 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "venmo"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "phone"}}
+{"method": "get", "url": "/phone/contact_relationships", "data": {}}
+{"method": "get", "url": "/phone/account", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/phone/auth/token", "data": {"email_address": "jo-harr@gmail.com", "password": "Ee%AVVI"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_profile"}}
+{"method": "post", "url": "/phone/auth/token", "data": {"username": "jo-harr@gmail.com", "password": "Ee%AVVI"}}
+{"method": "post", "url": "/phone/auth/token", "data": {"username": "2254213734", "password": "Ee%AVVI"}}
+{"method": "get", "url": "/phone/contact_relationships", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "phone", "api_name": "show_contact_relationships"}}
+{"method": "get", "url": "/phone/contact_relationships", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwaG9uZSsyMjU0MjEzNzM0IiwiZXhwIjoxNjg0NDEyMDk4fQ.xDB7pMF6Krp9DLl8Iso5JL0Kc0SLV78Gpi7X42sF_v0"}}
+{"method": "get", "url": "/phone/contacts", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwaG9uZSsyMjU0MjEzNzM0IiwiZXhwIjoxNjg0NDEyMDk4fQ.xDB7pMF6Krp9DLl8Iso5JL0Kc0SLV78Gpi7X42sF_v0", "relationship": "roommate"}}
+{"method": "get", "url": "/venmo/users", "data": {"query": "Kathryn Maldonado"}}
+{"method": "post", "url": "/venmo/auth/token", "data": {"username": "jo-harr@gmail.com", "password": "ZEgU=ep"}}
+{"method": "get", "url": "/venmo/users", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbytqby1oYXJyQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.jCDXE7B3S-9Y2n1Q_cumB4OaPL8QtvGpz2uBEBNwnuQ", "query": "Kathryn Maldonado"}}
+{"method": "get", "url": "/venmo/users", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbytqby1oYXJyQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.jCDXE7B3S-9Y2n1Q_cumB4OaPL8QtvGpz2uBEBNwnuQ", "query": "Nancy Ritter"}}
+{"method": "get", "url": "/venmo/users", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbytqby1oYXJyQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.jCDXE7B3S-9Y2n1Q_cumB4OaPL8QtvGpz2uBEBNwnuQ", "query": "Troy Solomon"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "venmo", "api_name": "create_payment_request"}}

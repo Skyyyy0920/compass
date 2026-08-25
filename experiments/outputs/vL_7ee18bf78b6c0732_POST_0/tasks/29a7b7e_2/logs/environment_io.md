@@ -538,10 +538,12 @@ print(dest_dirs)
 ----------------------------------------------------------------------------
 ```python
 # Now that the required directories have been created, let's move each file to its new location with the new name.
-for src_path, dest_dir, dest_path in move_operations:
+# We'll use the move_file API for each move operation, passing the access_token, source_path, and destination_path.
+
+for source_path, dest_dir, dest_path in move_operations:
     apis.file_system.move_file(
         access_token=access_token,
-        source_path=src_path,
+        source_path=source_path,
         destination_path=dest_path
     )
 
@@ -550,7 +552,7 @@ for src_path, dest_dir, dest_path in move_operations:
 
 ```
 Execution failed. Traceback:
-  File "<python-input>", line 3, in <module>
+  File "<python-input>", line 5, in <module>
     apis.file_system.move_file(
 Exception: Response status code is 422:
 {"message":"Validation error. Reason: \nsource_file_path: field required\ndestination_file_path: field required"}
@@ -560,17 +562,15 @@ Exception: Response status code is 422:
 ### Environment Interaction 12
 ----------------------------------------------------------------------------
 ```python
-# The error indicates that the correct parameter names are `source_file_path` and `destination_file_path`, not `source_path` and `destination_path`.
-# Let's retry the move operations with the correct parameter names.
+# The error message indicates that the correct parameter names are `source_file_path` and `destination_file_path`, not `source_path` and `destination_path`.
+# Let's update the API call accordingly and try again.
 
-for src_path, dest_dir, dest_path in move_operations:
+for source_path, dest_dir, dest_path in move_operations:
     apis.file_system.move_file(
         access_token=access_token,
-        source_file_path=src_path,
+        source_file_path=source_path,
         destination_file_path=dest_path
     )
-
-# After this, I will verify that the files have been moved correctly.
 ```
 
 ```
@@ -581,8 +581,8 @@ Execution successful.
 ### Environment Interaction 13
 ----------------------------------------------------------------------------
 ```python
-# The files have been moved to their new locations. Now, let's verify that the files are correctly organized in their new directories.
-# I will list the contents of each destination directory to confirm the moves.
+# The files have been moved to their new locations and renamed as required.
+# Now, let's verify that the files are correctly organized by listing the contents of each destination directory.
 
 for dest_dir in dest_dirs:
     print(f"Contents of {dest_dir}:")
@@ -606,13 +606,13 @@ Contents of /home/adam/documents/work/meetings_files/video_recording:
 ### Environment Interaction 14
 ----------------------------------------------------------------------------
 ```python
-# The destination directories are currently empty, which suggests the files may not have been moved as expected.
-# Let's check the original directory to see if the files are still there or if they have been moved elsewhere.
+# The destination directories are currently empty, which is unexpected. Let's check if the files exist in their new locations by listing all files recursively under "~/documents/work/meetings_files/".
+# This will help determine if the files were moved elsewhere or if there was an issue with the move operation.
 
 print(apis.file_system.show_directory(
     access_token=access_token,
     directory_path="/home/adam/documents/work/meetings_files",
-    recursive=False
+    recursive=True
 ))
 ```
 
@@ -631,5 +631,24 @@ print(apis.file_system.show_directory(
  "/home/adam/documents/work/meetings_files/slides/",
  "/home/adam/documents/work/meetings_files/video_recording/"
 ]
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# The recursive directory listing shows only directories, not files. It's possible that the files are inside the date-named directories.
+# Let's list the contents of one of these date-named directories to check if the files were moved there by mistake.
+# I'll check the first date-named directory as an example.
+
+print(apis.file_system.show_directory(
+    access_token=access_token,
+    directory_path="/home/adam/documents/work/meetings_files/2023-apr-03/",
+    recursive=False
+))
+```
+
+```
+[]
 ```
 

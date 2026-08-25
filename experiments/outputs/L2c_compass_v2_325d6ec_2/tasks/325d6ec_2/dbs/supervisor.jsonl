@@ -15,3 +15,4 @@
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["0+rjpZ+NMLU=",1,"todoist","+&R$o4K"],false]
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["ukl0BGC5r/E=",1,"venmo","rl2A-Xl"],false]
 ["INSERT INTO tasks (status, record_hash, supervisor_id, instruction, answer) VALUES (?, ?, ?, ?, ?)",[null,"gqq+IsJK91o=",1,"Keep going to the next song on Spotify until you reach a song I have already downloaded.","\"<<NOT_GIVEN>>\""],false]
+["UPDATE tasks SET status=?, record_hash=?, answer=? WHERE tasks.id = ?",["success","Ww8D5qRp4mE=","null",1],false]

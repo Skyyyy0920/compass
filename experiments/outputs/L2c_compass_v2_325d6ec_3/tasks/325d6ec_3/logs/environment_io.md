@@ -541,3 +541,250 @@ print(login_response)
 }
 ```
 
+
+### Environment Interaction 6
+----------------------------------------------------------------------------
+```python
+# Now I have the access_token. Let's get the current song using show_current_song.
+access_token = login_response["access_token"]
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 36,
+ "title": "A Whisper in the Midnight Air",
+ "album_id": 7,
+ "duration": 234,
+ "artists": [
+  {
+   "id": 11,
+   "name": "Eliana Harper"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 7
+----------------------------------------------------------------------------
+```python
+# Now I have the current song's song_id (36). Let's check if this song is liked.
+# The most direct way is to use show_song_privates, which may indicate if the song is liked by the user.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_song_privates'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "show_song_privates",
+ "path": "/songs/{song_id}/privates",
+ "method": "GET",
+ "description": "Show information about the song that is private to the user.",
+ "parameters": [
+  {
+   "name": "song_id",
+   "type": "integer",
+   "required": true,
+   "description": "The song id to retrieve.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "liked": true,
+   "reviewed": true,
+   "in_song_library": true,
+   "downloaded": true
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 8
+----------------------------------------------------------------------------
+```python
+# Let's check if the current song (song_id=36) is liked by calling show_song_privates.
+song_id = current_song["song_id"]
+song_privates = apis.spotify.show_song_privates(song_id=song_id, access_token=access_token)
+print(song_privates)
+```
+
+```
+{"liked": false, "reviewed": false, "in_song_library": false, "downloaded": false}
+```
+
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+# The current song is not liked. Let's go to the next song using the next_song API.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='next_song'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "next_song",
+ "path": "/music_player/next_song",
+ "method": "POST",
+ "description": "Go to the next song in the song queue.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "song_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# Let's go to the next song and get its song_id from the response.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 56}
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Now let's check if the new current song (song_id=56) is liked.
+song_id = next_song_response["song_id"]
+song_privates = apis.spotify.show_song_privates(song_id=song_id, access_token=access_token)
+print(song_privates)
+```
+
+```
+{"liked": false, "reviewed": false, "in_song_library": false, "downloaded": false}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# The new current song (song_id=56) is also not liked. Let's go to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 167}
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=167) is liked.
+song_id = next_song_response["song_id"]
+song_privates = apis.spotify.show_song_privates(song_id=song_id, access_token=access_token)
+print(song_privates)
+```
+
+```
+{"liked": false, "reviewed": false, "in_song_library": false, "downloaded": false}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The current song (song_id=167) is also not liked. Let's go to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 323}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=323) is liked.
+song_id = next_song_response["song_id"]
+song_privates = apis.spotify.show_song_privates(song_id=song_id, access_token=access_token)
+print(song_privates)
+```
+
+```
+{"liked": false, "reviewed": false, "in_song_library": false, "downloaded": false}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# The current song (song_id=323) is also not liked. Let's go to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 94}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=94) is liked.
+song_id = next_song_response["song_id"]
+song_privates = apis.spotify.show_song_privates(song_id=song_id, access_token=access_token)
+print(song_privates)
+```
+
+```
+{"liked": true, "reviewed": false, "in_song_library": false, "downloaded": false}
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# We've reached a song (song_id=94) that is already liked. The task is complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

@@ -16,3 +16,4 @@
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["ZWChUw85ooQ=",1,"todoist","MQ!CSVZ"],false]
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["Er+SKb//K2Q=",1,"venmo","J*(xh*P"],false]
 ["INSERT INTO tasks (status, record_hash, supervisor_id, instruction, answer) VALUES (?, ?, ?, ?, ?)",[null,"CVqsqBThm9U=",1,"My work meeting files are available in the \"~/documents/work/meetings_files/\" directory in my file system. Currently, they are organized as \"<date>__<file_name>.<extension>\". Reorganize them in this format, \"<file_name>/<date>.<extension>\".","\"<<NOT_GIVEN>>\""],false]
+["UPDATE tasks SET status=?, record_hash=?, answer=? WHERE tasks.id = ?",["success","/CCWZuaKh2M=","null",1],false]

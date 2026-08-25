@@ -1052,3 +1052,279 @@ print(apis.api_docs.show_api_descriptions(app_name='spotify'))
 ]
 ```
 
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# The correct API to skip to the next song is `next_song`. Let's check its specification to see what arguments it needs.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='next_song'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "next_song",
+ "path": "/music_player/next_song",
+ "method": "POST",
+ "description": "Go to the next song in the song queue.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "song_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Let's call the next_song API to skip to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 40}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# Now let's update the current song information by calling show_current_song again, so we can check if this new song is downloaded.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 40,
+ "title": "Burning Like a Distant Star",
+ "album_id": 8,
+ "duration": 277,
+ "artists": [
+  {
+   "id": 8,
+   "name": "Aria Sterling"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=40) is in the list of downloaded songs.
+current_song_id = current_song["song_id"]
+if current_song_id in downloaded_song_ids:
+    found_downloaded = True
+else:
+    found_downloaded = False
+print(found_downloaded)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The current song is still not downloaded. Let's skip to the next song again.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 71}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Let's update the current song information again to check if this new song is downloaded.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 71,
+ "title": "Eternal Fade",
+ "album_id": 15,
+ "duration": 267,
+ "artists": [
+  {
+   "id": 29,
+   "name": "Lucas Diaz"
+  },
+  {
+   "id": 7,
+   "name": "Orion Steele"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=71) is in the list of downloaded songs.
+current_song_id = current_song["song_id"]
+found_downloaded = current_song_id in downloaded_song_ids
+print(found_downloaded)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The current song is still not downloaded. Let's skip to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 50}
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# Let's update the current song information again to check if this new song is downloaded.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 50,
+ "title": "Lonely Skies",
+ "album_id": 10,
+ "duration": 284,
+ "artists": [
+  {
+   "id": 8,
+   "name": "Aria Sterling"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=50) is in the list of downloaded songs.
+current_song_id = current_song["song_id"]
+found_downloaded = current_song_id in downloaded_song_ids
+print(found_downloaded)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+# The current song is still not downloaded. Let's skip to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 66}
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# Let's update the current song information again to check if this new song is downloaded.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 66,
+ "title": "Phantom Pain",
+ "album_id": 13,
+ "duration": 223,
+ "artists": [
+  {
+   "id": 31,
+   "name": "Hazel Winter"
+  },
+  {
+   "id": 5,
+   "name": "Ava Morgan"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+# Let's check if the new current song (song_id=66) is in the list of downloaded songs.
+current_song_id = current_song["song_id"]
+found_downloaded = current_song_id in downloaded_song_ids
+print(found_downloaded)
+```
+
+```
+True
+```
+
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# We've reached a song that is already downloaded. The task is complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+
