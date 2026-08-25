@@ -6,12 +6,14 @@ It returns the new summary text. FIFO is the one non-generative baseline.
 """
 from __future__ import annotations
 
+import os
+
 from jinja2 import Template
 
 from .llm import LLM
 from .prompt import count_tokens, load_prompt, turns_to_text
 
-OBS_LIMIT = 4000  # chars, matches Trace's collector
+OBS_LIMIT = int(os.environ.get("COMPASS_OBS_LIMIT", "10000"))  # chars; see episode.OBS_STORE_LIMIT
 
 
 def clip_turns(turns: list[dict]) -> list[dict]:

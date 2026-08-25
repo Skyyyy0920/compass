@@ -1,0 +1,57 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/simple_note/account", "data": {}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU", "query": "liked songs"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_artists"}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Ava Morgan", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining", "artist_id": 5, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/57", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Ava Morgan", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining", "artist_id": 5, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/57", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Lily Moon, Zoey James", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Walking Through the Valley of Shadows", "artist_id": 9, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/75", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Olivia Roberts", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Where Shadows Come to Life", "artist_id": 1, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/83", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Olivia Roberts", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Eternal Melancholy", "artist_id": 1, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/87", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Phoenix Rivers", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Crimson Veil", "artist_id": 2, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/92", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Orion Steele", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Elusive Joy", "artist_id": 7, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/120", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Eliana Harper", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Ephemeral Beauty", "artist_id": 11, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/149", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Violet Cascade", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Stardust Serenade", "artist_id": 15, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/175", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Liam Palmer", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Veiled Behind a Mask of Joy", "artist_id": 24, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/237", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Isabella Cruz", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "In the Wake of Unspoken Promises", "artist_id": 26, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/253", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Marcus Lane", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wading Through the Ashes of Love", "artist_id": 30, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/285", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Hazel Winter", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Fading Like a Distant Star", "artist_id": 31, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/291", "data": {}}
+{"method": "get", "url": "/spotify/artists", "data": {"query": "Felix Blackwood", "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Grace", "artist_id": 33, "page_index": 0, "page_limit": 1}}
+{"method": "get", "url": "/spotify/songs/306", "data": {}}

@@ -1,0 +1,16 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_song_privates"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_song_library"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "carbrown@gmail.com", "password": "3a-m^o6"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

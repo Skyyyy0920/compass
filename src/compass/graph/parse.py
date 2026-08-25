@@ -262,7 +262,7 @@ def parse_step(turn: dict) -> dict:
             names = re.findall(r"\"name\":\s*\"(\w+)\"", obs)
             if names:
                 lists = {"?": names}
-                truncated = len(obs) >= 3990
+                truncated = not obs.rstrip().endswith("]")
         if m and "?" in lists:
             lists = {m.group(1): lists.pop("?")}
         elif "?" in lists:

@@ -1,0 +1,46 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_song_privates"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_song_library"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_liked_songs"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "next"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "now"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "next"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "page_index": 1}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "page_index": 2}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "next"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "skip"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "now"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "next"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "skip"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "now"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "play"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "current"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "next"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "playback"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify", "keywords": "queue"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

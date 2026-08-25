@@ -14,6 +14,7 @@ Protocol (matches ACON / Trace / the paper):
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -26,7 +27,11 @@ from .prompt import AGENT_SYSTEM, count_tokens, render_agent_prompt, turns_to_te
 
 compat.install()
 
-OBS_STORE_LIMIT = 4000
+# Characters of each observation the agent (and compressor) may see. Trace's
+# cohort used 4000, which truncates AppWorld's larger API listings (Spotify:
+# 9.1k chars / 91 APIs) and makes several tasks unsolvable for every method;
+# the end-to-end protocol therefore uses 10000. Override with COMPASS_OBS_LIMIT.
+OBS_STORE_LIMIT = int(os.environ.get("COMPASS_OBS_LIMIT", "10000"))
 
 
 def extract_code(response: str) -> str:
@@ -58,7 +63,7 @@ def run_episode(task_id: str, agent: LLM, compressor: Compressor | None, *, budg
 
     t0 = time.time()
     rec = {"task_id": task_id, "split": split, "method": compressor.name if compressor else "full",
-           "agent_model": agent.model, "budget": budget, "max_steps": max_steps,
+           "agent_model": agent.model, "budget": budget, "max_steps": max_steps, "obs_limit": OBS_STORE_LIMIT,
            "steps": [], "boundaries": [], "termination_reason": None, "error": None}
     turns: list[dict] = []
     summary: str | None = None
