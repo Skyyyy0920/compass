@@ -872,7 +872,7 @@ print(total_received)
 ### Environment Interaction 10
 ----------------------------------------------------------------------------
 ```python
-# The total amount received this month is 620.0. Now, I will mark the task as complete and return this value as the answer.
+# The total amount received is 620.0. Now, I will mark the task complete and return this as the answer.
 apis.supervisor.complete_task(answer=620.0)
 ```
 

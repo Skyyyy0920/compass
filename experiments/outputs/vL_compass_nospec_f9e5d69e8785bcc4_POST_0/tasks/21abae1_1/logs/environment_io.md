@@ -889,7 +889,7 @@ print(total_sent)
 ### Environment Interaction 9
 ----------------------------------------------------------------------------
 ```python
-# The total amount of money sent to others on Venmo this month so far is 1029.0. I will now mark the task as complete with this answer.
+# Now that we have the total amount sent, let's mark the task complete and return the answer as required.
 apis.supervisor.complete_task(answer=1029.0)
 ```
 

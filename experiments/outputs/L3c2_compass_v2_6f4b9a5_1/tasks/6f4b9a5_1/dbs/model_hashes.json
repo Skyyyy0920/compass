@@ -1,0 +1,14 @@
+{
+    "simple_note": {
+        "User": 2,
+        "Note": 1
+    },
+    "gmail": {
+        "Email": 2,
+        "GlobalEmailThread": 2,
+        "UserEmailThread": 4
+    },
+    "supervisor": {
+        "Task": 1
+    }
+}

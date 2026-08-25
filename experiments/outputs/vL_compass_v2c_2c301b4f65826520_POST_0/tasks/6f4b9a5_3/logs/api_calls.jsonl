@@ -1,0 +1,31 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU", "query": "liked songs"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining Ava Morgan", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining Ava Morgan", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Walking Through the Valley of Shadows Lily Moon Zoey James", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Where Shadows Come to Life Olivia Roberts", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Eternal Melancholy Olivia Roberts", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Crimson Veil Phoenix Rivers", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Elusive Joy Orion Steele", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Ephemeral Beauty Eliana Harper", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Stardust Serenade Violet Cascade", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Veiled Behind a Mask of Joy Liam Palmer", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "In the Wake of Unspoken Promises Isabella Cruz", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wading Through the Ashes of Love Marcus Lane", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Fading Like a Distant Star Hazel Winter", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Grace Felix Blackwood", "page_limit": 3}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining Ava Morgan", "page_limit": 3}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining Ava Morgan", "page_limit": 1}}

@@ -566,3 +566,336 @@ print(apis.api_docs.show_api_doc(app_name='file_system', api_name='move_file'))
 }
 ```
 
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Now that we know the correct parameter names (`source_file_path` and `destination_file_path`), let's try to move a file.
+# However, from the previous steps, it looks like `files_to_move` is empty. Let's re-list the directory to get the actual files, since the previous filter may have been too strict or the directory listing was not parsed correctly.
+# Let's print the directory listing again to see what files are present in '~/documents/work/meetings/'.
+
+print(directory_listing)
+```
+
+```
+[
+ "/home/catherine/documents/work/meetings/2023-apr-05/",
+ "/home/catherine/documents/work/meetings/2023-apr-05__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-apr-05__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-apr-12/",
+ "/home/catherine/documents/work/meetings/2023-apr-12__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-apr-12__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-apr-19/",
+ "/home/catherine/documents/work/meetings/2023-apr-19__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-apr-19__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-apr-26/",
+ "/home/catherine/documents/work/meetings/2023-apr-26__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-apr-26__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-mar-08/",
+ "/home/catherine/documents/work/meetings/2023-mar-08__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-mar-08__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-mar-15/",
+ "/home/catherine/documents/work/meetings/2023-mar-15__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-mar-15__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-mar-22/",
+ "/home/catherine/documents/work/meetings/2023-mar-22__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-mar-22__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-mar-29/",
+ "/home/catherine/documents/work/meetings/2023-mar-29__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-mar-29__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-may-03/",
+ "/home/catherine/documents/work/meetings/2023-may-03__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-may-03__video_recording.mp4",
+ "/home/catherine/documents/work/meetings/2023-may-10/",
+ "/home/catherine/documents/work/meetings/2023-may-10__slides.ppt",
+ "/home/catherine/documents/work/meetings/2023-may-10__video_recording.mp4"
+]
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# Let's filter out the files (not directories) that match the "<date>__<file_name>.<extension>" pattern from the directory listing.
+# We'll use a regex to extract date, file_name, and extension for each matching file.
+import re
+
+file_pattern = re.compile(r"/home/catherine/documents/work/meetings/([^/]+)__([^/.]+)\.([a-zA-Z0-9]+)$")
+files_to_move = []
+for path in directory_listing:
+    match = file_pattern.match(path)
+    if match:
+        date, file_name, extension = match.groups()
+        files_to_move.append({
+            "source_file_path": path,
+            "date": date,
+            "file_name": file_name,
+            "extension": extension
+        })
+print(files_to_move)
+```
+
+```
+[
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-05__slides.ppt",
+  "date": "2023-apr-05",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-05__video_recording.mp4",
+  "date": "2023-apr-05",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-12__slides.ppt",
+  "date": "2023-apr-12",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-12__video_recording.mp4",
+  "date": "2023-apr-12",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-19__slides.ppt",
+  "date": "2023-apr-19",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-19__video_recording.mp4",
+  "date": "2023-apr-19",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-26__slides.ppt",
+  "date": "2023-apr-26",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-apr-26__video_recording.mp4",
+  "date": "2023-apr-26",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-08__slides.ppt",
+  "date": "2023-mar-08",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-08__video_recording.mp4",
+  "date": "2023-mar-08",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-15__slides.ppt",
+  "date": "2023-mar-15",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-15__video_recording.mp4",
+  "date": "2023-mar-15",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-22__slides.ppt",
+  "date": "2023-mar-22",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-22__video_recording.mp4",
+  "date": "2023-mar-22",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-29__slides.ppt",
+  "date": "2023-mar-29",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-mar-29__video_recording.mp4",
+  "date": "2023-mar-29",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-may-03__slides.ppt",
+  "date": "2023-may-03",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-may-03__video_recording.mp4",
+  "date": "2023-may-03",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-may-10__slides.ppt",
+  "date": "2023-may-10",
+  "file_name": "slides",
+  "extension": "ppt"
+ },
+ {
+  "source_file_path": "/home/catherine/documents/work/meetings/2023-may-10__video_recording.mp4",
+  "date": "2023-may-10",
+  "file_name": "video_recording",
+  "extension": "mp4"
+ }
+]
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Now let's create the target directories for each unique file_name under ~/documents/work/meetings/
+# We'll use the file_name to create directories like ~/documents/work/meetings/<file_name>/ if they don't already exist.
+created_dirs = set()
+for file in files_to_move:
+    target_dir = f"/home/catherine/documents/work/meetings/{file['file_name']}/"
+    if target_dir not in created_dirs:
+        result = apis.file_system.create_directory(
+            access_token=access_token,
+            directory_path=target_dir,
+            recursive=True
+        )
+        created_dirs.add(target_dir)
+print(created_dirs)
+```
+
+```
+{'/home/catherine/documents/work/meetings/slides/', '/home/catherine/documents/work/meetings/video_recording/'}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Now let's move each file to its new path: "/home/catherine/documents/work/meetings/<file_name>/<date>.<extension>"
+# We'll use the correct parameter names: source_file_path and destination_file_path.
+move_results = []
+for file in files_to_move:
+    destination_file_path = f"/home/catherine/documents/work/meetings/{file['file_name']}/{file['date']}.{file['extension']}"
+    move_result = apis.file_system.move_file(
+        access_token=access_token,
+        source_file_path=file["source_file_path"],
+        destination_file_path=destination_file_path
+    )
+    move_results.append(move_result)
+print(move_results)
+```
+
+```
+[
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-12.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-12.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-19.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-19.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-26.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-26.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-08.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-08.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-15.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-15.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-22.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-22.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-29.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-29.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-may-03.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-may-03.mp4"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-may-10.ppt"
+ },
+ {
+  "message": "File moved.",
+  "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-may-10.mp4"
+ }
+]
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# All files have been successfully moved and reorganized as requested.
+# Now, I will mark the task as complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

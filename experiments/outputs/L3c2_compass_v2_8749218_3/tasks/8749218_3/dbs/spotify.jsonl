@@ -1,0 +1,8 @@
+["UPDATE music_players SET queue_song_ids=?, record_hash=?, cursor_position=? WHERE music_players.id = ?",["[]","rXJLvooipEI=",null,100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=?, cursor_position=? WHERE music_players.id = ?",["[17]","QVhE+J8wRzo=",0,100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=? WHERE music_players.id = ?",["[17, 22]","b3WN8l8SGNE=",100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=? WHERE music_players.id = ?",["[17, 22, 36]","QfNwGfXA5/Q=",100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=? WHERE music_players.id = ?",["[17, 22, 36, 39]","kyc2fGvUkFA=",100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=? WHERE music_players.id = ?",["[17, 22, 36, 39, 63]","5BvxcJ9b7fI=",100],false]
+["UPDATE music_players SET queue_song_ids=?, record_hash=? WHERE music_players.id = ?",["[36, 22, 17, 63, 39]","bTP83uCYWyQ=",100],false]
+["UPDATE music_players SET record_hash=?, is_playing=? WHERE music_players.id = ?",["0G0dcwwQvWI=",1,100],false]

@@ -1013,13 +1013,13 @@ print(answer)
 ----------------------------------------------------------------------------
 ```python
 # Now that we have the totals, let's mark the task complete and return the answer as required.
-apis.supervisor.complete_task(answer={"sent": 1072.0, "received": 520.0})
+apis.supervisor.complete_task(answer=answer)
 ```
 
 ```
 Execution failed. Traceback:
   File "<python-input>", line 2, in <module>
-    apis.supervisor.complete_task(answer={"sent": 1072.0, "received": 520.0})
+    apis.supervisor.complete_task(answer=answer)
 Exception: Response status code is 422:
 {"message":"Validation error. Reason: \nanswer: value is not a valid float\nanswer: value is not a valid integer\nanswer: str type expected"}
 ```
@@ -1028,10 +1028,10 @@ Exception: Response status code is 422:
 ### Environment Interaction 11
 ----------------------------------------------------------------------------
 ```python
-# The API expects the answer to be a single float, integer, or string, not a dictionary.
+# The API expects the answer as a single float, integer, or string, not a dictionary.
 # The task asks: "How much money have I sent to or received from others on venmo this month so far?"
-# This is ambiguous, but typically it means the total of both sent and received.
-# Let's sum both sent and received and return the total as a float.
+# This is ambiguous, but usually means the total of both sent and received.
+# Let's return the sum of sent and received as a float.
 
 total = sent + received
 apis.supervisor.complete_task(answer=total)

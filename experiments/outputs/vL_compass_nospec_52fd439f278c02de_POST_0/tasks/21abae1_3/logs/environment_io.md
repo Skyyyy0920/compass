@@ -1028,13 +1028,11 @@ Exception: Response status code is 422:
 ### Environment Interaction 11
 ----------------------------------------------------------------------------
 ```python
-# The API expects the answer to be a single float, integer, or string, not a dictionary.
+# The API expects the answer as a single float, integer, or string, not a dictionary.
 # The task asks: "How much money have I sent to or received from others on venmo this month so far?"
 # This is ambiguous, but usually means the total of both sent and received.
-# To be safe, let's return the sum of sent and received as a float.
-
-total = sent + received
-apis.supervisor.complete_task(answer=total)
+# To be safe, let's return both values as a string: "sent: 1072.0, received: 520.0"
+apis.supervisor.complete_task(answer="sent: 1072.0, received: 520.0")
 ```
 
 ```
