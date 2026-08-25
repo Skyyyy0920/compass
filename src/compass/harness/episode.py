@@ -115,7 +115,8 @@ def run_episode(task_id: str, agent: LLM, compressor: Compressor | None, *, budg
             refetch = any(s in seen_exact for s in ex[:1])
             seen_exact.update(ex)
             turns.append({"step": step, "raw_response": raw, "code": code, "observation": obs})
-            rec["steps"].append({"step": step, "code": code, "observation": obs[:OBS_STORE_LIMIT],
+            rec["steps"].append({"step": step, "code": code, "raw_response": raw[:3000],
+                                 "observation": obs[:OBS_STORE_LIMIT],
                                  "is_error": is_error(obs), "sigs": ex, "refetch": refetch,
                                  "prompt_tokens": ptok, "compressed": summary is not None})
             if world.task_completed():

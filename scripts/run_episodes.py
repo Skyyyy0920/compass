@@ -51,13 +51,13 @@ def make_compressor(method: str, model: str, provider: str, budget: int):
 
 def one(args_tuple):
     (task_id, method, agent_model, agent_provider, comp_model, comp_provider, budget,
-     max_steps, out_dir, run_tag) = args_tuple
+     max_steps, out_dir, run_tag, agent_temp) = args_tuple
     from compass.harness.episode import run_episode
     from compass.harness.llm import LLM
     out_path = Path(out_dir) / method / f"{task_id}.json"
     if out_path.exists():
         return json.loads(out_path.read_text(encoding="utf-8"))
-    agent = LLM(agent_model, agent_provider, max_tokens=2048)
+    agent = LLM(agent_model, agent_provider, max_tokens=2048, temperature=agent_temp)
     comp = make_compressor(method, comp_model, comp_provider, budget)
     return run_episode(task_id, agent, comp, budget=budget, max_steps=max_steps,
                        experiment_name=f"{run_tag}_{method}_{task_id}", out_path=out_path)
@@ -76,10 +76,11 @@ def main():
     ap.add_argument("--max-steps", type=int, default=50)
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--tag", default="run")
+    ap.add_argument("--agent-temp", type=float, default=0.0)
     a = ap.parse_args()
     tasks = resolve_tasks(a.tasks)
     jobs = [(t, a.method, a.agent_model, a.agent_provider, a.comp_model, a.comp_provider,
-             a.budget, a.max_steps, a.out, a.tag) for t in tasks]
+             a.budget, a.max_steps, a.out, a.tag, a.agent_temp) for t in tasks]
     results = []
 
     def report(r):
