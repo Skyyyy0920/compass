@@ -228,6 +228,11 @@ def api_specs(observation: str) -> tuple[list[str], dict[str, list[str]]]:
                     s += f":{p['type']}"
                 if not p.get("required", True):
                     s += "?"
+                d = str(p.get("description") or "")
+                m = re.search(r"(between \d+ and \d+|max(?:imum)? (?:of )?\d+|at most \d+|one of [^.]+|"
+                              r"in (?:the )?format[^.]*|e\.g\.[^.]*)", d, re.I)
+                if m:
+                    s += f"[{m.group(1).strip()[:50]}]"
                 params.append(s)
             desc = (obj.get("description") or "").strip().rstrip(".")[:90]
             resp = obj.get("response_schemas", {}).get("success") if isinstance(obj.get("response_schemas"), dict) else None

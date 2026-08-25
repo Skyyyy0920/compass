@@ -1777,3 +1777,153 @@ print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_liked_songs'
 }
 ```
 
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# I can use show_liked_songs API with the access token to get all liked songs (paging through all pages).
+# These liked songs can be used to reset the Spotify queue.
+# I will fetch all liked songs first.
+
+all_liked_songs = []
+page_index = 0
+page_limit = 20  # max allowed
+
+while True:
+    response = apis.spotify.show_liked_songs(access_token=login_response["access_token"], page_index=page_index, page_limit=page_limit)
+    if not response:
+        break
+    all_liked_songs.extend(response)
+    if len(response) < page_limit:
+        break
+    page_index += 1
+
+print(f"Total liked songs fetched: {len(all_liked_songs)}")  # Check how many liked songs were fetched.
+```
+
+```
+Total liked songs fetched: 2
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# I have fetched 2 liked songs. Now I will try to reset the Spotify queue with these songs.
+# Since there is no explicit API for queue management, I will check if there is an API to create a playlist or update a playlist and then play it.
+# Let's check the create_playlist API specification to see if I can create a new playlist with these songs.
+
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='create_playlist'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "create_playlist",
+ "path": "/playlists",
+ "method": "POST",
+ "description": "Create a new playlist.",
+ "parameters": [
+  {
+   "name": "title",
+   "type": "string",
+   "required": true,
+   "description": "The title of the playlist.",
+   "default": null,
+   "constraints": [
+    "length >= 1"
+   ]
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "is_public",
+   "type": "boolean",
+   "required": false,
+   "description": "Whether the playlist is public or not.",
+   "default": false,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "playlist_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# I can create a new playlist with a title and access token.
+# Next, I will check if there is an API to add songs to a playlist.
+
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='update_playlist'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "update_playlist",
+ "path": "/playlists/{playlist_id}",
+ "method": "PATCH",
+ "description": "Update a playlist title or privacy.",
+ "parameters": [
+  {
+   "name": "playlist_id",
+   "type": "integer",
+   "required": true,
+   "description": "The playlist id to update.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "title",
+   "type": "string",
+   "required": false,
+   "description": "The updated title of the playlist.",
+   "default": null,
+   "constraints": [
+    "length >= 1"
+   ]
+  },
+  {
+   "name": "is_public",
+   "type": "boolean",
+   "required": false,
+   "description": "Whether the playlist is public or not.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+

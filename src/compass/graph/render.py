@@ -15,7 +15,7 @@ already called (the refetch guard v1 lacked).
 from __future__ import annotations
 
 from ..harness.prompt import count_tokens
-from .build import Graph, Intent, compact_step_view
+from .build import Graph, Info, Intent, compact_step_view
 
 
 def _status_mark(s: str) -> str:
@@ -122,6 +122,15 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
         rt = [i for i in g.live_infos(recent_steps=2) if i.kind == "runtime_reference"]
         if rt:
             L += ["", "LIVE VARIABLES: " + ", ".join(i.name for i in rt[-30:])]
+
+    results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
+    if results:
+        seen: dict[str, Info] = {}
+        for i in results:
+            seen[i.name] = i          # latest observation per api
+        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again)"]
+        for i in list(seen.values())[-10:]:
+            L.append(f"- {i.name}: {i.value_hint if level <= 1 else i.value_hint[:80]}")
 
     other = [f for f in g.facts if f["kind"] != "constraint"]
     if other:

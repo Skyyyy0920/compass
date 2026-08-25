@@ -87,13 +87,15 @@ class Graph:
                 s["consumes"].append(info.id)
         # PRODUCES: module-level defs
         api_by_var = _assigned_api_calls(s["code"])
+        literals = _literal_assignments(s["code"])
         for name in s["defs"]:
             prev = self._latest_info_for(name)
             if prev is not None:
                 prev.superseded = True
             self._n_info += 1
             info = Info(id=f"i{self._n_info}", kind="runtime_reference", name=name, producer=sid,
-                        source_api=api_by_var.get(name), value_hint=_value_hint(s, name))
+                        source_api=api_by_var.get(name),
+                        value_hint=literals.get(name) or _value_hint(s, name))
             self.infos[info.id] = info
             s["produces"].append(info.id)
         # API documentation read by the agent -> api_spec / api_list infos (deduped by name)
@@ -307,6 +309,22 @@ def _assigned_api_calls(code: str) -> dict[str, str]:
             m = re.search(r"apis\.(\w+)\.(\w+)\(", src)
             if m:
                 out[node.targets[0].id] = f"{m.group(1)}.{m.group(2)}"
+    return out
+
+
+def _literal_assignments(code: str) -> dict[str, str]:
+    """{var: repr(literal)} for ``var = <constant or short literal container>``."""
+    out: dict[str, str] = {}
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return out
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            v = node.value
+            if isinstance(v, ast.Constant) or (isinstance(v, (ast.List, ast.Tuple, ast.Dict, ast.Set))
+                                               and len(ast.unparse(v)) <= 120):
+                out[node.targets[0].id] = ast.unparse(v)[:120]
     return out
 
 
