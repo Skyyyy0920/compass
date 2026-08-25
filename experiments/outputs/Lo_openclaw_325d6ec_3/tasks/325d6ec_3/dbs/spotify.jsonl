@@ -10,3 +10,7 @@
 ["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["ggDYQX7WJKs=",4,16],false]
 ["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["oqxktxDFivs=",5,16],false]
 ["UPDATE music_players SET record_hash=?, is_playing=? WHERE music_players.id = ?",["5YrlhewkBoo=",1,16],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["JjpAqg+fAug=",6,16],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["rmNKBjXAfFU=",7,16],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["isGiyH4CFH8=",8,16],false]
+["UPDATE music_players SET record_hash=?, cursor_position=? WHERE music_players.id = ?",["nL/eytV3mIE=",9,16],false]

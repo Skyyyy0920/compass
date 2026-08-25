@@ -1,0 +1,16 @@
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"query": "liked songs"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"email": "la-mcco@gmail.com", "password": "Cq2M9XO"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/profile", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_account"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "lauramccoy", "password": "Cq2M9XO"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "laura_mccoy", "password": "Cq2M9XO"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "la-mcco", "password": "Cq2M9XO"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "la_mcco", "password": "Cq2M9XO"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "send_verification_code"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "send_password_reset_code"}}
+{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

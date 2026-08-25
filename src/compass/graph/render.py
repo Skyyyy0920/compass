@@ -18,6 +18,11 @@ from ..harness.prompt import count_tokens
 from .build import Graph, Info, Intent, compact_step_view
 
 
+def _short(text: str | None, n: int) -> str:
+    t = (text or "").strip()
+    return t if len(t) <= n else t[:n] + "..."
+
+
 def _status_mark(s: str) -> str:
     return {"done": "[x]", "blocked": "[!]", "invalidated": "[-]", "active": "[>]", "pending": "[ ]"}[s]
 
@@ -75,6 +80,9 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
                 apis = _executed_apis(g, it.evidence)
                 if apis and level <= 2:
                     line += f"  (executed: {', '.join(apis[:6])})"
+                prod = g.produced_by_intent(it)
+                if prod and it.status == "done":
+                    line += "  -> " + "; ".join(f"{i.name} = {_short(i.value_hint, 60 if level <= 2 else 30)}" for i in prod)
                 L.append(line)
                 continue
             if it.note and it.status in ("blocked", "active", "invalidated"):
@@ -82,13 +90,16 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
             if it.needs and it.status not in ("done", "invalidated"):
                 names = [g.infos[n].name for n in it.needs if n in g.infos]
                 if names:
-                    line += f"  needs: {', '.join(names)}"
+                    line += f"  needs: {', '.join(names[:6])}" + (" ..." if len(names) > 6 else "")
             L.append(line)
             if level == 0 and it.status == "done":
                 for e in it.evidence[-3:]:
                     if e in g.steps and e not in shown_evidence:
                         shown_evidence.add(e)
                         L.append(f"{ind}    - {compact_step_view(g.steps[e], 70)}")
+                prod = g.produced_by_intent(it)
+                if prod:
+                    L.append(f"{ind}    -> " + "; ".join(f"{i.name} = {_short(i.value_hint, 80)}" for i in prod))
 
     all_ok_apis = _executed_apis(g, sorted(g.steps, key=lambda s: int(s[1:])))
     all_ok_apis = [a for a in all_ok_apis if not a.startswith("api_docs.")]

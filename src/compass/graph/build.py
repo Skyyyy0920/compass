@@ -214,8 +214,6 @@ class Graph:
                 cand.append(i.id)
             elif any(c in recent for c in i.consumers):
                 cand.append(i.id)
-            elif len(set(i.consumers)) >= 2:
-                cand.append(i.id)
         added = 0
         for it in open_intents:
             before = len(it.needs)
@@ -247,6 +245,19 @@ class Graph:
         return bool(text) and bool(self.NEGATIVE.search(text)) \
             and bool(re.search(r"\bapi|endpoint|function|feature|way to|capabilit", text, re.I)) \
             and not self.complete_listing_seen(text)
+
+    def produced_by_intent(self, it: Intent, limit: int = 4) -> list[Info]:
+        """Current (non-superseded) variables defined by the intent's evidence steps, with hints."""
+        out = []
+        for e in it.evidence:
+            st = self.steps.get(e)
+            if not st:
+                continue
+            for iid in st["produces"]:
+                i = self.infos.get(iid)
+                if i and i.kind == "runtime_reference" and not i.superseded and i.value_hint:
+                    out.append(i)
+        return out[-limit:]
 
     def add_fact(self, text: str, kind: str = "fact", steps: list[str] | None = None) -> dict | None:
         if self.ungrounded_negative(text):

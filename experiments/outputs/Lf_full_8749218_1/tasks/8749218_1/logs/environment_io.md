@@ -575,3 +575,508 @@ print(apis.spotify.clear_song_queue(access_token=access_token))
 {"message": "Cleared the song queue."}
 ```
 
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+# The queue is now cleared. Next, let's get all recommended songs using the show_recommendations API. Let's check its specification to see if it supports pagination or any parameters.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_recommendations'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "show_recommendations",
+ "path": "/recommendations",
+ "method": "GET",
+ "description": "Get personalized song recommendations for the user.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "page_index",
+   "type": "integer",
+   "required": false,
+   "description": "The index of the page to return.",
+   "default": 0,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  },
+  {
+   "name": "page_limit",
+   "type": "integer",
+   "required": false,
+   "description": "The maximum number of results to return per page.",
+   "default": 5,
+   "constraints": [
+    "value >= 1.0, <= 20.0"
+   ]
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   {
+    "song_id": 1,
+    "title": "string",
+    "album_id": 1,
+    "album_title": "string",
+    "duration": 1,
+    "artists": [
+     {
+      "id": 1,
+      "name": "string"
+     }
+    ]
+   }
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# The show_recommendations API supports pagination with page_index and page_limit.
+# Let's fetch the first page of recommended songs with the maximum page_limit (20).
+recommended_songs = []
+page_index = 0
+page_limit = 20
+
+response = apis.spotify.show_recommendations(access_token=access_token, page_index=page_index, page_limit=page_limit)
+recommended_songs.extend(response)
+
+# If the number of songs returned is equal to page_limit, there may be more pages. Let's check and fetch all pages.
+while len(response) == page_limit:
+    page_index += 1
+    response = apis.spotify.show_recommendations(access_token=access_token, page_index=page_index, page_limit=page_limit)
+    recommended_songs.extend(response)
+
+# Let's see how many recommended songs we have.
+print(len(recommended_songs))
+print(recommended_songs)
+```
+
+```
+23
+[
+ {
+  "song_id": 28,
+  "title": "Invisible Lines",
+  "album_id": 5,
+  "duration": 199,
+  "artists": [
+   {
+    "id": 32,
+    "name": "Lucas Grey"
+   },
+   {
+    "id": 25,
+    "name": "Velvet Echo"
+   }
+  ]
+ },
+ {
+  "song_id": 50,
+  "title": "Lonely Skies",
+  "album_id": 10,
+  "duration": 284,
+  "artists": [
+   {
+    "id": 8,
+    "name": "Aria Sterling"
+   }
+  ]
+ },
+ {
+  "song_id": 60,
+  "title": "The Haunting Echo of Goodbye",
+  "album_id": 12,
+  "duration": 224,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ]
+ },
+ {
+  "song_id": 63,
+  "title": "Journey Through the Unknown",
+  "album_id": 13,
+  "duration": 290,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   },
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ]
+ },
+ {
+  "song_id": 70,
+  "title": "Serenade of the Forgotten Stars",
+  "album_id": 15,
+  "duration": 265,
+  "artists": [
+   {
+    "id": 29,
+    "name": "Lucas Diaz"
+   },
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ]
+ },
+ {
+  "song_id": 76,
+  "title": "Whispers of the Heart",
+  "album_id": 16,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ]
+ },
+ {
+  "song_id": 82,
+  "title": "Lost in the Twilight of Hope",
+  "album_id": 18,
+  "duration": 193,
+  "artists": [
+   {
+    "id": 33,
+    "name": "Felix Blackwood"
+   }
+  ]
+ },
+ {
+  "song_id": 86,
+  "title": "Shattered",
+  "album_id": null,
+  "duration": 250,
+  "artists": [
+   {
+    "id": 1,
+    "name": "Olivia Roberts"
+   }
+  ]
+ },
+ {
+  "song_id": 100,
+  "title": "Fragile Bonds",
+  "album_id": null,
+  "duration": 250,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   }
+  ]
+ },
+ {
+  "song_id": 106,
+  "title": "The Irony of a Perfect Moment",
+  "album_id": null,
+  "duration": 185,
+  "artists": [
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ]
+ },
+ {
+  "song_id": 135,
+  "title": "In the Silence of Your Absence",
+  "album_id": null,
+  "duration": 208,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ]
+ },
+ {
+  "song_id": 153,
+  "title": "Love's Aftermath",
+  "album_id": null,
+  "duration": 265,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   }
+  ]
+ },
+ {
+  "song_id": 170,
+  "title": "The Silence that Speaks Volumes",
+  "album_id": null,
+  "duration": 286,
+  "artists": [
+   {
+    "id": 15,
+    "name": "Violet Cascade"
+   }
+  ]
+ },
+ {
+  "song_id": 189,
+  "title": "Sinking Ship",
+  "album_id": null,
+  "duration": 255,
+  "artists": [
+   {
+    "id": 17,
+    "name": "Dylan Stone"
+   }
+  ]
+ },
+ {
+  "song_id": 190,
+  "title": "Final Goodbye",
+  "album_id": null,
+  "duration": 291,
+  "artists": [
+   {
+    "id": 17,
+    "name": "Dylan Stone"
+   }
+  ]
+ },
+ {
+  "song_id": 212,
+  "title": "A Labyrinth of Empty Streets",
+  "album_id": null,
+  "duration": 211,
+  "artists": [
+   {
+    "id": 21,
+    "name": "Oceanic Odyssey"
+   }
+  ]
+ },
+ {
+  "song_id": 220,
+  "title": "The Threads of a Frayed Bond",
+  "album_id": null,
+  "duration": 217,
+  "artists": [
+   {
+    "id": 21,
+    "name": "Oceanic Odyssey"
+   }
+  ]
+ },
+ {
+  "song_id": 228,
+  "title": "The Last Waltz of a Broken Heart",
+  "album_id": null,
+  "duration": 271,
+  "artists": [
+   {
+    "id": 23,
+    "name": "Soulful Reverie"
+   }
+  ]
+ },
+ {
+  "song_id": 265,
+  "title": "Secrets of the Heart",
+  "album_id": null,
+  "duration": 183,
+  "artists": [
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ]
+ },
+ {
+  "song_id": 270,
+  "title": "Tangled Web",
+  "album_id": null,
+  "duration": 284,
+  "artists": [
+   {
+    "id": 28,
+    "name": "Evelyn Rose"
+   }
+  ]
+ },
+ {
+  "song_id": 280,
+  "title": "The Tragedy of Living Without",
+  "album_id": null,
+  "duration": 196,
+  "artists": [
+   {
+    "id": 30,
+    "name": "Marcus Lane"
+   }
+  ]
+ },
+ {
+  "song_id": 286,
+  "title": "Golden Lies",
+  "album_id": null,
+  "duration": 295,
+  "artists": [
+   {
+    "id": 30,
+    "name": "Marcus Lane"
+   }
+  ]
+ },
+ {
+  "song_id": 295,
+  "title": "City of Fallen Angels",
+  "album_id": null,
+  "duration": 222,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ]
+ }
+]
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Now I have all 23 recommended songs. Next, I need to add all these songs to the queue.
+# Let's check the add_to_queue API to see if it supports adding multiple songs at once or if I need to add them one by one.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='add_to_queue'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "add_to_queue",
+ "path": "/music_player/song_queue",
+ "method": "POST",
+ "description": "Add a song, album or playlist to the music player song queue.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "song_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the song to add to queue.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "album_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the album to add to queue.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "playlist_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the playlist to add to queue.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# The add_to_queue API only supports adding one song, album, or playlist at a time.
+# I will add each recommended song to the queue one by one using their song_id.
+for song in recommended_songs:
+    apis.spotify.add_to_queue(access_token=access_token, song_id=song["song_id"])
+# Now let's check the queue to confirm all songs are added.
+queue = apis.spotify.show_song_queue(access_token=access_token)
+print(len(queue), queue)
+```
+
+```
+23 [{'song_id': 28, 'title': 'Invisible Lines', 'album_id': 5, 'duration': 199, 'artists': [{'id': 32, 'name': 'Lucas Grey'}, {'id': 25, 'name': 'Velvet Echo'}], 'position': 0, 'is_playing': False, 'is_current': True}, {'song_id': 50, 'title': 'Lonely Skies', 'album_id': 10, 'duration': 284, 'artists': [{'id': 8, 'name': 'Aria Sterling'}], 'position': 1, 'is_playing': False, 'is_current': False}, {'song_id': 60, 'title': 'The Haunting Echo of Goodbye', 'album_id': 12, 'duration': 224, 'artists': [{'id': 9, 'name': 'Zoey James'}], 'position': 2, 'is_playing': False, 'is_current': False}, {'song_id': 63, 'title': 'Journey Through the Unknown', 'album_id': 13, 'duration': 290, 'artists': [{'id': 31, 'name': 'Hazel Winter'}, {'id': 5, 'name': 'Ava Morgan'}], 'position': 3, 'is_playing': False, 'is_current': False}, {'song_id': 70, 'title': 'Serenade of the Forgotten Stars', 'album_id': 15, 'duration': 265, 'artists': [{'id': 29, 'name': 'Lucas Diaz'}, {'id': 7, 'name': 'Orion Steele'}], 'position': 4, 'is_playing': False, 'is_current': False}, {'song_id': 76, 'title': 'Whispers of the Heart', 'album_id': 16, 'duration': 270, 'artists': [{'id': 34, 'name': 'Lily Moon'}, {'id': 9, 'name': 'Zoey James'}], 'position': 5, 'is_playing': False, 'is_current': False}, {'song_id': 82, 'title': 'Lost in the Twilight of Hope', 'album_id': 18, 'duration': 193, 'artists': [{'id': 33, 'name': 'Felix Blackwood'}], 'position': 6, 'is_playing': False, 'is_current': False}, {'song_id': 86, 'title': 'Shattered', 'album_id': None, 'duration': 250, 'artists': [{'id': 1, 'name': 'Olivia Roberts'}], 'position': 7, 'is_playing': False, 'is_current': False}, {'song_id': 100, 'title': 'Fragile Bonds', 'album_id': None, 'duration': 250, 'artists': [{'id': 3, 'name': 'Jasper Skye'}], 'position': 8, 'is_playing': False, 'is_current': False}, {'song_id': 106, 'title': 'The Irony of a Perfect Moment', 'album_id': None, 'duration': 185, 'artists': [{'id': 5, 'name': 'Ava Morgan'}], 'position': 9, 'is_playing': False, 'is_current': False}, {'song_id': 135, 'title': 'In the Silence of Your Absence', 'album_id': None, 'duration': 208, 'artists': [{'id': 9, 'name': 'Zoey James'}], 'position': 10, 'is_playing': False, 'is_current': False}, {'song_id': 153, 'title': "Love's Aftermath", 'album_id': None, 'duration': 265, 'artists': [{'id': 12, 'name': 'Mia Sullivan'}], 'position': 11, 'is_playing': False, 'is_current': False}, {'song_id': 170, 'title': 'The Silence that Speaks Volumes', 'album_id': None, 'duration': 286, 'artists': [{'id': 15, 'name': 'Violet Cascade'}], 'position': 12, 'is_playing': False, 'is_current': False}, {'song_id': 189, 'title': 'Sinking Ship', 'album_id': None, 'duration': 255, 'artists': [{'id': 17, 'name': 'Dylan Stone'}], 'position': 13, 'is_playing': False, 'is_current': False}, {'song_id': 190, 'title': 'Final Goodbye', 'album_id': None, 'duration': 291, 'artists': [{'id': 17, 'name': 'Dylan Stone'}], 'position': 14, 'is_playing': False, 'is_current': False}, {'song_id': 212, 'title': 'A Labyrinth of Empty Streets', 'album_id': None, 'duration': 211, 'artists': [{'id': 21, 'name': 'Oceanic Odyssey'}], 'position': 15, 'is_playing': False, 'is_current': False}, {'song_id': 220, 'title': 'The Threads of a Frayed Bond', 'album_id': None, 'duration': 217, 'artists': [{'id': 21, 'name': 'Oceanic Odyssey'}], 'position': 16, 'is_playing': False, 'is_current': False}, {'song_id': 228, 'title': 'The Last Waltz of a Broken Heart', 'album_id': None, 'duration': 271, 'artists': [{'id': 23, 'name': 'Soulful Reverie'}], 'position': 17, 'is_playing': False, 'is_current': False}, {'song_id': 265, 'title': 'Secrets of the Heart', 'album_id': None, 'duration': 183, 'artists': [{'id': 27, 'name': 'Carter Knight'}], 'position': 18, 'is_playing': False, 'is_current': False}, {'song_id': 270, 'title': 'Tangled Web', 'album_id': None, 'duration': 284, 'artists': [{'id': 28, 'name': 'Evelyn Rose'}], 'position': 19, 'is_playing': False, 'is_current': False}, {'song_id': 280, 'title': 'The Tragedy of Living Without', 'album_id': None, 'duration': 196, 'artists': [{'id': 30, 'name': 'Marcus Lane'}], 'position': 20, 'is_playing': False, 'is_current': False}, {'song_id': 286, 'title': 'Golden Lies', 'album_id': None, 'duration': 295, 'artists': [{'id': 30, 'name': 'Marcus Lane'}], 'position': 21, 'is_playing': False, 'is_current': False}, {'song_id': 295, 'title': 'City of Fallen Angels', 'album_id': None, 'duration': 222, 'artists': [{'id': 31, 'name': 'Hazel Winter'}], 'position': 22, 'is_playing': False, 'is_current': False}]
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# All 23 recommended songs are now in the queue. Next, let's shuffle the queue using the shuffle_song_queue API.
+print(apis.spotify.shuffle_song_queue(access_token=access_token))
+```
+
+```
+{"message": "Shuffled the music player queue."}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The queue is now shuffled. Finally, let's play the queue using the play_music API.
+print(apis.spotify.play_music(access_token=access_token))
+```
+
+```
+{"message": "Song (In the Silence of Your Absence) is now playing.", "song_id": 135}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# The Spotify queue has been reset with all recommended songs, shuffled, and playback has started.
+# Task complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

@@ -1,0 +1,8 @@
+{
+    "spotify": {
+        "MusicPlayer": 32
+    },
+    "supervisor": {
+        "Task": 1
+    }
+}

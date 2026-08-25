@@ -868,3 +868,15 @@ print(total_received)
 620.0
 ```
 
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# The total amount received from others on Venmo this month so far is 620.0. I will now mark the task as complete and return this answer.
+apis.supervisor.complete_task(answer=620.0)
+```
+
+```
+Execution successful.
+```
+

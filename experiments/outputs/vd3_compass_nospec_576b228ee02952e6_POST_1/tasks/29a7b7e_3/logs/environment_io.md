@@ -942,3 +942,63 @@ print(files)  # To see the list of files in the directory.
 ]
 ```
 
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# The files are listed with full paths.
+# We need to reorganize files from "<date>__<file_name>.<extension>" to "<file_name>/<date>.<extension>".
+# For each file (not directory), parse the filename, create the target directory if not exists, and move the file.
+# Use access_token for all file_system API calls.
+# I will implement this step-by-step.
+
+import os
+
+# Filter only files (exclude directories ending with '/')
+file_paths = [f for f in files if not f.endswith('/')]
+
+# Function to parse the filename and return new directory and new filename
+def parse_and_get_new_path(file_path):
+    # file_path example: /home/sierra/documents/work/meetings_data/2023-apr-04__slides.ppt
+    base_name = os.path.basename(file_path)
+    # Split by '__'
+    if '__' not in base_name:
+        return None, None
+    date_part, rest = base_name.split('__', 1)
+    # rest is <file_name>.<extension>
+    if '.' not in rest:
+        return None, None
+    file_name, extension = rest.rsplit('.', 1)
+    new_dir = os.path.join(os.path.dirname(file_path), file_name)
+    new_file_name = f"{date_part}.{extension}"
+    new_file_path = os.path.join(new_dir, new_file_name)
+    return new_dir, new_file_path
+
+# Collect all new directories to create
+new_dirs = set()
+file_moves = []  # tuples of (old_path, new_path)
+
+for file_path in file_paths:
+    new_dir, new_file_path = parse_and_get_new_path(file_path)
+    if new_dir and new_file_path:
+        new_dirs.add(new_dir)
+        file_moves.append((file_path, new_file_path))
+
+# Create all new directories if not exist
+for new_dir in new_dirs:
+    # create_directory API requires access_token and directory_path
+    apis.file_system.create_directory(access_token=access_token, directory_path=new_dir, recursive=True)
+
+# Move files to new locations
+for old_path, new_path in file_moves:
+    apis.file_system.move_file(access_token=access_token, source_path=old_path, destination_path=new_path)
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 46, in <module>
+    apis.file_system.move_file(access_token=access_token, source_path=old_path, destination_path=new_path)
+Exception: Response status code is 422:
+{"message":"Validation error. Reason: \nsource_file_path: field required\ndestination_file_path: field required"}
+```
+

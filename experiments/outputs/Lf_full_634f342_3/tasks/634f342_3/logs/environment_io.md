@@ -863,3 +863,1198 @@ print(spotify_login)
 }
 ```
 
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Now I have the Spotify access_token.
+# Let's fetch all playlists in the user's playlist library. Since the API is paginated, I'll fetch all pages.
+
+spotify_access_token = spotify_login["access_token"]
+all_playlists = []
+page_index = 0
+page_limit = 20
+
+while True:
+    playlists_page = apis.spotify.show_playlist_library(access_token=spotify_access_token, page_index=page_index, page_limit=page_limit)
+    if not playlists_page or len(playlists_page) == 0:
+        break
+    all_playlists.extend(playlists_page)
+    if len(playlists_page) < page_limit:
+        break
+    page_index += 1
+
+print(all_playlists)
+```
+
+```
+[
+ {
+  "playlist_id": 513,
+  "title": "Rooftop Rendezvous: Cityscapes & Beats",
+  "is_public": false,
+  "rating": 0.0,
+  "like_count": 0,
+  "review_count": 0,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-04-01T00:19:54",
+  "song_ids": [
+   50,
+   100,
+   106,
+   237,
+   295
+  ]
+ },
+ {
+  "playlist_id": 514,
+  "title": "Whiskey & Words: Songs & Poetry",
+  "is_public": false,
+  "rating": 0.0,
+  "like_count": 1,
+  "review_count": 0,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-05-08T16:20:26",
+  "song_ids": [
+   22,
+   100,
+   146,
+   290,
+   324
+  ]
+ },
+ {
+  "playlist_id": 515,
+  "title": "Evergreen Emotions: Timeless Tracks",
+  "is_public": true,
+  "rating": 0.0,
+  "like_count": 2,
+  "review_count": 0,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-03-20T11:30:18",
+  "song_ids": [
+   114,
+   161,
+   218,
+   233,
+   245,
+   270,
+   301
+  ]
+ },
+ {
+  "playlist_id": 516,
+  "title": "Opera Opulence: Timeless Arias",
+  "is_public": true,
+  "rating": 4.0,
+  "like_count": 2,
+  "review_count": 1,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-03-10T00:26:53",
+  "song_ids": [
+   92,
+   193,
+   299,
+   301,
+   320
+  ]
+ },
+ {
+  "playlist_id": 517,
+  "title": "The Rom-Com Mixtape",
+  "is_public": true,
+  "rating": 4.0,
+  "like_count": 5,
+  "review_count": 1,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-04-08T20:31:06",
+  "song_ids": [
+   4,
+   7,
+   77,
+   196,
+   252,
+   317,
+   319
+  ]
+ },
+ {
+  "playlist_id": 518,
+  "title": "Midweek Motivation: Hump Day Hits",
+  "is_public": true,
+  "rating": 3.0,
+  "like_count": 1,
+  "review_count": 1,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-04-30T11:25:23",
+  "song_ids": [
+   69,
+   184,
+   219,
+   278,
+   323
+  ]
+ },
+ {
+  "playlist_id": 519,
+  "title": "Heartbreak Hotel: Songs of Sorrow",
+  "is_public": false,
+  "rating": 0.0,
+  "like_count": 0,
+  "review_count": 0,
+  "owner": {
+   "name": "Jack Maldonado",
+   "email": "jack-maldonado@gmail.com"
+  },
+  "created_at": "2023-04-18T15:32:19",
+  "song_ids": [
+   22,
+   44,
+   111,
+   146,
+   226,
+   265,
+   287,
+   294,
+   298
+  ]
+ }
+]
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# I have all playlists and their song_ids. Now, I need to map the song titles/artists from the old songs list to actual song_ids in these playlists.
+# To do this, I need to get the metadata (title, artist) for each song_id in all playlists.
+# Let's collect all unique song_ids from all playlists and fetch their details using the show_song API.
+
+# Gather all unique song_ids from all playlists
+all_song_ids = set()
+for playlist in all_playlists:
+    all_song_ids.update(playlist["song_ids"])
+all_song_ids = list(all_song_ids)
+
+print(all_song_ids)  # Let's see the list of unique song_ids to fetch details for.
+```
+
+```
+[
+ 4,
+ 7,
+ 265,
+ 270,
+ 146,
+ 22,
+ 278,
+ 287,
+ 161,
+ 290,
+ 294,
+ 295,
+ 298,
+ 299,
+ 44,
+ 301,
+ 50,
+ 184,
+ 317,
+ 319,
+ 320,
+ 193,
+ 323,
+ 324,
+ 196,
+ 69,
+ 77,
+ 218,
+ 219,
+ 92,
+ 226,
+ 100,
+ 233,
+ 106,
+ 237,
+ 111,
+ 114,
+ 245,
+ 252
+]
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Now, let's fetch the metadata for each song_id using the show_song API.
+# To avoid hitting any API limits, let's fetch them in batches of 10.
+
+song_id_to_metadata = {}
+for i in range(0, len(all_song_ids), 10):
+    batch = all_song_ids[i:i+10]
+    for song_id in batch:
+        song_info = apis.spotify.show_song(song_id=song_id, access_token=spotify_access_token)
+        song_id_to_metadata[song_id] = song_info
+
+print(song_id_to_metadata)  # This will map song_id to its metadata (title, artists, etc.)
+```
+
+```
+{
+ "4": {
+  "song_id": 4,
+  "title": "The Puzzle of My Heart",
+  "album_id": 1,
+  "duration": 181,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   },
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   },
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "release_date": "2022-10-29T01:54:53",
+  "genre": "EDM",
+  "play_count": 667,
+  "rating": 0.0,
+  "like_count": 14,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/4"
+ },
+ "7": {
+  "song_id": 7,
+  "title": "Memories Stitched in Time",
+  "album_id": 1,
+  "duration": 279,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   },
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   },
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "release_date": "2022-10-29T01:54:53",
+  "genre": "EDM",
+  "play_count": 443,
+  "rating": 0.0,
+  "like_count": 18,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/7"
+ },
+ "265": {
+  "song_id": 265,
+  "title": "Secrets of the Heart",
+  "album_id": null,
+  "duration": 183,
+  "artists": [
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2023-04-29T08:00:31",
+  "genre": "classical",
+  "play_count": 773,
+  "rating": 5.0,
+  "like_count": 6,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/265"
+ },
+ "270": {
+  "song_id": 270,
+  "title": "Tangled Web",
+  "album_id": null,
+  "duration": 284,
+  "artists": [
+   {
+    "id": 28,
+    "name": "Evelyn Rose"
+   }
+  ],
+  "release_date": "2020-02-16T11:14:14",
+  "genre": "classical",
+  "play_count": 847,
+  "rating": 3.0,
+  "like_count": 5,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/270"
+ },
+ "146": {
+  "song_id": 146,
+  "title": "Drifting Through Eternal Skies",
+  "album_id": null,
+  "duration": 294,
+  "artists": [
+   {
+    "id": 11,
+    "name": "Eliana Harper"
+   }
+  ],
+  "release_date": "2019-11-06T19:28:29",
+  "genre": "hip-hop",
+  "play_count": 277,
+  "rating": 3.5,
+  "like_count": 4,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/146"
+ },
+ "22": {
+  "song_id": 22,
+  "title": "Echoes from the Abyss",
+  "album_id": 4,
+  "duration": 192,
+  "artists": [
+   {
+    "id": 36,
+    "name": "Noah Bennett"
+   }
+  ],
+  "release_date": "2021-03-23T13:53:26",
+  "genre": "indie",
+  "play_count": 253,
+  "rating": 5.0,
+  "like_count": 14,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/22"
+ },
+ "278": {
+  "song_id": 278,
+  "title": "A Broken Heart's Lament",
+  "album_id": null,
+  "duration": 215,
+  "artists": [
+   {
+    "id": 29,
+    "name": "Lucas Diaz"
+   }
+  ],
+  "release_date": "2020-06-27T18:28:48",
+  "genre": "pop",
+  "play_count": 546,
+  "rating": 3.5,
+  "like_count": 7,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/278"
+ },
+ "287": {
+  "song_id": 287,
+  "title": "Painted Skies",
+  "album_id": null,
+  "duration": 298,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ],
+  "release_date": "2019-05-01T22:57:58",
+  "genre": "EDM",
+  "play_count": 661,
+  "rating": 3.0,
+  "like_count": 5,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/287"
+ },
+ "161": {
+  "song_id": 161,
+  "title": "In the Embrace of Midnight",
+  "album_id": null,
+  "duration": 232,
+  "artists": [
+   {
+    "id": 13,
+    "name": "Luna Starlight"
+   }
+  ],
+  "release_date": "2022-12-22T20:20:13",
+  "genre": "reggae",
+  "play_count": 733,
+  "rating": 3.0,
+  "like_count": 5,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/161"
+ },
+ "290": {
+  "song_id": 290,
+  "title": "Whispers in the Wind",
+  "album_id": null,
+  "duration": 253,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ],
+  "release_date": "2020-07-08T10:47:35",
+  "genre": "EDM",
+  "play_count": 438,
+  "rating": 3.0,
+  "like_count": 12,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/290"
+ },
+ "294": {
+  "song_id": 294,
+  "title": "Eternal Reverie",
+  "album_id": null,
+  "duration": 292,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ],
+  "release_date": "2019-11-13T06:15:54",
+  "genre": "EDM",
+  "play_count": 910,
+  "rating": 5.0,
+  "like_count": 3,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/294"
+ },
+ "295": {
+  "song_id": 295,
+  "title": "City of Fallen Angels",
+  "album_id": null,
+  "duration": 222,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ],
+  "release_date": "2020-12-12T05:37:59",
+  "genre": "EDM",
+  "play_count": 591,
+  "rating": 2.0,
+  "like_count": 5,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/295"
+ },
+ "298": {
+  "song_id": 298,
+  "title": "When Dawn Breaks Without You",
+  "album_id": null,
+  "duration": 248,
+  "artists": [
+   {
+    "id": 32,
+    "name": "Lucas Grey"
+   }
+  ],
+  "release_date": "2021-05-21T19:35:41",
+  "genre": "R&B",
+  "play_count": 718,
+  "rating": 0.0,
+  "like_count": 8,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/298"
+ },
+ "299": {
+  "song_id": 299,
+  "title": "In the Wake of Goodbye",
+  "album_id": null,
+  "duration": 261,
+  "artists": [
+   {
+    "id": 32,
+    "name": "Lucas Grey"
+   }
+  ],
+  "release_date": "2022-01-08T16:12:50",
+  "genre": "R&B",
+  "play_count": 958,
+  "rating": 5.0,
+  "like_count": 7,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/299"
+ },
+ "44": {
+  "song_id": 44,
+  "title": "The Illusion of Eternal Spring",
+  "album_id": 9,
+  "duration": 198,
+  "artists": [
+   {
+    "id": 8,
+    "name": "Aria Sterling"
+   }
+  ],
+  "release_date": "2022-09-27T00:38:12",
+  "genre": "jazz",
+  "play_count": 671,
+  "rating": 5.0,
+  "like_count": 12,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/44"
+ },
+ "301": {
+  "song_id": 301,
+  "title": "A Fading Reflection in Water",
+  "album_id": null,
+  "duration": 244,
+  "artists": [
+   {
+    "id": 32,
+    "name": "Lucas Grey"
+   }
+  ],
+  "release_date": "2020-07-04T18:13:52",
+  "genre": "R&B",
+  "play_count": 826,
+  "rating": 4.0,
+  "like_count": 9,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/301"
+ },
+ "50": {
+  "song_id": 50,
+  "title": "Lonely Skies",
+  "album_id": 10,
+  "duration": 284,
+  "artists": [
+   {
+    "id": 8,
+    "name": "Aria Sterling"
+   }
+  ],
+  "release_date": "2022-11-11T09:54:16",
+  "genre": "jazz",
+  "play_count": 316,
+  "rating": 3.0,
+  "like_count": 14,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/50"
+ },
+ "184": {
+  "song_id": 184,
+  "title": "Enchanted Reverie",
+  "album_id": null,
+  "duration": 192,
+  "artists": [
+   {
+    "id": 16,
+    "name": "Apollo Serenade"
+   }
+  ],
+  "release_date": "2023-04-04T14:07:29",
+  "genre": "R&B",
+  "play_count": 336,
+  "rating": 0.0,
+  "like_count": 8,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/184"
+ },
+ "317": {
+  "song_id": 317,
+  "title": "Trapped in a Daydream",
+  "album_id": null,
+  "duration": 225,
+  "artists": [
+   {
+    "id": 35,
+    "name": "Nova Harmony"
+   }
+  ],
+  "release_date": "2021-04-27T06:17:23",
+  "genre": "indie",
+  "play_count": 731,
+  "rating": 2.0,
+  "like_count": 8,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/317"
+ },
+ "319": {
+  "song_id": 319,
+  "title": "Under the Willow",
+  "album_id": null,
+  "duration": 290,
+  "artists": [
+   {
+    "id": 35,
+    "name": "Nova Harmony"
+   }
+  ],
+  "release_date": "2022-08-23T07:07:34",
+  "genre": "indie",
+  "play_count": 576,
+  "rating": 4.0,
+  "like_count": 2,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/319"
+ },
+ "320": {
+  "song_id": 320,
+  "title": "Lost in the Maze of Your Mind",
+  "album_id": null,
+  "duration": 299,
+  "artists": [
+   {
+    "id": 36,
+    "name": "Noah Bennett"
+   }
+  ],
+  "release_date": "2021-08-24T09:13:13",
+  "genre": "indie",
+  "play_count": 620,
+  "rating": 4.0,
+  "like_count": 0,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/320"
+ },
+ "193": {
+  "song_id": 193,
+  "title": "Fading Echoes",
+  "album_id": null,
+  "duration": 204,
+  "artists": [
+   {
+    "id": 18,
+    "name": "Astrid Nightshade"
+   }
+  ],
+  "release_date": "2019-10-05T02:59:00",
+  "genre": "reggae",
+  "play_count": 336,
+  "rating": 2.0,
+  "like_count": 7,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/193"
+ },
+ "323": {
+  "song_id": 323,
+  "title": "Innocent Lies",
+  "album_id": null,
+  "duration": 197,
+  "artists": [
+   {
+    "id": 36,
+    "name": "Noah Bennett"
+   }
+  ],
+  "release_date": "2022-09-28T13:16:15",
+  "genre": "indie",
+  "play_count": 372,
+  "rating": 0.0,
+  "like_count": 4,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/323"
+ },
+ "324": {
+  "song_id": 324,
+  "title": "Sacred Ground",
+  "album_id": null,
+  "duration": 180,
+  "artists": [
+   {
+    "id": 36,
+    "name": "Noah Bennett"
+   }
+  ],
+  "release_date": "2021-07-01T06:13:37",
+  "genre": "indie",
+  "play_count": 743,
+  "rating": 3.0,
+  "like_count": 4,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/324"
+ },
+ "196": {
+  "song_id": 196,
+  "title": "Falling Through the Cracks of Time",
+  "album_id": null,
+  "duration": 278,
+  "artists": [
+   {
+    "id": 18,
+    "name": "Astrid Nightshade"
+   }
+  ],
+  "release_date": "2020-07-29T17:06:15",
+  "genre": "reggae",
+  "play_count": 949,
+  "rating": 0.0,
+  "like_count": 11,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/196"
+ },
+ "69": {
+  "song_id": 69,
+  "title": "Whispers of a Forgotten Love",
+  "album_id": 14,
+  "duration": 285,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "release_date": "2022-02-21T17:34:33",
+  "genre": "rock",
+  "play_count": 645,
+  "rating": 4.0,
+  "like_count": 17,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/69"
+ },
+ "77": {
+  "song_id": 77,
+  "title": "Whispers of the Soul",
+  "album_id": 17,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   },
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "release_date": "2020-10-15T13:57:09",
+  "genre": "classical",
+  "play_count": 505,
+  "rating": 2.0,
+  "like_count": 11,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/77"
+ },
+ "218": {
+  "song_id": 218,
+  "title": "Lost in the Tumult of Emotions",
+  "album_id": null,
+  "duration": 249,
+  "artists": [
+   {
+    "id": 21,
+    "name": "Oceanic Odyssey"
+   }
+  ],
+  "release_date": "2021-10-25T15:03:50",
+  "genre": "classical",
+  "play_count": 282,
+  "rating": 0.0,
+  "like_count": 10,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/218"
+ },
+ "219": {
+  "song_id": 219,
+  "title": "Strangers Again",
+  "album_id": null,
+  "duration": 292,
+  "artists": [
+   {
+    "id": 21,
+    "name": "Oceanic Odyssey"
+   }
+  ],
+  "release_date": "2022-06-18T11:40:31",
+  "genre": "classical",
+  "play_count": 557,
+  "rating": 0.0,
+  "like_count": 9,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/219"
+ },
+ "92": {
+  "song_id": 92,
+  "title": "Crimson Veil",
+  "album_id": null,
+  "duration": 189,
+  "artists": [
+   {
+    "id": 2,
+    "name": "Phoenix Rivers"
+   }
+  ],
+  "release_date": "2020-01-27T12:52:34",
+  "genre": "R&B",
+  "play_count": 972,
+  "rating": 0.0,
+  "like_count": 8,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/92"
+ },
+ "226": {
+  "song_id": 226,
+  "title": "Midnight Whispers",
+  "album_id": null,
+  "duration": 246,
+  "artists": [
+   {
+    "id": 22,
+    "name": "Silent Thunder"
+   }
+  ],
+  "release_date": "2021-03-31T15:42:21",
+  "genre": "reggae",
+  "play_count": 721,
+  "rating": 4.0,
+  "like_count": 8,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/226"
+ },
+ "100": {
+  "song_id": 100,
+  "title": "Fragile Bonds",
+  "album_id": null,
+  "duration": 250,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   }
+  ],
+  "release_date": "2022-04-28T02:03:49",
+  "genre": "EDM",
+  "play_count": 549,
+  "rating": 4.0,
+  "like_count": 13,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/100"
+ },
+ "233": {
+  "song_id": 233,
+  "title": "Fire and Ice",
+  "album_id": null,
+  "duration": 227,
+  "artists": [
+   {
+    "id": 23,
+    "name": "Soulful Reverie"
+   }
+  ],
+  "release_date": "2020-09-20T14:29:07",
+  "genre": "R&B",
+  "play_count": 926,
+  "rating": 0.0,
+  "like_count": 4,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/233"
+ },
+ "106": {
+  "song_id": 106,
+  "title": "The Irony of a Perfect Moment",
+  "album_id": null,
+  "duration": 185,
+  "artists": [
+   {
+    "id": 5,
+    "name": "Ava Morgan"
+   }
+  ],
+  "release_date": "2022-11-01T15:16:14",
+  "genre": "EDM",
+  "play_count": 888,
+  "rating": 3.0,
+  "like_count": 7,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/106"
+ },
+ "237": {
+  "song_id": 237,
+  "title": "Veiled Behind a Mask of Joy",
+  "album_id": null,
+  "duration": 248,
+  "artists": [
+   {
+    "id": 24,
+    "name": "Liam Palmer"
+   }
+  ],
+  "release_date": "2022-10-21T16:18:29",
+  "genre": "country",
+  "play_count": 125,
+  "rating": 2.0,
+  "like_count": 6,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/237"
+ },
+ "111": {
+  "song_id": 111,
+  "title": "Lonesome Road",
+  "album_id": null,
+  "duration": 277,
+  "artists": [
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "release_date": "2022-06-30T23:28:04",
+  "genre": "EDM",
+  "play_count": 658,
+  "rating": 0.0,
+  "like_count": 4,
+  "review_count": 0,
+  "shareable_link": "https://spotify.com/songs/111"
+ },
+ "114": {
+  "song_id": 114,
+  "title": "When All Hope Seems Lost",
+  "album_id": null,
+  "duration": 253,
+  "artists": [
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "release_date": "2022-04-20T12:58:02",
+  "genre": "EDM",
+  "play_count": 868,
+  "rating": 5.0,
+  "like_count": 5,
+  "review_count": 2,
+  "shareable_link": "https://spotify.com/songs/114"
+ },
+ "245": {
+  "song_id": 245,
+  "title": "Beneath the Surface of Love",
+  "album_id": null,
+  "duration": 206,
+  "artists": [
+   {
+    "id": 25,
+    "name": "Velvet Echo"
+   }
+  ],
+  "release_date": "2019-12-30T06:19:02",
+  "genre": "R&B",
+  "play_count": 264,
+  "rating": 3.0,
+  "like_count": 3,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/245"
+ },
+ "252": {
+  "song_id": 252,
+  "title": "Dark Reverie",
+  "album_id": null,
+  "duration": 216,
+  "artists": [
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   }
+  ],
+  "release_date": "2022-03-27T22:45:27",
+  "genre": "EDM",
+  "play_count": 558,
+  "rating": 3.0,
+  "like_count": 4,
+  "review_count": 1,
+  "shareable_link": "https://spotify.com/songs/252"
+ }
+}
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Now, let's match the old songs (from the file) to the song_ids in the playlists by comparing both title and artist(s).
+# We'll build a set of song_ids to archive, then for each playlist, remove those songs and collect them for the new playlist.
+
+# Prepare a normalized set of "title by artist(s)" for each song_id
+def normalize(s):
+    return s.strip().lower()
+
+# Build a mapping from normalized "title by artist(s)" to song_id
+song_key_to_id = {}
+for song_id, meta in song_id_to_metadata.items():
+    title = meta["title"]
+    artists = ", ".join([a["name"] for a in meta["artists"]])
+    key = normalize(f"{title} by {artists}")
+    song_key_to_id[key] = int(song_id)
+
+# Build a set of song_ids to archive
+archive_song_ids = set()
+for line in song_lines:
+    key = normalize(line)
+    if key in song_key_to_id:
+        archive_song_ids.add(song_key_to_id[key])
+
+print(archive_song_ids)  # These are the song_ids to remove from all playlists and add to the new playlist.
+```
+
+```
+{320, 324, 4, 69, 295, 265, 298, 299, 245, 22, 278, 219, 92}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# Now, let's check if a playlist named "Archived Playlist Songs" already exists.
+# If not, we'll create it. If it exists, we'll use its playlist_id.
+
+archived_playlist = None
+for playlist in all_playlists:
+    if playlist["title"] == "Archived Playlist Songs":
+        archived_playlist = playlist
+        break
+
+if archived_playlist is None:
+    archived_playlist = apis.spotify.create_playlist(
+        access_token=spotify_access_token,
+        title="Archived Playlist Songs",
+        is_public=False
+    )
+print(archived_playlist)  # This will have the playlist_id for the archive playlist.
+```
+
+```
+{"message": "Playlist created.", "playlist_id": 654}
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# The new "Archived Playlist Songs" playlist has playlist_id 654.
+# Now, for each playlist, remove the archive_song_ids from it (if present), and collect those song_ids to add to the archive playlist.
+# We'll also avoid removing from the archive playlist itself.
+
+archive_playlist_id = 654
+removal_actions = []
+for playlist in all_playlists:
+    if playlist["playlist_id"] == archive_playlist_id:
+        continue
+    songs_to_remove = [song_id for song_id in playlist["song_ids"] if song_id in archive_song_ids]
+    for song_id in songs_to_remove:
+        removal_actions.append((playlist["playlist_id"], song_id))
+
+print(removal_actions)  # List of (playlist_id, song_id) pairs to remove.
+```
+
+```
+[
+ [
+  513,
+  295
+ ],
+ [
+  514,
+  22
+ ],
+ [
+  514,
+  324
+ ],
+ [
+  515,
+  245
+ ],
+ [
+  516,
+  92
+ ],
+ [
+  516,
+  299
+ ],
+ [
+  516,
+  320
+ ],
+ [
+  517,
+  4
+ ],
+ [
+  518,
+  69
+ ],
+ [
+  518,
+  219
+ ],
+ [
+  518,
+  278
+ ],
+ [
+  519,
+  22
+ ],
+ [
+  519,
+  265
+ ],
+ [
+  519,
+  298
+ ]
+]
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# Let's remove the specified songs from their respective playlists using the remove_song_from_playlist API.
+# We'll do this one by one for each (playlist_id, song_id) pair.
+
+for playlist_id, song_id in removal_actions:
+    apis.spotify.remove_song_from_playlist(
+        access_token=spotify_access_token,
+        playlist_id=playlist_id,
+        song_id=song_id
+    )
+
+# Now, let's add all archive_song_ids to the "Archived Playlist Songs" playlist.
+for song_id in archive_song_ids:
+    apis.spotify.add_song_to_playlist(
+        access_token=spotify_access_token,
+        playlist_id=archive_playlist_id,
+        song_id=song_id
+    )
+
+# Task complete, mark it as done.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

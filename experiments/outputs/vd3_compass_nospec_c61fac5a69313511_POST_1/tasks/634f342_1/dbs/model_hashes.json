@@ -1,0 +1,8 @@
+{
+    "spotify": {
+        "PlaylistSong": 1,
+        "Playlist": 5,
+        "PlaylistLike": 3,
+        "PlaylistReview": 1
+    }
+}

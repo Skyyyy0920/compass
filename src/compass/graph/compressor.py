@@ -35,7 +35,7 @@ class CompassCompressor(Compressor):
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True):
         super().__init__(llm, budget)
-        self.summary_budget = summary_budget or max(600, budget // 3)
+        self.summary_budget = summary_budget or max(600, int(budget * 0.4))
         self.use_llm = use_llm and llm is not None
         self.hide_sections = tuple(hide_sections)
         self.det_needs = det_needs

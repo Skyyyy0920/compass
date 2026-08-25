@@ -647,3 +647,307 @@ print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_liked_songs'
 }
 ```
 
+
+### Environment Interaction 8
+----------------------------------------------------------------------------
+```python
+# Let's get all liked songs (handle pagination) and collect their song_ids for quick lookup.
+liked_song_ids = set()
+page_index = 0
+page_limit = 20
+
+while True:
+    liked_songs_page = apis.spotify.show_liked_songs(
+        access_token=access_token,
+        page_index=page_index,
+        page_limit=page_limit
+    )
+    if not liked_songs_page or isinstance(liked_songs_page, dict) and "message" in liked_songs_page:
+        break
+    for song in liked_songs_page:
+        liked_song_ids.add(song["song_id"])
+    if len(liked_songs_page) < page_limit:
+        break
+    page_index += 1
+
+print(liked_song_ids)
+```
+
+```
+{193, 197, 6, 39, 235, 172, 173, 239, 240, 180, 184, 94, 286}
+```
+
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+# The current song's song_id is 36, which is not in the liked_song_ids set.
+# Let's check the next song, and repeat until we find a song that is liked.
+# We'll need to call next_song, then show_current_song, and check if the song_id is in liked_song_ids.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='next_song'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "next_song",
+ "path": "/music_player/next_song",
+ "method": "POST",
+ "description": "Go to the next song in the song queue.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "song_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# We have the access_token already. Let's call next_song to move to the next song in the queue.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 56}
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# The next song's song_id is 56. Let's get the details of the current song to confirm and check if it is liked.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 56,
+ "title": "Distant Love",
+ "album_id": 11,
+ "duration": 202,
+ "artists": [
+  {
+   "id": 5,
+   "name": "Ava Morgan"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# The current song's song_id is 56. Let's check if this song_id is in the liked_song_ids set.
+liked_song_ids = {193, 197, 6, 39, 235, 172, 173, 239, 240, 180, 184, 94, 286}
+current_song_id = 56
+
+if current_song_id in liked_song_ids:
+    found_liked = True
+else:
+    found_liked = False
+
+print(found_liked)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# The current song (song_id 56) is not liked. Let's go to the next song and repeat the process.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 167}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The next song's song_id is 167. Let's get the details of the current song and check if it is liked.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 167,
+ "title": "The Tragic Beauty of Love",
+ "album_id": null,
+ "duration": 190,
+ "artists": [
+  {
+   "id": 14,
+   "name": "Grace Harrison"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# The current song's song_id is 167. Let's check if this song_id is in the liked_song_ids set.
+current_song_id = 167
+found_liked = current_song_id in liked_song_ids
+print(found_liked)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# The current song (song_id 167) is not liked. Let's go to the next song and repeat the process.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 323}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# The next song's song_id is 323. Let's get the details of the current song and check if it is liked.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 323,
+ "title": "Innocent Lies",
+ "album_id": null,
+ "duration": 197,
+ "artists": [
+  {
+   "id": 36,
+   "name": "Noah Bennett"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# The current song's song_id is 323. Let's check if this song_id is in the liked_song_ids set.
+current_song_id = 323
+found_liked = current_song_id in liked_song_ids
+print(found_liked)
+```
+
+```
+False
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# The current song (song_id 323) is not liked. Let's go to the next song and repeat the process.
+next_song_response = apis.spotify.next_song(access_token=access_token)
+print(next_song_response)
+```
+
+```
+{"message": "Moved to the next song in the queue.", "song_id": 94}
+```
+
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+# The next song's song_id is 94. Let's get the details of the current song and check if it is liked.
+current_song = apis.spotify.show_current_song(access_token=access_token)
+print(current_song)
+```
+
+```
+{
+ "song_id": 94,
+ "title": "Bridges Burned and Rivers Crossed",
+ "album_id": null,
+ "duration": 250,
+ "artists": [
+  {
+   "id": 3,
+   "name": "Jasper Skye"
+  }
+ ],
+ "played_seconds": 0,
+ "is_playing": true,
+ "is_looping": false
+}
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# The current song's song_id is 94. Let's check if this song_id is in the liked_song_ids set.
+current_song_id = 94
+found_liked = current_song_id in liked_song_ids
+print(found_liked)
+```
+
+```
+True
+```
+
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+# We've reached a song that is already liked (song_id 94).
+# Task complete. Let's mark the task as complete and provide the answer as the song_id of the first liked song reached.
+apis.supervisor.complete_task(answer=94)
+```
+
+```
+Execution successful.
+```
+
