@@ -1,0 +1,8 @@
+pyproject.toml
+src/compass/__init__.py
+src/compass/compat.py
+src/compass.egg-info/PKG-INFO
+src/compass.egg-info/SOURCES.txt
+src/compass.egg-info/dependency_links.txt
+src/compass.egg-info/requires.txt
+src/compass.egg-info/top_level.txt
