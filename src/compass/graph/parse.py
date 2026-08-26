@@ -294,7 +294,7 @@ def parse_step(turn: dict, adapter: str = "codeact") -> dict:
                returned/printed objects, interface knowledge from tool documentation
       codeact  + program state: AST def/use dataflow and literal/derived values
     """
-    step = _parse_codeact(turn)
+    step = _parse_officebench(turn) if turn.get("env") == "officebench" else _parse_codeact(turn)
     if adapter == "codeact":
         return step
     if adapter not in ADAPTERS:
@@ -311,6 +311,38 @@ def parse_step(turn: dict, adapter: str = "codeact") -> dict:
     step["api_specs"], step["api_lists"], step["api_list_truncated"] = [], {}, False
     step["printed"] = {}
     return step
+
+
+def _parse_officebench(turn: dict) -> dict:
+    """Schema-aware event for a JSON tool action (OfficeBench): tool name, argument
+    shape, canonical signature, outcome from the environment's error prefix, and the
+    per-app action listing an app switch reveals. No program state exists here."""
+    from ..harness.officebench import is_ob_error, ob_signature
+    code = turn.get("code") or ""
+    obs = turn.get("observation") or ""
+    sig, a = ob_signature(code)
+    api_names, forms = [], []
+    if sig:
+        name = sig.split("(", 1)[0]
+        api_names = [name]
+        keys = [k for k in a if k not in ("app", "action")]
+        forms = [f"{name}({', '.join(keys)})"]
+    lists = {}
+    m = re.search(r"Successfully switched to app: (\w+)\. Available actions:\n((?:- \w+\n?)+)", obs)
+    if m:
+        lists = {m.group(1): re.findall(r"- (\w+)", m.group(2))}
+    err = is_ob_error(obs)
+    return {
+        "call_forms": forms, "error_line": obs.strip().splitlines()[0][:160] if err else None,
+        "api_specs": [], "api_lists": lists, "api_list_truncated": False,
+        "step": turn["step"], "code": code, "observation": obs,
+        "comments": [turn["reasoning"]] if turn.get("reasoning") else [],
+        "api_sigs": [sig] if sig else [], "api_names": api_names,
+        "defs": [], "uses": [], "ast_ok": True,
+        "status": "blocked" if err else "ok",
+        "error_class": ("bad_argument" if "Malformed" in obs or "Missing" in obs else "other") if err else None,
+        "printed": printed_values(obs), "obs_tokens": count_tokens(obs[:4000]),
+    }
 
 
 def _parse_codeact(turn: dict) -> dict:

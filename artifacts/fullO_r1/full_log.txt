@@ -1,0 +1,11 @@
+3d9a636_1  success=True score=1.00 steps=21 bnd=0 blocked=0 refetch=1 peak=9590 task_completed 
+3d9a636_2  success=True score=1.00 steps=24 bnd=0 blocked=0 refetch=1 peak=11560 task_completed 
+3d9a636_3  success=True score=1.00 steps=24 bnd=0 blocked=0 refetch=1 peak=11148 task_completed 
+fd1f8fa_1  success=True score=1.00 steps=19 bnd=0 blocked=0 refetch=2 peak=11555 task_completed 
+fd1f8fa_2  success=True score=1.00 steps=20 bnd=0 blocked=1 refetch=1 peak=11833 task_completed 
+fd1f8fa_3  success=True score=1.00 steps=14 bnd=0 blocked=0 refetch=1 peak=11361 task_completed 
+325d6ec_1  success=True score=1.00 steps=17 bnd=0 blocked=0 refetch=1 peak=8281 task_completed 
+325d6ec_2  success=True score=1.00 steps=16 bnd=0 blocked=2 refetch=2 peak=7242 task_completed 
+325d6ec_3  success=True score=1.00 steps=15 bnd=0 blocked=1 refetch=1 peak=8215 task_completed 
+29a7b7e_3  success=True score=1.00 steps=14 bnd=0 blocked=0 refetch=0 peak=8108 task_completed 
+29a7b7e_2  success=True score=1.00 steps=15 bnd=0 blocked=0 refetch=2 peak=8719 task_completed 

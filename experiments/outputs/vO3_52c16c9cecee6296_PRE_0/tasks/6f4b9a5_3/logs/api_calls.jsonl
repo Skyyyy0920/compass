@@ -28,3 +28,7 @@
 {"method": "get", "url": "/spotify/songs", "data": {"query": "Wilted Grace Felix Blackwood"}}
 {"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "update_note"}}
 {"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ._bm6_sXXjuhFx8OTCY8KAAHmdFXWl0oqxaqw447PY9Y"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMTU3fQ.QWrVI4R4szAVWv2Dexn9JtTYHncuPnDIfag4PfHZOm4"}}

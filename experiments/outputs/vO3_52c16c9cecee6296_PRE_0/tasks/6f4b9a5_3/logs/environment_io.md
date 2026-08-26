@@ -2637,3 +2637,100 @@ print(apis.api_docs.show_api_doc(app_name='simple_note', api_name='show_note'))
 }
 ```
 
+
+### Environment Interaction 33
+----------------------------------------------------------------------------
+```python
+# Retrieve the current note content to see the exact format.
+print(apis.simple_note.show_note(note_id=3084, access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ._bm6_sXXjuhFx8OTCY8KAAHmdFXWl0oqxaqw447PY9Y'))
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 2, in <module>
+    print(apis.simple_note.show_note(note_id=3084, access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ._bm6_sXXjuhFx8OTCY8KAAHmdFXWl0oqxaqw447PY9Y'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 401:
+{"message":"You are either not authorized to access this simple_note API endpoint or your access token is missing, invalid or expired."}
+```
+
+
+### Environment Interaction 34
+----------------------------------------------------------------------------
+```python
+# Token expired. Let me re-login to simple_note.
+print(apis.api_docs.show_api_doc(app_name='simple_note', api_name='login'))
+```
+
+```
+{
+ "app_name": "simple_note",
+ "api_name": "login",
+ "path": "/auth/token",
+ "method": "POST",
+ "description": "Login to your account.",
+ "parameters": [
+  {
+   "name": "username",
+   "type": "string",
+   "required": true,
+   "description": "Your account email.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "password",
+   "type": "string",
+   "required": true,
+   "description": "Your account password.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "access_token": "string",
+   "token_type": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 35
+----------------------------------------------------------------------------
+```python
+# Re-login to simple_note with the known credentials.
+print(apis.simple_note.login(username='alexwhite@gmail.com', password='sTv9L0p'))
+```
+
+```
+{
+ "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMTU3fQ.QWrVI4R4szAVWv2Dexn9JtTYHncuPnDIfag4PfHZOm4",
+ "token_type": "Bearer"
+}
+```
+
+
+### Environment Interaction 36
+----------------------------------------------------------------------------
+```python
+# Got new token. Now retrieve the note content.
+print(apis.simple_note.show_note(note_id=3084, access_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMTU3fQ.QWrVI4R4szAVWv2Dexn9JtTYHncuPnDIfag4PfHZOm4'))
+```
+
+```
+{
+ "note_id": 3084,
+ "title": "Spotify Liked Songs",
+ "content": "# Spotify Liked Songs\n- When Angels Weep for Us BY Lucas Grey, Velvet Echo RELEASED_AT 07/2022\n- Unspoken Words BY Aria Sterling RELEASED_AT 06/2021\n- Time's Hold BY Aria Sterling RELEASED_AT 11/2022\n- Bleeding Sun BY Aria Sterling RELEASED_AT 11/2022\n- Distant Love BY Ava Morgan RELEASED_AT 12/2022\n- Silver Lining BY Ava Morgan RELEASED_AT TODO\n- Walking Through the Valley of Shadows BY Lily Moon, Zoey James RELEASED_AT TODO\n- Where Shadows Come to Life BY Olivia Roberts RELEASED_AT TODO\n- Eternal Melancholy BY Olivia Roberts RELEASED_AT TODO\n- Crimson Veil BY Phoenix Rivers RELEASED_AT TODO\n- Elusive Joy BY Orion Steele RELEASED_AT TODO\n- Ephemeral Beauty BY Eliana Harper RELEASED_AT TODO\n- Stardust Serenade BY Violet Cascade RELEASED_AT TODO\n- Veiled Behind a Mask of Joy BY Liam Palmer RELEASED_AT TODO\n- In the Wake of Unspoken Promises BY Isabella Cruz RELEASED_AT TODO\n- Wading Through the Ashes of Love BY Marcus Lane RELEASED_AT TODO\n- Fading Like a Distant Star BY Hazel Winter RELEASED_AT TODO\n- Wilted Grace BY Felix Blackwood RELEASED_AT TODO\n",
+ "tags": [],
+ "created_at": "2023-05-17T12:13:03",
+ "updated_at": "2023-05-17T12:13:03",
+ "pinned": false
+}
+```
+
