@@ -1,0 +1,70 @@
+95 episodes
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+1-13/0     success=True steps=5 bnd=0 blocked=0 refetch=0 peak=2945 task_completed 
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+1-13/1     success=True steps=5 bnd=0 blocked=0 refetch=0 peak=2908 task_completed 
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+Smolagents environment not available, skipping import.
+COMMAND: /bin/bash -c """ ls -la tasks/1-13/testbed/data/ """
+
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 .
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 ..
+-rwxrwxrwx 1 root root 8881 Aug 25 14:36 Thomas_Robinson_Course_List.xlsx
+
+
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 .
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 ..
+-rwxrwxrwx 1 root root 8881 Aug 25 14:36 Thomas_Robinson_Course_List.xlsx
+COMMAND: /bin/bash -c """ python3 /mnt/w/context_compression/acon_ref/src/productive_agents/env/officebench/apps/excel_app/excel_read_file.py --file_path tasks/1-13/testbed/data/Thomas_Robinson_Course_List.xlsx """
+
+Smolagents environment not available, skipping import.
+
+
+
+
+COMMAND: /bin/bash -c """ ls -la tasks/1-13/testbed/data """
+
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 .
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 ..
+-rwxrwxrwx 1 root root 8881 Aug 25 14:36 Thomas_Robinson_Course_List.xlsx
+
+
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 .
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 ..
+-rwxrwxrwx 1 root root 8881 Aug 25 14:36 Thomas_Robinson_Course_List.xlsx
+COMMAND: /bin/bash -c """ python3 /mnt/w/context_compression/acon_ref/src/productive_agents/env/officebench/apps/excel_app/excel_read_file.py --file_path tasks/1-13/testbed/data/Thomas_Robinson_Course_List.xlsx """
+
+Smolagents environment not available, skipping import.
+
+
+
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+1-13/2     success=True steps=5 bnd=0 blocked=0 refetch=0 peak=2902 task_completed 
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+[INFO] HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+Smolagents environment not available, skipping import.
+COMMAND: /bin/bash -c """ ls -la tasks/1-13/testbed/data """
+
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 .
+drwxrwxrwx 1 root root 4096 Aug 25 14:36 ..
+-rwxrwxrwx 1 root root 8881 Aug 25 14:36 Thomas_Robinson_Cour

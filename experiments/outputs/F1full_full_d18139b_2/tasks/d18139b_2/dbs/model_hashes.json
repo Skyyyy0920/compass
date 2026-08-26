@@ -1,0 +1,11 @@
+{
+    "venmo": {
+        "User": 5,
+        "PaymentRequest": 3,
+        "Transaction": 3,
+        "Notification": 3
+    },
+    "admin": {
+        "PaymentCard": 1
+    }
+}

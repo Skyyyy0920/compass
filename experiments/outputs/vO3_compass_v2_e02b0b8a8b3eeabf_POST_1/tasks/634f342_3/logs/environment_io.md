@@ -1015,3 +1015,15 @@ for song_id in all_song_ids:
 252: Dark Reverie by Isabella Cruz
 ```
 
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Let's print the fs_token variable to confirm its structure
+print(fs_token)
+```
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStqYWNrLW1hbGRvbmFkb0BnbWFpbC5jb20iLCJleHAiOjE2ODQ0MTIwOTh9.60TOET_S5D_YAnQm5TT3CPRS8hMX4SDPYXongw53TH8
+```
+
