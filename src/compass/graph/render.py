@@ -200,10 +200,85 @@ def live_variable_line(g: Graph) -> str:
     return "LIVE VARIABLES (still bound in the Python session): " + ", ".join(i.name for i in rt[-40:]) if rt else ""
 
 
+def render_bounded(g: Graph, recent_ids: list[str], *, max_items: int = 8, hint_chars: int = 100) -> str:
+    """Hard-bounded coarsest deterministic level: every section capped, prioritised by
+    what the frontier needs and by recency, so a long trajectory never forces the LLM
+    fallback. Sizes are per-section, independent of how many steps the graph holds."""
+    recent = set(recent_ids)
+    L: list[str] = ["GOAL", g.goal.strip()]
+    cons = [f for f in g.facts if f["kind"] == "constraint"]
+    if cons:
+        L += ["", "CONSTRAINTS"] + [f"- {_short(f['text'], 160)}" for f in cons[-6:]]
+    front = g.frontier()
+    open_ids = {it.id for it in front}
+    tree = _tree(g)
+    if tree:
+        L += ["", "PLAN ([x] done  [>] active  [ ] pending  [!] blocked  [-] invalidated)"]
+        shown = 0
+        for it, depth in tree:
+            if it.status in ("done", "invalidated") and it.parent is not None:
+                continue                       # folded into the parent line
+            line = f"{'  ' * min(depth, 1)}{_status_mark(it.status)} {it.id} {_short(it.description, 140)}"
+            if it.status in ("done", "invalidated"):
+                prod = g.produced_by_intent(it, limit=2)
+                if prod:
+                    line += "  -> " + "; ".join(f"{i.name}={_short(i.value_hint, 40)}" for i in prod)
+            elif it.note:
+                line += f"  -- {_short(it.note, 90)}"
+            L.append(line)
+            shown += 1
+            if shown >= 2 * max_items:
+                break
+    # interface knowledge: signatures of APIs the open work will call (recently used or needed)
+    used_recent = {a for s in recent_ids if s in g.steps for a in g.steps[s]["api_names"]}
+    specs = [i for i in g.infos.values() if i.kind == "api_spec"]
+    pri = [i for i in specs if i.name in used_recent] + [i for i in specs if i.name not in used_recent]
+    if specs:
+        L += ["", "API SIGNATURES (exact; do not re-read docs)"] + [f"- {_short(i.value_hint, 150)}" for i in pri[:max_items]]
+    ok_forms = list(g.calls_ok)[-max_items:]
+    if ok_forms:
+        L += ["", "CALL FORMS THAT WORKED"] + [f"- {f}" for f in ok_forms]
+    if g.calls_failed:
+        L += ["", "CALL FORMS THAT FAILED"] + [f"- {f} -> {_short(e, 80)}" for f, e in list(g.calls_failed.items())[-4:]]
+    # state: needed by open intents first, then recently consumed, then most recent bindings
+    needed: list[Info] = []
+    for it in front:
+        for n in it.needs:
+            i = g.infos.get(n)
+            if i and i.kind == "runtime_reference" and not i.superseded and i not in needed:
+                needed.append(i)
+    rest = [i for i in g.infos.values() if i.kind == "runtime_reference" and not i.superseded and i not in needed]
+    rest = [i for i in rest if any(c in recent for c in i.consumers)] + [i for i in rest if not any(c in recent for c in i.consumers)]
+    live = (needed + rest)[:2 * max_items]
+    if live:
+        L += ["", "LIVE VARIABLES (still bound in the Python session; reuse them)"]
+        for i in live:
+            src = f" = {i.source_api}(...)" if i.source_api else ""
+            hint = f" -> {_short(i.value_hint, hint_chars)}" if i.value_hint else ""
+            L.append(f"- {i.name}{src}{hint}")
+    data = [f for f in g.facts if f["kind"] == "data"]
+    if data:
+        L += ["", "DATA EXTRACTED SO FAR"] + [f"- {_short(f['text'], 200)}" for f in data[-2 * max_items:]]
+    results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
+    if results:
+        L += ["", "RESULTS ALREADY OBSERVED"] + [f"- {_short(i.name, 70)} -> {_short(i.value_hint, 80)}" for i in results[-max_items:]]
+    other = [f for f in g.facts if f["kind"] not in ("constraint", "data")]
+    if other:
+        L += ["", "FACTS"] + [f"- {_short(f['text'], 160)}" for f in other[-6:]]
+    if front:
+        L += ["", "NEXT"] + [f"- {it.id} {_short(it.description, 140)}" for it in front[:5]]
+    return "\n".join(L)
+
+
 def render_to_budget(g: Graph, budget: int, recent_ids: list[str]) -> tuple[str, int]:
-    """Levels 0-3 are deterministic folds; 4 means 'still over budget, caller degrades'."""
-    for level in (0, 1, 2, 3):
+    """Levels 0-2 are progressively folded renders, level 3 is the hard-bounded render
+    (a smaller item cap is tried before giving up); 4 means the caller must degrade."""
+    for level in (0, 1, 2):
         text = render(g, level, recent_ids)
         if count_tokens(text) <= budget:
             return text, level
-    return render(g, 3, recent_ids), 4
+    for cap, chars in ((8, 100), (5, 60), (3, 40)):
+        text = render_bounded(g, recent_ids, max_items=cap, hint_chars=chars)
+        if count_tokens(text) <= budget:
+            return text, 3
+    return text, 4
