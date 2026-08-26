@@ -1,0 +1,14 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "file_system"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "show_directory"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "login"}}
+{"method": "post", "url": "/file_system/auth/token", "data": {"username": "ca-smit@gmail.com", "password": "JJub3%w"}}
+{"method": "post", "url": "/file_system/auth/token", "data": {"username": "ca-smit@gmail.com", "password": "JJub3%w"}}
+{"method": "get", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.WU-0mTvm6difI8OM6OrcM4Godb0IT6gBKglls9w_52A", "directory_path": "~/documents/work/meetings/", "entry_type": "files", "recursive": false}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "create_directory"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "file_system", "api_name": "move_file"}}
+{"method": "post", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.WU-0mTvm6difI8OM6OrcM4Godb0IT6gBKglls9w_52A", "directory_path": "~/documents/work/meetings/slides"}}
+{"method": "post", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.WU-0mTvm6difI8OM6OrcM4Godb0IT6gBKglls9w_52A", "directory_path": "~/documents/work/meetings/video_recording"}}
+{"method": "get", "url": "/file_system/directory", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaWxlX3N5c3RlbStjYS1zbWl0QGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjc0MX0.WU-0mTvm6difI8OM6OrcM4Godb0IT6gBKglls9w_52A", "directory_path": "~/documents/work/meetings/", "entry_type": "files", "recursive": false}}

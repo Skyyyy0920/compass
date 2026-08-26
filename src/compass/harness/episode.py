@@ -119,6 +119,17 @@ def run_episode(task_id: str, agent: LLM, compressor: Compressor | None, *, budg
                 break
             code = extract_code(raw)
             if not code:
+                # an empty/prose-only completion is usually a transient provider hiccup:
+                # ask once more before ending the episode (same for every method)
+                try:
+                    raw = agent.chat(msgs + [{"role": "user", "content":
+                                              "Your previous reply contained no code. Reply with the next Python code block only."}],
+                                     tag="agent")
+                    code = extract_code(raw)
+                except Exception as e:  # noqa: BLE001
+                    reason, rec["error"] = "agent_error", str(e)
+                    break
+            if not code:
                 reason = "no_code"
                 break
             obs = world.execute(code) or ""

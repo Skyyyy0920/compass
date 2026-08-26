@@ -1,0 +1,14 @@
+{
+    "spotify": {
+        "User": 2,
+        "MusicPlayer": 4
+    },
+    "gmail": {
+        "Email": 2,
+        "GlobalEmailThread": 2,
+        "UserEmailThread": 4
+    },
+    "supervisor": {
+        "Task": 1
+    }
+}
