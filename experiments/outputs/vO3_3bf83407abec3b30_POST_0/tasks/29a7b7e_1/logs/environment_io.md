@@ -678,3 +678,141 @@ print(files_response)
 ]
 ```
 
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Move each file to its new location: <file_name>/<date>.<extension>
+import re
+
+files = [
+    "/home/catherine/documents/work/meetings/2023-apr-05__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-apr-05__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-apr-12__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-apr-12__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-apr-19__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-apr-19__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-apr-26__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-apr-26__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-mar-08__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-mar-08__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-mar-15__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-mar-15__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-mar-22__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-mar-22__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-mar-29__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-mar-29__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-may-03__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-may-03__video_recording.mp4",
+    "/home/catherine/documents/work/meetings/2023-may-10__slides.ppt",
+    "/home/catherine/documents/work/meetings/2023-may-10__video_recording.mp4"
+]
+
+for file_path in files:
+    # Extract filename from path
+    filename = file_path.split('/')[-1]
+    # Split on "__" to get date and rest
+    date_part, rest = filename.split('__')
+    # Split rest on "." to get file_name and extension
+    file_name, extension = rest.rsplit('.', 1)
+    # Build destination path: ~/documents/work/meetings/<file_name>/<date>.<extension>
+    dest_path = f"~/documents/work/meetings/{file_name}/{date_part}.{extension}"
+    result = apis.file_system.move_file(access_token=access_token, source_file_path=file_path, destination_file_path=dest_path)
+    print(f"Moved {file_path} -> {dest_path}: {result}")
+```
+
+```
+Moved /home/catherine/documents/work/meetings/2023-apr-05__slides.ppt -> ~/documents/work/meetings/slides/2023-apr-05.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-apr-05__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-05.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-apr-12__slides.ppt -> ~/documents/work/meetings/slides/2023-apr-12.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-apr-12.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-apr-12__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-12.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-apr-12.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-apr-19__slides.ppt -> ~/documents/work/meetings/slides/2023-apr-19.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-apr-19.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-apr-19__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-19.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-apr-19.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-apr-26__slides.ppt -> ~/documents/work/meetings/slides/2023-apr-26.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-apr-26.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-apr-26__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-26.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-apr-26.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-mar-08__slides.ppt -> ~/documents/work/meetings/slides/2023-mar-08.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-mar-08.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-mar-08__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-08.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-mar-08.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-mar-15__slides.ppt -> ~/documents/work/meetings/slides/2023-mar-15.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-mar-15.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-mar-15__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-15.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-mar-15.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-mar-22__slides.ppt -> ~/documents/work/meetings/slides/2023-mar-22.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-mar-22.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-mar-22__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-22.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-mar-22.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-mar-29__slides.ppt -> ~/documents/work/meetings/slides/2023-mar-29.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-mar-29.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-mar-29__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-29.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-mar-29.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-may-03__slides.ppt -> ~/documents/work/meetings/slides/2023-may-03.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-may-03.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-may-03__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-may-03.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-may-03.mp4'}
+Moved /home/catherine/documents/work/meetings/2023-may-10__slides.ppt -> ~/documents/work/meetings/slides/2023-may-10.ppt: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/slides/2023-may-10.ppt'}
+Moved /home/catherine/documents/work/meetings/2023-may-10__video_recording.mp4 -> ~/documents/work/meetings/video_recording/2023-may-10.mp4: {'message': 'File moved.', 'destination_file_path': '/home/catherine/documents/work/meetings/video_recording/2023-may-10.mp4'}
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# Verify the new directory structure
+result = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/', recursive=True)
+print(result)
+```
+
+```
+[
+ "/home/catherine/documents/work/meetings/2023-apr-05/",
+ "/home/catherine/documents/work/meetings/2023-apr-12/",
+ "/home/catherine/documents/work/meetings/2023-apr-19/",
+ "/home/catherine/documents/work/meetings/2023-apr-26/",
+ "/home/catherine/documents/work/meetings/2023-mar-08/",
+ "/home/catherine/documents/work/meetings/2023-mar-15/",
+ "/home/catherine/documents/work/meetings/2023-mar-22/",
+ "/home/catherine/documents/work/meetings/2023-mar-29/",
+ "/home/catherine/documents/work/meetings/2023-may-03/",
+ "/home/catherine/documents/work/meetings/2023-may-10/",
+ "/home/catherine/documents/work/meetings/slides/",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-12.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-19.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-26.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-08.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-15.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-22.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-29.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-may-03.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-may-10.ppt",
+ "/home/catherine/documents/work/meetings/video_recording/",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-12.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-19.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-26.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-08.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-15.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-22.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-29.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-may-03.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-may-10.mp4"
+]
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# Check if there are any remaining files in the original format at the root level
+result = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/', entry_type='files', recursive=False)
+print(result)
+```
+
+```
+[]
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# Check if the date directories contain anything (they may be pre-existing or empty)
+result = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/2023-apr-05/', recursive=True)
+print(result)
+```
+
+```
+[]
+```
+

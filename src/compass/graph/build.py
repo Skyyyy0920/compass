@@ -145,11 +145,20 @@ class Graph:
         # under the generic adapter (no outcome, no program state) every tool observation is one
         if s["status"] in ("ok", "unknown") and s["api_names"] and not s["defs"] and not s.get("api_specs") \
                 and not s.get("api_lists"):
-            for api in s["api_names"]:
+            obs = s["observation"]
+            # one result node per distinct call (signature with arguments), so a loop of
+            # lookups keeps every answer instead of collapsing into one line per API
+            keys = s["api_sigs"][:4] or s["api_names"]
+            for key in keys:
+                api = key.split("(", 1)[0]
+                old = next((i for i in self.infos.values() if i.kind == "api_result" and i.name == key), None)
+                hint = _excerpt(obs, SMALL_VALUE_CHARS if len(obs) <= SMALL_VALUE_CHARS else 240)
+                if old is not None:
+                    old.value_hint, old.producer = hint, sid
+                    continue
                 self._n_info += 1
-                obs = s["observation"]
-                info = Info(id=f"i{self._n_info}", kind="api_result", name=api, producer=sid, source_api=api,
-                            value_hint=_excerpt(obs, SMALL_VALUE_CHARS if len(obs) <= SMALL_VALUE_CHARS else 240))
+                info = Info(id=f"i{self._n_info}", kind="api_result", name=key, producer=sid, source_api=api,
+                            value_hint=hint)
                 self.infos[info.id] = info
                 s["produces"].append(info.id)
         return s

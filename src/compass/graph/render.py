@@ -141,12 +141,10 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
 
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
     if results and level <= 2:
-        seen: dict[str, Info] = {}
-        for i in results:
-            seen[i.name] = i          # latest observation per api
+        keep, chars = (20, 160) if level <= 1 else (12, 90)
         L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again)"]
-        for i in list(seen.values())[-10:]:
-            L.append(f"- {i.name}: {i.value_hint if level <= 1 else i.value_hint[:80]}")
+        for i in results[-keep:]:
+            L.append(f"- {_short(i.name, 90)} -> {_short(i.value_hint, chars)}")
 
     other = [f for f in g.facts if f["kind"] != "constraint"]
     if other:

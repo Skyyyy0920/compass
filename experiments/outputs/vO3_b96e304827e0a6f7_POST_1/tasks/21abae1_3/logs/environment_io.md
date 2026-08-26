@@ -1037,3 +1037,45 @@ print(transactions_page2)
 ]
 ```
 
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# We have the access token from previous steps. Let's fetch all transactions for May 1-18 and sum the amounts.
+access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbytqby1oYXJyQGdtYWlsLmNvbSIsImV4cCI6MTY4NDQxMjA5OH0.4kAHHBEgpO70h3jQRPMhEC-3T9ar14kiHiBCNVLKxYY"
+
+all_transactions = []
+page_index = 0
+while True:
+    page = apis.venmo.show_transactions(
+        access_token=access_token,
+        min_created_at='2023-05-01',
+        max_created_at='2023-05-18',
+        page_limit=20,
+        page_index=page_index
+    )
+    all_transactions.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+
+# Sum all amounts (both sent and received)
+total_money = sum(tx['amount'] for tx in all_transactions)
+print(total_money)
+```
+
+```
+1592.0
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+apis.supervisor.complete_task(answer=1592.0)
+```
+
+```
+Execution successful.
+```
+

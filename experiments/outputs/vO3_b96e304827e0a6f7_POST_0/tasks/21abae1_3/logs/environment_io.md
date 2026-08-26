@@ -1080,3 +1080,451 @@ print(transactions_page3)
 []
 ```
 
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# Fetch page 0 again to have the data in this session
+transactions_page0 = apis.venmo.show_transactions(
+    access_token=access_token,
+    min_created_at='2023-05-01',
+    max_created_at='2023-05-18',
+    page_limit=20,
+    page_index=0
+)
+print(transactions_page0)
+```
+
+```
+[
+ {
+  "transaction_id": 1124,
+  "amount": 17.0,
+  "description": "\ud83c\udf31 Vegan Cooking Ingredients \ud83c\udf45",
+  "created_at": "2023-05-01T15:46:43",
+  "updated_at": "2023-05-01T15:46:43",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Tammy Weaver",
+   "email": "ta.weav@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1129,
+  "amount": 10.0,
+  "description": "\ud83c\udf69 Donut Delight \ud83c\udf69\ud83d\udc95",
+  "created_at": "2023-05-12T03:57:09",
+  "updated_at": "2023-05-12T03:57:09",
+  "private": true,
+  "like_count": 1,
+  "payment_card_digits": null,
+  "comment_count": 2,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Tammy Weaver",
+   "email": "ta.weav@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1131,
+  "amount": 95.0,
+  "description": "Concert Tickets",
+  "created_at": "2023-05-15T20:04:20",
+  "updated_at": "2023-05-15T20:04:20",
+  "private": false,
+  "like_count": 6,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Tammy Weaver",
+   "email": "ta.weav@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1132,
+  "amount": 147.0,
+  "description": "Sporting Event",
+  "created_at": "2023-05-17T05:33:04",
+  "updated_at": "2023-05-17T05:33:04",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Tammy Weaver",
+   "email": "ta.weav@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1144,
+  "amount": 484.0,
+  "description": "Charity Donation",
+  "created_at": "2023-05-05T12:39:01",
+  "updated_at": "2023-05-05T12:39:01",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Connor Brown",
+   "email": "connorbrow@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1147,
+  "amount": 10.0,
+  "description": "\u26fd Gas Money",
+  "created_at": "2023-05-08T19:29:59",
+  "updated_at": "2023-05-08T19:29:59",
+  "private": true,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Nancy Ritter",
+   "email": "nan_ritt@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1150,
+  "amount": 40.0,
+  "description": "Tutoring",
+  "created_at": "2023-05-13T11:09:23",
+  "updated_at": "2023-05-13T11:09:23",
+  "private": false,
+  "like_count": 5,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Nancy Ritter",
+   "email": "nan_ritt@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1169,
+  "amount": 13.0,
+  "description": "Cosmetics",
+  "created_at": "2023-05-15T18:00:05",
+  "updated_at": "2023-05-15T18:00:05",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Connor Brown",
+   "email": "connorbrow@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1175,
+  "amount": 27.0,
+  "description": "Wine Tasting",
+  "created_at": "2023-05-15T22:51:50",
+  "updated_at": "2023-05-15T22:51:50",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Glenn Burton",
+   "email": "glenn.burton@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1183,
+  "amount": 72.0,
+  "description": "\ud83c\udfa7 New Headphones \ud83c\udfb5\ud83e\udd18",
+  "created_at": "2023-05-18T11:37:00",
+  "updated_at": "2023-05-18T11:37:00",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Kathryn Maldonado",
+   "email": "kathrynmaldonado@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 1190,
+  "amount": 82.0,
+  "description": "Online Course",
+  "created_at": "2023-05-04T22:38:33",
+  "updated_at": "2023-05-04T22:38:33",
+  "private": true,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Joseph Weber",
+   "email": "joseph.webe@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 2029,
+  "amount": 66.0,
+  "description": "\ud83c\udf77 Winery Day Trip \ud83c\udf47",
+  "created_at": "2023-05-03T18:50:43",
+  "updated_at": "2023-05-03T18:50:43",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Spencer Powell",
+   "email": "spencer.powell@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 3324,
+  "amount": 22.0,
+  "description": "\ud83c\udf54 Gourmet Burger and Fries \ud83c\udf5f",
+  "created_at": "2023-05-14T12:59:08",
+  "updated_at": "2023-05-14T12:59:08",
+  "private": true,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Kevin Blackburn",
+   "email": "kevin.blac@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 3384,
+  "amount": 146.0,
+  "description": "Hiking Gear",
+  "created_at": "2023-05-07T05:37:24",
+  "updated_at": "2023-05-07T05:37:24",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Kevin Blackburn",
+   "email": "kevin.blac@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 4033,
+  "amount": 50.0,
+  "description": "House Party \ud83c\udf89\ud83c\udfe0",
+  "created_at": "2023-05-08T02:38:20",
+  "updated_at": "2023-05-08T02:38:20",
+  "private": true,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Joseph Weber",
+   "email": "joseph.webe@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 4035,
+  "amount": 18.0,
+  "description": "\ud83d\udcda Study Group Snack Fund \ud83d\udcd6",
+  "created_at": "2023-05-13T14:47:47",
+  "updated_at": "2023-05-13T14:47:47",
+  "private": false,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Joseph Weber",
+   "email": "joseph.webe@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 4474,
+  "amount": 31.0,
+  "description": "\ud83c\udf79Happy Hour Vibes",
+  "created_at": "2023-05-14T14:45:14",
+  "updated_at": "2023-05-14T14:45:14",
+  "private": false,
+  "like_count": 2,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Tammy Weaver",
+   "email": "ta.weav@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 5165,
+  "amount": 47.0,
+  "description": "Manicure/Pedicure",
+  "created_at": "2023-05-14T10:12:04",
+  "updated_at": "2023-05-14T10:12:04",
+  "private": false,
+  "like_count": 6,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jeffrey Smith",
+   "email": "jefsmith@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 6963,
+  "amount": 106.0,
+  "description": "Bungee Jumping",
+  "created_at": "2023-05-15T03:34:08",
+  "updated_at": "2023-05-15T03:34:08",
+  "private": false,
+  "like_count": 2,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Connor Brown",
+   "email": "connorbrow@gmail.com"
+  },
+  "receiver": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  }
+ },
+ {
+  "transaction_id": 7327,
+  "amount": 55.0,
+  "description": "\ud83c\udf77 Winery Day Trip \ud83c\udf47",
+  "created_at": "2023-05-13T20:34:37",
+  "updated_at": "2023-05-13T20:34:37",
+  "private": true,
+  "like_count": 0,
+  "payment_card_digits": null,
+  "comment_count": 0,
+  "sender": {
+   "name": "Jordan Harrison",
+   "email": "jo-harr@gmail.com"
+  },
+  "receiver": {
+   "name": "Nancy Ritter",
+   "email": "nan_ritt@gmail.com"
+  }
+ }
+]
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Fetch all transactions for May 2023 (pages 0 and 1)
+all_tx = []
+for page in range(2):
+    result = apis.venmo.show_transactions(
+        access_token=access_token,
+        min_created_at='2023-05-01',
+        max_created_at='2023-05-18',
+        page_limit=20,
+        page_index=page
+    )
+    all_tx.extend(result)
+
+# Compute total sent and received
+total_sent = 0
+total_received = 0
+for tx in all_tx:
+    if tx['sender']['email'] == 'jo-harr@gmail.com':
+        total_sent += tx['amount']
+    elif tx['receiver']['email'] == 'jo-harr@gmail.com':
+        total_received += tx['amount']
+
+total_volume = total_sent + total_received
+print(f"Total sent: {total_sent}")
+print(f"Total received: {total_received}")
+print(f"Total volume (sent + received): {total_volume}")
+```
+
+```
+Total sent: 1072.0
+Total received: 520.0
+Total volume (sent + received): 1592.0
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+apis.supervisor.complete_task(answer=1592)
+```
+
+```
+Execution successful.
+```
+

@@ -1,0 +1,19 @@
+109 boundaries from artifacts/devO/openclaw
+436 rollouts to run
+  openclaw::21abae1_1#t1 POST#0 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_1#t1 PRE#1 steps=2 E=0 R=0 task_completed 
+  openclaw::21abae1_1#t1 PRE#0 steps=2 E=0 R=0 task_completed 
+  openclaw::21abae1_1#t1 POST#1 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_2#t1 PRE#0 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_2#t1 POST#0 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_2#t1 PRE#1 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_2#t1 POST#1 steps=1 E=0 R=0 task_completed 
+  openclaw::21abae1_3#t1 PRE#0 steps=2 E=0 R=0 task_completed 
+  openclaw::21abae1_3#t1 PRE#1 steps=2 E=0 R=0 task_completed 
+  openclaw::29a7b7e_1#t1 PRE#0 steps=5 E=0 R=1 reached_max_actions 
+  openclaw::21abae1_3#t1 POST#1 steps=2 E=0 R=0 task_completed 
+  openclaw::29a7b7e_1#t1 POST#0 steps=5 E=0 R=2 reached_max_actions 
+  openclaw::21abae1_3#t1 POST#0 steps=5 E=1 R=0 task_completed 
+  openclaw::29a7b7e_1#t1 PRE#1 steps=5 E=0 R=1 reached_max_actions 
+  openclaw::29a7b7e_1#t2 PRE#0 steps=4 E=0 R=2 task_completed 
+  openclaw::29a7b7e_1#t1 POST#1 steps=4 E=0 R=1 task_completed 
