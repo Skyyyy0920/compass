@@ -118,7 +118,7 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
                     hint = hint[:300] + " ... (more; listing shortened here)"
                 L.append(f"- {i.name} apis: {hint}")
         for i in specs[-(25 if level <= 1 else 12):]:
-            L.append(f"- {i.value_hint}")
+            L.append(f"- {_short(i.value_hint, 220 if level <= 1 else 150)}")
 
     if level <= 1:
         infos = g.live_infos(recent_steps=3 if level == 1 else 8)

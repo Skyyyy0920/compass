@@ -101,12 +101,15 @@ def _json_load(text: str) -> dict | None:
         i = text.find('"plan_updates"')
         j = text.find("[", i)
         items, k = [], j + 1
-        while True:
+        while j >= 0:
             while k < len(text) and text[k] in " \n\r\t,":
                 k += 1
             if k >= len(text) or text[k] != "{":
                 break
-            obj, end = dec.raw_decode(text, k)
+            try:
+                obj, end = dec.raw_decode(text, k)
+            except json.JSONDecodeError:
+                break                      # the item that was cut off
             items.append(obj)
             k = end
         return {"plan_updates": items, "_truncated": True} if items else None
