@@ -1060,3 +1060,181 @@ print(slides_dir)
 []
 ```
 
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# The files were moved with backslashes in the path, which created files with backslashes in their names at the root.
+# We need to move them properly into the directories using forward slashes.
+
+import os
+
+base_dir = "~/documents/work/meetings/"
+# Get the current files at the root
+files = apis.file_system.show_directory(access_token=access_token, directory_path=base_dir, entry_type='files', recursive=False)
+
+for file_path in files:
+    # The file_path looks like "/home/catherine/documents/work/meetings/slides\\2023-apr-05.ppt"
+    # Extract the part after the base directory
+    relative = file_path.replace("/home/catherine/documents/work/meetings/", "")
+    # Split on backslash to get directory name and filename
+    if "\\" in relative:
+        dir_name, filename = relative.split("\\", 1)
+        # Construct proper destination path with forward slash
+        dest_path = f"{base_dir}{dir_name}/{filename}"
+        print(f"Moving {file_path} -> {dest_path}")
+        result = apis.file_system.move_file(access_token=access_token, source_file_path=file_path, destination_file_path=dest_path)
+        print(result)
+    else:
+        print(f"Unexpected file: {file_path}")
+```
+
+```
+Moving /home/catherine/documents/work/meetings/slides\2023-apr-05.ppt -> ~/documents/work/meetings/slides/2023-apr-05.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-apr-12.ppt -> ~/documents/work/meetings/slides/2023-apr-12.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-12.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-apr-19.ppt -> ~/documents/work/meetings/slides/2023-apr-19.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-19.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-apr-26.ppt -> ~/documents/work/meetings/slides/2023-apr-26.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-apr-26.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-mar-08.ppt -> ~/documents/work/meetings/slides/2023-mar-08.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-08.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-mar-15.ppt -> ~/documents/work/meetings/slides/2023-mar-15.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-15.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-mar-22.ppt -> ~/documents/work/meetings/slides/2023-mar-22.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-22.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-mar-29.ppt -> ~/documents/work/meetings/slides/2023-mar-29.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-mar-29.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-may-03.ppt -> ~/documents/work/meetings/slides/2023-may-03.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-may-03.ppt"
+}
+Moving /home/catherine/documents/work/meetings/slides\2023-may-10.ppt -> ~/documents/work/meetings/slides/2023-may-10.ppt
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/slides/2023-may-10.ppt"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-apr-05.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-05.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-apr-12.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-12.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-12.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-apr-19.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-19.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-19.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-apr-26.mp4 -> ~/documents/work/meetings/video_recording/2023-apr-26.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-apr-26.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-mar-08.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-08.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-08.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-mar-15.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-15.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-15.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-mar-22.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-22.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-22.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-mar-29.mp4 -> ~/documents/work/meetings/video_recording/2023-mar-29.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-mar-29.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-may-03.mp4 -> ~/documents/work/meetings/video_recording/2023-may-03.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-may-03.mp4"
+}
+Moving /home/catherine/documents/work/meetings/video_recording\2023-may-10.mp4 -> ~/documents/work/meetings/video_recording/2023-may-10.mp4
+{
+ "message": "File moved.",
+ "destination_file_path": "/home/catherine/documents/work/meetings/video_recording/2023-may-10.mp4"
+}
+```
+
+
+### Environment Interaction 24
+----------------------------------------------------------------------------
+```python
+# Verify the final structure
+result = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/', recursive=True)
+print(result)
+```
+
+```
+[
+ "/home/catherine/documents/work/meetings/2023-apr-05/",
+ "/home/catherine/documents/work/meetings/2023-apr-12/",
+ "/home/catherine/documents/work/meetings/2023-apr-19/",
+ "/home/catherine/documents/work/meetings/2023-apr-26/",
+ "/home/catherine/documents/work/meetings/2023-mar-08/",
+ "/home/catherine/documents/work/meetings/2023-mar-15/",
+ "/home/catherine/documents/work/meetings/2023-mar-22/",
+ "/home/catherine/documents/work/meetings/2023-mar-29/",
+ "/home/catherine/documents/work/meetings/2023-may-03/",
+ "/home/catherine/documents/work/meetings/2023-may-10/",
+ "/home/catherine/documents/work/meetings/slides/",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-05.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-12.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-19.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-apr-26.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-08.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-15.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-22.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-mar-29.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-may-03.ppt",
+ "/home/catherine/documents/work/meetings/slides/2023-may-10.ppt",
+ "/home/catherine/documents/work/meetings/video_recording/",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-05.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-12.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-19.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-apr-26.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-08.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-15.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-22.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-mar-29.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-may-03.mp4",
+ "/home/catherine/documents/work/meetings/video_recording/2023-may-10.mp4"
+]
+```
+

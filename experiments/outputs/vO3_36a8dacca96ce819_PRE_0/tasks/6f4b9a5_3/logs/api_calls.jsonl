@@ -1,0 +1,18 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQjJ_BspbHcmYtryXaeQ8QSyrJBz1oWxuU", "query": "liked songs"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ._bm6_sXXjuhFx8OTCY8KAAHmdFXWl1oqxaqw447PY9Y", "query": "liked songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyNzQxfQ._bm6_sXXjuhFx8OTCY8KAAHmdFXWl1oqxaqw447PY9Y"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "login"}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "=ql86Wp"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2FsZXh3aGl0ZUBnbWFpbC5jb20iLCJleHAiOjE2ODQ0MTI3MzF9.NfvW9ij8nh6VlD-vTY7wZylCuJNRKvm0sffXmHzqWn4"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Walking Through the Valley of Shadows", "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzcG90aWZ5K2FsZXh3aGl0ZUBnbWFpbC5jb20iLCJleHAiOjE2ODQ0MTI3MzF9.NfvW9ij8nh6VlD-vTY7wZylCuJNRKvm0sffXmHzqWn4"}}
