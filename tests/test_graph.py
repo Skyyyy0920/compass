@@ -32,6 +32,13 @@ def test_defs_uses_and_loop_vars():
     assert set(uses) == {"u", "p", "friends"}
 
 
+def test_extract_code_strips_model_markup():
+    from compass.harness.episode import extract_code
+    assert extract_code("\n\n<｜DSML｜python>\nprint(1)\n</｜DSML｜python>") == "print(1)"
+    assert extract_code("```python\nx = 1\n```") == "x = 1"
+    assert extract_code("<think>hmm</think>\nprint(2)") == "print(2)"
+
+
 def test_error_class():
     assert error_class(ERR) == "name_error"
     assert error_class("No code available to execute.") == "no_code"

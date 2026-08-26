@@ -1,0 +1,60 @@
+──────────────────────────────── Overall Stats ────────────────────────────────
+Num Passed Tests : 1
+Num Failed Tests : 3
+Num Total  Tests : 4
+─────────────────────────────────── Passes ────────────────────────────────────
+>> Passed Requirement
+obtain all the file paths from start_file_path_to_content's keys that are not
+in
+private_data.meeting_start_to_end_file_path. These are the file_paths that
+should not have been renamed.
+Assert their paths and contents are identical in the start and the end state.
+──────────────────────────────────── Fails ────────────────────────────────────
+>> Failed Requirement
+assert answers match.
+```python
+with test(
+    """
+    assert answers match.
+    """
+):
+    test.answer(predicted_answer, ground_truth_answer)
+```
+----------
+AssertionError:  '<<not_given>>' == 'null'
+>> Failed Requirement
+assert model changes match file_system.File.
+```python
+with test(
+    """
+    assert model changes match file_system.File.
+    """
+):
+    changed_model_names = models.changed_model_names()
+    test.case(changed_model_names, "==", {"file_system.File",
+"file_system.Directory"})
+```
+----------
+AssertionError:  {'file_system.Directory'} == {'file_system.Directory',
+'file_system.File'}
+
+In right but not left:
+['file_system.File']
+>> Failed Requirement
+prepare start_file_path_to_content and end_file_path_to_content from start and
+end state of user.files,
+then assert the files have been renamed (with proper content) as per
+private_data.meeting_start_to_end_file_path.
+```python
+with test(
+    """
+    prepare start_file_path_to_content and end_file_path_to_content from start
+and end state of user.files,
+    then assert the files have been renamed (with proper content) as per
+private_data.meeting_start_to_end_file_path.
+    """
+):
+    files_user_start = models.start.file_system.User.find_from(main_user)
+    files_user_end = models.end.file_system.User.find_from(main_user)
+```
+----------

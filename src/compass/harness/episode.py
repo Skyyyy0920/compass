@@ -38,6 +38,12 @@ def extract_code(response: str) -> str:
     """ACON's extraction: strip <think>, strip fences, else first fenced block."""
     text = re.sub(r"<\s*think[^>]*>", "", response, flags=re.IGNORECASE)
     text = re.sub(r"<\s*/\s*think\s*>", "", text, flags=re.IGNORECASE)
+    # DeepSeek occasionally wraps code in its own markup, <｜DSML｜python> ... </｜DSML｜python>
+    # (U+FF5C bars); treat it like a fence and strip any other <｜...｜> special tokens
+    m = re.search(r"<｜DSML｜python>\s*(.*?)\s*</｜DSML｜python>", text, re.DOTALL)
+    if m and m.group(1).strip():
+        return m.group(1).strip()
+    text = re.sub(r"</?｜[^｜>]*｜[^>]*>", "", text)
     for pat in (r"```python\s*(.*?)\s*```", r"```\s*(.*?)\s*```"):
         m = re.search(pat, text, re.DOTALL)
         if m and m.group(1).strip():
