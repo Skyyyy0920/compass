@@ -22,6 +22,7 @@ from ..harness.llm import LLM
 from ..harness.prompt import count_tokens, load_prompt
 from .build import Graph
 from .refine import refine_graph
+from .flow import attach_to_frontier, narrate, prune_evidence, render_flow_to_budget
 from .render import live_variable_line, render_to_budget
 
 
@@ -34,9 +35,12 @@ class CompassCompressor(Compressor):
 
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
-                 adapter: str = "codeact", summary_frac: float = 0.4):
+                 adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
+                 narrate: bool = False):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
+        self.flow = flow
+        self.narrate = narrate and llm is not None
         self.use_llm = use_llm and llm is not None
         self.hide_sections = tuple(hide_sections)
         self.det_needs = det_needs
@@ -68,7 +72,21 @@ class CompassCompressor(Compressor):
                 g.log.append({"drop": "refine_call_failed", "err": str(e)[:200]})
         if self.det_needs:
             g.augment_needs(new_ids[-3:])
-        text, level = render_to_budget(g, self.summary_budget, new_ids[-3:])
+        attached = pruned = 0
+        if self.flow:
+            attached = attach_to_frontier(g, new_ids[-3:])
+            pruned = prune_evidence(g, new_ids[-3:])
+            text, level = render_flow_to_budget(g, self.summary_budget, new_ids[-3:])
+            if self.narrate:
+                structured = text
+                try:
+                    text = narrate(structured, self.llm, self.summary_budget)
+                    if count_tokens(text) > self.summary_budget * 1.2:
+                        text = structured
+                except Exception:  # noqa: BLE001
+                    text = structured
+        else:
+            text, level = render_to_budget(g, self.summary_budget, new_ids[-3:])
         degraded = False
         if level == 4 and self.llm is not None:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
@@ -85,6 +103,7 @@ class CompassCompressor(Compressor):
         self.last_extra = {"level": level, "degraded": degraded, "rebuilt_from_legacy": rebuilt,
                            "n_steps": len(g.steps), "n_intents": len(g.intents), "n_infos": len(g.infos),
                            "n_facts": len(g.facts), "summary_tokens": count_tokens(text),
+                           "attached": attached, "pruned_steps": pruned,
                            "refine": stats, "drops": g.log[-10:]}
         return text
 
@@ -118,6 +137,9 @@ VARIANTS = {
     "compass_noplan": {"hide_sections": ("PLAN (", "NEXT", "CONSTRAINTS", "FACTS")},        # A2 no intent layer
     "compass_llmneeds": {"det_needs": False},                             # A4b LLM-only needs
     # adapter tiers (paper: Generic <= Schema-aware <= Domain-specific); compass_v2 == codeact
+    "compass_v3": {"flow": True},            # flow graph: attach-to-node, prune evidence, plan-first render
+    "compass_v3_det": {"flow": True, "use_llm": False},
+    "compass_v3_nl": {"flow": True, "narrate": True},   # same content, narrated by the LLM as the final surface
     "compass_generic": {"adapter": "generic"},
     "compass_schema": {"adapter": "schema"},
     "compass_codeaware": {},

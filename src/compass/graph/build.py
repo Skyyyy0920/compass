@@ -51,6 +51,7 @@ class Intent:
     produces: list[str] = field(default_factory=list)    # info ids
     note: str | None = None                              # short LLM note (e.g. why blocked)
     order: int = 0
+    carry: list = field(default_factory=list)            # (kind, payload) attached by flow.attach_to_frontier
 
 
 class Graph:
@@ -428,6 +429,10 @@ def _value_hint(step: dict, name: str) -> str | None:
         return "access_token " + p["tokens"][0][:10] + "..."
     printed = re.findall(r"print\(([^)]*)\)", code)
     hits = [pp for pp in printed if re.search(rf"\b{re.escape(name)}\b", pp)]
+    if len(printed) > 1 and len(step["defs"]) > 1:
+        # several values printed by one cell: the observation cannot be attributed to
+        # one variable, and a wrong value is worse than none
+        return None
     if hits or (len(step["defs"]) == 1 and printed):
         # small structured results (credential lists, profiles, short id lists) are kept whole:
         # an excerpt of them is exactly what makes the agent re-fetch
