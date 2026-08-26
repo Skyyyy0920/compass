@@ -34,9 +34,9 @@ class CompassCompressor(Compressor):
 
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
-                 adapter: str = "codeact"):
+                 adapter: str = "codeact", summary_frac: float = 0.4):
         super().__init__(llm, budget)
-        self.summary_budget = summary_budget or max(600, int(budget * 0.4))
+        self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.use_llm = use_llm and llm is not None
         self.hide_sections = tuple(hide_sections)
         self.det_needs = det_needs
@@ -121,6 +121,7 @@ VARIANTS = {
     "compass_generic": {"adapter": "generic"},
     "compass_schema": {"adapter": "schema"},
     "compass_codeaware": {},
+    "compass_wide": {"summary_frac": 0.6},                                 # A6b larger handover budget
 }
 
 

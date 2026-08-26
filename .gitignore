@@ -3,4 +3,6 @@ data/
 __pycache__/
 *.pyc
 .env
+experiments/
+artifacts/**/_work/
 artifacts/**/rollouts/

@@ -138,6 +138,23 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
         rt = [i for i in g.live_infos(recent_steps=2) if i.kind == "runtime_reference"]
         if rt:
             L += ["", "LIVE VARIABLES: " + ", ".join(i.name for i in rt[-30:])]
+        # plan-conditioned floor: whatever the frontier needs keeps its value even at the
+        # coarsest levels (folding must not drop what the next computation consumes)
+        needed: list[Info] = []
+        for it in g.frontier():
+            for n in it.needs:
+                i = g.infos.get(n)
+                if i and i.value_hint and i.kind == "runtime_reference" and not i.superseded and i not in needed:
+                    needed.append(i)
+        recent = set(recent_ids)
+        for i in g.infos.values():
+            if i.kind == "runtime_reference" and not i.superseded and i.value_hint and i not in needed \
+                    and any(c in recent for c in i.consumers):
+                needed.append(i)
+        if needed:
+            L += ["", "VALUES THE NEXT STEPS NEED (still bound; reuse instead of recomputing)"]
+            for i in needed[-12:]:
+                L.append(f"- {i.name} = {_short(i.value_hint, 160)}")
 
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
     if results and level <= 2:
