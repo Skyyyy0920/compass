@@ -74,8 +74,8 @@ class Graph:
         cands = [i for i in self.infos.values() if i.kind == "runtime_reference" and i.name == name and not i.superseded]
         return cands[-1] if cands else None
 
-    def add_turn(self, turn: dict) -> dict:
-        s = parse_step(turn)
+    def add_turn(self, turn: dict, adapter: str = "codeact") -> dict:
+        s = parse_step(turn, adapter)
         sid = f"s{s['step']}"
         s["id"] = sid
         s["produces"] = []
@@ -141,8 +141,10 @@ class Graph:
             self.infos[f"i{self._n_info}"] = Info(id=f"i{self._n_info}", kind="api_list", name=app, producer=sid,
                                                   source_api="api_docs.show_api_descriptions", value_hint=hint)
             s["produces"].append(f"i{self._n_info}")
-        # api results not bound to a variable but printed (non-doc calls) -> api_result info
-        if s["status"] == "ok" and s["api_names"] and not s["defs"] and not s.get("api_specs") and not s.get("api_lists"):
+        # api results not bound to a variable but printed (non-doc calls) -> api_result info;
+        # under the generic adapter (no outcome, no program state) every tool observation is one
+        if s["status"] in ("ok", "unknown") and s["api_names"] and not s["defs"] and not s.get("api_specs") \
+                and not s.get("api_lists"):
             for api in s["api_names"]:
                 self._n_info += 1
                 obs = s["observation"]
@@ -175,8 +177,13 @@ class Graph:
             self.log.append({"drop": "bad_status", "intent": iid, "status": status})
             return False
         ev = [e for e in evidence if e in self.steps]
+        if status in ("done", "blocked", "invalidated") and not ev:
+            # provenance is deterministic, semantics are proposed: a status change must cite evidence
+            self.log.append({"drop": "status_without_citation", "intent": iid, "status": status})
+            status = "active" if it.status in ("pending", "active") else it.status
         if status == "done":
-            ok = [e for e in ev if self.steps[e]["status"] == "ok"]
+            # with a generic adapter (outcome unknown) citation is the only grounding available
+            ok = [e for e in ev if self.steps[e]["status"] in ("ok", "unknown")]
             if not ok:
                 self.log.append({"drop": "done_without_ok_evidence", "intent": iid})
                 status = "active" if it.status in ("pending", "active") else it.status
@@ -279,6 +286,10 @@ class Graph:
         return out[-limit:]
 
     def add_fact(self, text: str, kind: str = "fact", steps: list[str] | None = None) -> dict | None:
+        cited = [s for s in (steps or []) if s in self.steps]
+        if not cited:
+            self.log.append({"drop": "fact_without_citation", "text": text[:80]})
+            return None
         if self.ungrounded_negative(text):
             self.log.append({"drop": "ungrounded_negative_fact", "text": text[:100]})
             return None

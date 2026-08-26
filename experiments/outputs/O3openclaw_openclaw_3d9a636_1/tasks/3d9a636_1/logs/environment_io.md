@@ -825,3 +825,1916 @@ print(phone_login)
 }
 ```
 
+
+### Environment Interaction 7
+----------------------------------------------------------------------------
+```python
+# Login to venmo app using email and password.
+venmo_login = apis.venmo.login(username='anita.burch@gmail.com', password='UIK!=rI')
+print(venmo_login)
+```
+
+```
+{
+ "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2ZW5tbythbml0YS5idXJjaEBnbWFpbC5jb20iLCJleHAiOjE2ODQ0MTI3NDF9._UndgIF_4PAEnQz7Yn55jPuCVCIe_qecNjfXeJ6DkWo",
+ "token_type": "Bearer"
+}
+```
+
+
+### Environment Interaction 8
+----------------------------------------------------------------------------
+```python
+# Let's check the phone contacts API documentation to understand how to get all contacts.
+print(apis.api_docs.show_api_doc(app_name='phone', api_name='search_contacts'))
+```
+
+```
+{
+ "app_name": "phone",
+ "api_name": "search_contacts",
+ "path": "/contacts",
+ "method": "GET",
+ "description": "Search your contact book for relatives' information.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from phone app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "query",
+   "type": "string",
+   "required": false,
+   "description": "Search query for the contacts list.",
+   "default": "",
+   "constraints": []
+  },
+  {
+   "name": "relationship",
+   "type": "string",
+   "required": false,
+   "description": "Relationship with the person in the contacts list to filter by.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "page_index",
+   "type": "integer",
+   "required": false,
+   "description": "The index of the page to return.",
+   "default": 0,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  },
+  {
+   "name": "page_limit",
+   "type": "integer",
+   "required": false,
+   "description": "The maximum number of results to return per page.",
+   "default": 5,
+   "constraints": [
+    "value >= 1.0, <= 20.0"
+   ]
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   {
+    "contact_id": 1,
+    "first_name": "string",
+    "last_name": "string",
+    "email": "user@example.com",
+    "phone_number": "string",
+    "relationships": [
+     "string"
+    ],
+    "birthday": "string",
+    "home_address": "string",
+    "work_address": "string",
+    "created_at": "2019-01-01T00:00:00"
+   }
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+# Let's check the venmo search_friends API documentation.
+print(apis.api_docs.show_api_doc(app_name='venmo', api_name='search_friends'))
+```
+
+```
+{
+ "app_name": "venmo",
+ "api_name": "search_friends",
+ "path": "/friends",
+ "method": "GET",
+ "description": "Search your or others' friends by name or email address.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "query",
+   "type": "string",
+   "required": false,
+   "description": "Search friends by name or email address.",
+   "default": "",
+   "constraints": []
+  },
+  {
+   "name": "user_email",
+   "type": "string",
+   "required": false,
+   "description": "Email address of the user whose friends you want to see. If not passed, your friends will be returned.",
+   "default": null,
+   "constraints": [
+    "value is email address"
+   ]
+  },
+  {
+   "name": "page_index",
+   "type": "integer",
+   "required": false,
+   "description": "The index of the page to return.",
+   "default": 0,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  },
+  {
+   "name": "page_limit",
+   "type": "integer",
+   "required": false,
+   "description": "The maximum number of results to return per page.",
+   "default": 5,
+   "constraints": [
+    "value >= 1.0, <= 20.0"
+   ]
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   {
+    "first_name": "string",
+    "last_name": "string",
+    "email": "user@example.com",
+    "registered_at": "2019-01-01T00:00:00",
+    "friends_since": "2019-01-01T00:00:00"
+   }
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# Get all phone contacts with pagination.
+phone_token = phone_login['access_token']
+all_phone_contacts = []
+page_index = 0
+page_limit = 20
+while True:
+    contacts = apis.phone.search_contacts(access_token=phone_token, page_index=page_index, page_limit=page_limit)
+    if not contacts:
+        break
+    all_phone_contacts.extend(contacts)
+    if len(contacts) < page_limit:
+        break
+    page_index += 1
+print(f"Total phone contacts: {len(all_phone_contacts)}")
+print(all_phone_contacts)
+```
+
+```
+Total phone contacts: 27
+[
+ {
+  "contact_id": 727,
+  "first_name": "Allison",
+  "last_name": "Calhoun",
+  "email": "allison-calhoun@gmail.com",
+  "phone_number": "3767193416",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1960-05-20",
+  "home_address": "7183 Mckinney Stravenue Suite 7\nSeattle\nWashington\nUnited States\n55442",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 748,
+  "first_name": "Anthony",
+  "last_name": "Harrison",
+  "email": "an-harrison@gmail.com",
+  "phone_number": "2466064078",
+  "relationships": [
+   "roommate"
+  ],
+  "birthday": "1990-06-09",
+  "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+  "work_address": "96967 Fox Loop Suite 397\nSeattle\nWashington\nUnited States\n86832",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 736,
+  "first_name": "Caitlin",
+  "last_name": "Burch",
+  "email": "caiburc@gmail.com",
+  "phone_number": "5896230193",
+  "relationships": [
+   "parent",
+   "mother"
+  ],
+  "birthday": "1962-09-05",
+  "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+  "work_address": "80547 Cynthia Square Suite 842\nSeattle\nWashington\nUnited States\n78964",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 735,
+  "first_name": "Christopher",
+  "last_name": "Burch",
+  "email": "ch-burch@gmail.com",
+  "phone_number": "4275730168",
+  "relationships": [
+   "parent",
+   "father"
+  ],
+  "birthday": "1961-03-17",
+  "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+  "work_address": "5840 Craig Turnpike Suite 634\nSeattle\nWashington\nUnited States\n78487",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 738,
+  "first_name": "Chelsea",
+  "last_name": "Burch",
+  "email": "chelsea-burch@gmail.com",
+  "phone_number": "7763361246",
+  "relationships": [
+   "sibling",
+   "sister"
+  ],
+  "birthday": "1992-03-22",
+  "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+  "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 728,
+  "first_name": "Cody",
+  "last_name": "Smith",
+  "email": "cod.smith@gmail.com",
+  "phone_number": "7826309761",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1993-03-02",
+  "home_address": "8948 Owens Via Suite 628\nSeattle\nWashington\nUnited States\n75367",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 745,
+  "first_name": "Cory",
+  "last_name": "Wilson",
+  "email": "corwils@gmail.com",
+  "phone_number": "5412564532",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1985-07-29",
+  "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+  "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 747,
+  "first_name": "Debra",
+  "last_name": "Ritter",
+  "email": "de_ritt@gmail.com",
+  "phone_number": "3375602296",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1994-11-30",
+  "home_address": "5309 Rios Cliff Suite 287\nSeattle\nWashington\nUnited States\n84348",
+  "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 739,
+  "first_name": "Denise",
+  "last_name": "Maldonado",
+  "email": "deniseburch@gmail.com",
+  "phone_number": "6279200672",
+  "relationships": [
+   "sibling",
+   "sister"
+  ],
+  "birthday": "1994-08-14",
+  "home_address": "727 Cannon Falls Suite 933\nSeattle\nWashington\nUnited States\n74687",
+  "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 730,
+  "first_name": "Grant",
+  "last_name": "Martinez",
+  "email": "gra-martinez@gmail.com",
+  "phone_number": "7056722825",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1990-04-24",
+  "home_address": "897 Carter Spurs Suite 636\nSeattle\nWashington\nUnited States\n29431",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 725,
+  "first_name": "Jamie",
+  "last_name": "Solomon",
+  "email": "jamie-solomon@gmail.com",
+  "phone_number": "8456546003",
+  "relationships": [
+   "manager",
+   "coworker"
+  ],
+  "birthday": "1960-09-19",
+  "home_address": "2317 Powell Stream Suite 570\nSeattle\nWashington\nUnited States\n32418",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 741,
+  "first_name": "Jennifer",
+  "last_name": "Powell",
+  "email": "jepowell@gmail.com",
+  "phone_number": "4288705164",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1989-09-21",
+  "home_address": "34495 Michael Burg Suite 805\nSeattle\nWashington\nUnited States\n38887",
+  "work_address": "3850 Timothy Squares Suite 942\nSeattle\nWashington\nUnited States\n54179",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 740,
+  "first_name": "Jordan",
+  "last_name": "Harrison",
+  "email": "jo-harr@gmail.com",
+  "phone_number": "2254213734",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1988-04-06",
+  "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+  "work_address": "8875 Amy Extensions Suite 797\nSeattle\nWashington\nUnited States\n49596",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 734,
+  "first_name": "Kayla",
+  "last_name": "Burton",
+  "email": "ka_burt@gmail.com",
+  "phone_number": "4835398522",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1962-11-10",
+  "home_address": "395 Tamara Place Suite 807\nSeattle\nWashington\nUnited States\n42274",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 744,
+  "first_name": "Katie",
+  "last_name": "Simpson",
+  "email": "kat_simp@gmail.com",
+  "phone_number": "6727300099",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1965-01-15",
+  "home_address": "808 Richard Crescent Suite 750\nSeattle\nWashington\nUnited States\n18427",
+  "work_address": "97051 Keith Spur Suite 381\nSeattle\nWashington\nUnited States\n29218",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 746,
+  "first_name": "Kathryn",
+  "last_name": "Maldonado",
+  "email": "kathrynmaldonado@gmail.com",
+  "phone_number": "2473084266",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1989-07-29",
+  "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+  "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 742,
+  "first_name": "Kevin",
+  "last_name": "Blackburn",
+  "email": "kevin.blac@gmail.com",
+  "phone_number": "3654328626",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1987-07-06",
+  "home_address": "5183 Cabrera Trail Suite 457\nSeattle\nWashington\nUnited States\n66233",
+  "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 726,
+  "first_name": "Kristin",
+  "last_name": "White",
+  "email": "kri-powe@gmail.com",
+  "phone_number": "6017026518",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1987-05-31",
+  "home_address": "0031 Jeremy Cliff Suite 552\nSeattle\nWashington\nUnited States\n72731",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 749,
+  "first_name": "Melissa",
+  "last_name": "Bailey",
+  "email": "mel.bailey@gmail.com",
+  "phone_number": "3383946795",
+  "relationships": [
+   "roommate"
+  ],
+  "birthday": "1986-08-02",
+  "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+  "work_address": "774 Samuel Cape Suite 202\nSeattle\nWashington\nUnited States\n16844",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 737,
+  "first_name": "Michael",
+  "last_name": "Burch",
+  "email": "mi.burch@gmail.com",
+  "phone_number": "8095050664",
+  "relationships": [
+   "sibling",
+   "brother"
+  ],
+  "birthday": "1989-09-20",
+  "home_address": "07161 Wilkerson Haven Suite 848\nSeattle\nWashington\nUnited States\n49511",
+  "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 750,
+  "first_name": "Nicholas",
+  "last_name": "Weber",
+  "email": "nicholas.weber@gmail.com",
+  "phone_number": "9503658964",
+  "relationships": [
+   "roommate"
+  ],
+  "birthday": "1986-10-19",
+  "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+  "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 732,
+  "first_name": "Sabrina",
+  "last_name": "Brown",
+  "email": "sab-brown@gmail.com",
+  "phone_number": "6639773608",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1954-02-03",
+  "home_address": "77032 Jason Viaduct Suite 482\nSeattle\nWashington\nUnited States\n89837",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 733,
+  "first_name": "Sandra",
+  "last_name": "Martinez",
+  "email": "saritt@gmail.com",
+  "phone_number": "9012831674",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1998-11-17",
+  "home_address": "6990 Nunez Corners Suite 644\nSeattle\nWashington\nUnited States\n88977",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 731,
+  "first_name": "Stacy",
+  "last_name": "Maldonado",
+  "email": "st-maldonado@gmail.com",
+  "phone_number": "9053203579",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1961-11-23",
+  "home_address": "78543 Brian Canyon Suite 452\nSeattle\nWashington\nUnited States\n94342",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 724,
+  "first_name": "Stephen",
+  "last_name": "Mccoy",
+  "email": "stmcco@gmail.com",
+  "phone_number": "5707454150",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1956-03-22",
+  "home_address": "3928 Justin Bridge Suite 149\nSeattle\nWashington\nUnited States\n59253",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 743,
+  "first_name": "Tammy",
+  "last_name": "Weaver",
+  "email": "ta.weav@gmail.com",
+  "phone_number": "2738013302",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1987-10-28",
+  "home_address": "775 Curry Plains Suite 496\nSeattle\nWashington\nUnited States\n19221",
+  "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 729,
+  "first_name": "Travis",
+  "last_name": "Wilson",
+  "email": "tra_wils@gmail.com",
+  "phone_number": "7599900254",
+  "relationships": [
+   "coworker"
+  ],
+  "birthday": "1982-05-18",
+  "home_address": "31434 Mark Trail Suite 731\nSeattle\nWashington\nUnited States\n75765",
+  "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+  "created_at": "2022-11-26T13:04:16"
+ }
+]
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# Get all current venmo friends with pagination.
+venmo_token = venmo_login['access_token']
+all_venmo_friends = []
+page_index = 0
+page_limit = 20
+while True:
+    friends = apis.venmo.search_friends(access_token=venmo_token, page_index=page_index, page_limit=page_limit)
+    if not friends:
+        break
+    all_venmo_friends.extend(friends)
+    if len(friends) < page_limit:
+        break
+    page_index += 1
+print(f"Total venmo friends: {len(all_venmo_friends)}")
+print(all_venmo_friends)
+```
+
+```
+Total venmo friends: 10
+[
+ {
+  "first_name": "Tammy",
+  "last_name": "Weaver",
+  "email": "ta.weav@gmail.com",
+  "registered_at": "2023-01-24T08:24:07",
+  "friends_since": "2023-05-11T07:36:04"
+ },
+ {
+  "first_name": "Cory",
+  "last_name": "Wilson",
+  "email": "corwils@gmail.com",
+  "registered_at": "2022-08-29T18:50:33",
+  "friends_since": "2023-05-02T17:47:10"
+ },
+ {
+  "first_name": "Jennifer",
+  "last_name": "Powell",
+  "email": "jepowell@gmail.com",
+  "registered_at": "2023-01-10T09:03:33",
+  "friends_since": "2023-05-06T19:58:10"
+ },
+ {
+  "first_name": "Kathryn",
+  "last_name": "Maldonado",
+  "email": "kathrynmaldonado@gmail.com",
+  "registered_at": "2022-10-08T10:30:22",
+  "friends_since": "2023-04-29T02:45:18"
+ },
+ {
+  "first_name": "Anthony",
+  "last_name": "Harrison",
+  "email": "an-harrison@gmail.com",
+  "registered_at": "2022-12-23T16:09:19",
+  "friends_since": "2023-05-12T12:42:41"
+ },
+ {
+  "first_name": "Stacy",
+  "last_name": "Maldonado",
+  "email": "st-maldonado@gmail.com",
+  "registered_at": "2022-08-19T16:12:47",
+  "friends_since": "2023-05-03T06:26:43"
+ },
+ {
+  "first_name": "Jamie",
+  "last_name": "Solomon",
+  "email": "jamie-solomon@gmail.com",
+  "registered_at": "2023-01-17T09:00:50",
+  "friends_since": "2023-05-02T03:34:23"
+ },
+ {
+  "first_name": "Travis",
+  "last_name": "Wilson",
+  "email": "tra_wils@gmail.com",
+  "registered_at": "2022-04-28T16:40:41",
+  "friends_since": "2023-05-08T06:24:57"
+ },
+ {
+  "first_name": "Kayla",
+  "last_name": "Burton",
+  "email": "ka_burt@gmail.com",
+  "registered_at": "2022-07-14T13:15:05",
+  "friends_since": "2023-05-06T17:22:29"
+ },
+ {
+  "first_name": "Kristin",
+  "last_name": "White",
+  "email": "kri-powe@gmail.com",
+  "registered_at": "2022-12-17T11:05:29",
+  "friends_since": "2023-05-01T08:25:52"
+ }
+]
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# Retrieve all phone contacts again to get their relationships.
+phone_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwaG9uZSszNjQzNDYzNTcwIiwiZXhwIjoxNjg0NDEyMDk4fQ.ZFQUPodJE26UEOFv1hdB1TZ5KINEyfNCENr0jlIt5vQ'
+all_contacts = []
+page_index = 0
+page_limit = 20
+while True:
+    contacts = apis.phone.search_contacts(access_token=phone, page_index=page_index, page_limit=page_limit)
+    if not contacts:
+        break
+    all_contacts.extend(contacts)
+    if len(contacts) < page_limit:
+        break
+    page_index += 1
+print(f"Total contacts: {len(all_contacts)}")
+# Print contacts with their relationships
+for c in all_contacts:
+    print(c)
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 7, in <module>
+    contacts = apis.phone.search_contacts(access_token=phone, page_index=page_index, page_limit=page_limit)
+                                                       ^^^^^
+NameError: name 'phone' is not defined
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Fix the variable name - use phone_token instead of phone
+all_contacts = []
+page_index = 0
+page_limit = 20
+while True:
+    contacts = apis.phone.search_contacts(access_token=phone_token, page_index=page_index, page_limit=page_limit)
+    if not contacts:
+        break
+    all_contacts.extend(contacts)
+    if len(contacts) < page_limit:
+        break
+    page_index += 1
+print(f"Total contacts: {len(all_contacts)}")
+for c in all_contacts:
+    print(c)
+```
+
+```
+Total contacts: 27
+{
+ "contact_id": 727,
+ "first_name": "Allison",
+ "last_name": "Calhoun",
+ "email": "allison-calhoun@gmail.com",
+ "phone_number": "3767193416",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1960-05-20",
+ "home_address": "7183 Mckinney Stravenue Suite 7\nSeattle\nWashington\nUnited States\n55442",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 748,
+ "first_name": "Anthony",
+ "last_name": "Harrison",
+ "email": "an-harrison@gmail.com",
+ "phone_number": "2466064078",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1990-06-09",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "96967 Fox Loop Suite 397\nSeattle\nWashington\nUnited States\n86832",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 736,
+ "first_name": "Caitlin",
+ "last_name": "Burch",
+ "email": "caiburc@gmail.com",
+ "phone_number": "5896230193",
+ "relationships": [
+  "parent",
+  "mother"
+ ],
+ "birthday": "1962-09-05",
+ "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+ "work_address": "80547 Cynthia Square Suite 842\nSeattle\nWashington\nUnited States\n78964",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 735,
+ "first_name": "Christopher",
+ "last_name": "Burch",
+ "email": "ch-burch@gmail.com",
+ "phone_number": "4275730168",
+ "relationships": [
+  "parent",
+  "father"
+ ],
+ "birthday": "1961-03-17",
+ "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+ "work_address": "5840 Craig Turnpike Suite 634\nSeattle\nWashington\nUnited States\n78487",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 738,
+ "first_name": "Chelsea",
+ "last_name": "Burch",
+ "email": "chelsea-burch@gmail.com",
+ "phone_number": "7763361246",
+ "relationships": [
+  "sibling",
+  "sister"
+ ],
+ "birthday": "1992-03-22",
+ "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+ "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 728,
+ "first_name": "Cody",
+ "last_name": "Smith",
+ "email": "cod.smith@gmail.com",
+ "phone_number": "7826309761",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1993-03-02",
+ "home_address": "8948 Owens Via Suite 628\nSeattle\nWashington\nUnited States\n75367",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 745,
+ "first_name": "Cory",
+ "last_name": "Wilson",
+ "email": "corwils@gmail.com",
+ "phone_number": "5412564532",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1985-07-29",
+ "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+ "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 747,
+ "first_name": "Debra",
+ "last_name": "Ritter",
+ "email": "de_ritt@gmail.com",
+ "phone_number": "3375602296",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1994-11-30",
+ "home_address": "5309 Rios Cliff Suite 287\nSeattle\nWashington\nUnited States\n84348",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 739,
+ "first_name": "Denise",
+ "last_name": "Maldonado",
+ "email": "deniseburch@gmail.com",
+ "phone_number": "6279200672",
+ "relationships": [
+  "sibling",
+  "sister"
+ ],
+ "birthday": "1994-08-14",
+ "home_address": "727 Cannon Falls Suite 933\nSeattle\nWashington\nUnited States\n74687",
+ "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 730,
+ "first_name": "Grant",
+ "last_name": "Martinez",
+ "email": "gra-martinez@gmail.com",
+ "phone_number": "7056722825",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1990-04-24",
+ "home_address": "897 Carter Spurs Suite 636\nSeattle\nWashington\nUnited States\n29431",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 725,
+ "first_name": "Jamie",
+ "last_name": "Solomon",
+ "email": "jamie-solomon@gmail.com",
+ "phone_number": "8456546003",
+ "relationships": [
+  "manager",
+  "coworker"
+ ],
+ "birthday": "1960-09-19",
+ "home_address": "2317 Powell Stream Suite 570\nSeattle\nWashington\nUnited States\n32418",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 741,
+ "first_name": "Jennifer",
+ "last_name": "Powell",
+ "email": "jepowell@gmail.com",
+ "phone_number": "4288705164",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1989-09-21",
+ "home_address": "34495 Michael Burg Suite 805\nSeattle\nWashington\nUnited States\n38887",
+ "work_address": "3850 Timothy Squares Suite 942\nSeattle\nWashington\nUnited States\n54179",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 740,
+ "first_name": "Jordan",
+ "last_name": "Harrison",
+ "email": "jo-harr@gmail.com",
+ "phone_number": "2254213734",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1988-04-06",
+ "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+ "work_address": "8875 Amy Extensions Suite 797\nSeattle\nWashington\nUnited States\n49596",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 734,
+ "first_name": "Kayla",
+ "last_name": "Burton",
+ "email": "ka_burt@gmail.com",
+ "phone_number": "4835398522",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1962-11-10",
+ "home_address": "395 Tamara Place Suite 807\nSeattle\nWashington\nUnited States\n42274",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 744,
+ "first_name": "Katie",
+ "last_name": "Simpson",
+ "email": "kat_simp@gmail.com",
+ "phone_number": "6727300099",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1965-01-15",
+ "home_address": "808 Richard Crescent Suite 750\nSeattle\nWashington\nUnited States\n18427",
+ "work_address": "97051 Keith Spur Suite 381\nSeattle\nWashington\nUnited States\n29218",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 746,
+ "first_name": "Kathryn",
+ "last_name": "Maldonado",
+ "email": "kathrynmaldonado@gmail.com",
+ "phone_number": "2473084266",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1989-07-29",
+ "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+ "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 742,
+ "first_name": "Kevin",
+ "last_name": "Blackburn",
+ "email": "kevin.blac@gmail.com",
+ "phone_number": "3654328626",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1987-07-06",
+ "home_address": "5183 Cabrera Trail Suite 457\nSeattle\nWashington\nUnited States\n66233",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 726,
+ "first_name": "Kristin",
+ "last_name": "White",
+ "email": "kri-powe@gmail.com",
+ "phone_number": "6017026518",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1987-05-31",
+ "home_address": "0031 Jeremy Cliff Suite 552\nSeattle\nWashington\nUnited States\n72731",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 749,
+ "first_name": "Melissa",
+ "last_name": "Bailey",
+ "email": "mel.bailey@gmail.com",
+ "phone_number": "3383946795",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1986-08-02",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "774 Samuel Cape Suite 202\nSeattle\nWashington\nUnited States\n16844",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 737,
+ "first_name": "Michael",
+ "last_name": "Burch",
+ "email": "mi.burch@gmail.com",
+ "phone_number": "8095050664",
+ "relationships": [
+  "sibling",
+  "brother"
+ ],
+ "birthday": "1989-09-20",
+ "home_address": "07161 Wilkerson Haven Suite 848\nSeattle\nWashington\nUnited States\n49511",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 750,
+ "first_name": "Nicholas",
+ "last_name": "Weber",
+ "email": "nicholas.weber@gmail.com",
+ "phone_number": "9503658964",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1986-10-19",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 732,
+ "first_name": "Sabrina",
+ "last_name": "Brown",
+ "email": "sab-brown@gmail.com",
+ "phone_number": "6639773608",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1954-02-03",
+ "home_address": "77032 Jason Viaduct Suite 482\nSeattle\nWashington\nUnited States\n89837",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 733,
+ "first_name": "Sandra",
+ "last_name": "Martinez",
+ "email": "saritt@gmail.com",
+ "phone_number": "9012831674",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1998-11-17",
+ "home_address": "6990 Nunez Corners Suite 644\nSeattle\nWashington\nUnited States\n88977",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 731,
+ "first_name": "Stacy",
+ "last_name": "Maldonado",
+ "email": "st-maldonado@gmail.com",
+ "phone_number": "9053203579",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1961-11-23",
+ "home_address": "78543 Brian Canyon Suite 452\nSeattle\nWashington\nUnited States\n94342",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 724,
+ "first_name": "Stephen",
+ "last_name": "Mccoy",
+ "email": "stmcco@gmail.com",
+ "phone_number": "5707454150",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1956-03-22",
+ "home_address": "3928 Justin Bridge Suite 149\nSeattle\nWashington\nUnited States\n59253",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 743,
+ "first_name": "Tammy",
+ "last_name": "Weaver",
+ "email": "ta.weav@gmail.com",
+ "phone_number": "2738013302",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1987-10-28",
+ "home_address": "775 Curry Plains Suite 496\nSeattle\nWashington\nUnited States\n19221",
+ "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 729,
+ "first_name": "Travis",
+ "last_name": "Wilson",
+ "email": "tra_wils@gmail.com",
+ "phone_number": "7599900254",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1982-05-18",
+ "home_address": "31434 Mark Trail Suite 731\nSeattle\nWashington\nUnited States\n75765",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# Print the remaining contacts (we only saw up to contact_id 731)
+for c in all_contacts:
+    if c['contact_id'] > 731:
+        print(c)
+```
+
+```
+{
+ "contact_id": 748,
+ "first_name": "Anthony",
+ "last_name": "Harrison",
+ "email": "an-harrison@gmail.com",
+ "phone_number": "2466064078",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1990-06-09",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "96967 Fox Loop Suite 397\nSeattle\nWashington\nUnited States\n86832",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 736,
+ "first_name": "Caitlin",
+ "last_name": "Burch",
+ "email": "caiburc@gmail.com",
+ "phone_number": "5896230193",
+ "relationships": [
+  "parent",
+  "mother"
+ ],
+ "birthday": "1962-09-05",
+ "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+ "work_address": "80547 Cynthia Square Suite 842\nSeattle\nWashington\nUnited States\n78964",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 735,
+ "first_name": "Christopher",
+ "last_name": "Burch",
+ "email": "ch-burch@gmail.com",
+ "phone_number": "4275730168",
+ "relationships": [
+  "parent",
+  "father"
+ ],
+ "birthday": "1961-03-17",
+ "home_address": "4380 Sosa Orchard Suite 194\nSeattle\nWashington\nUnited States\n73131",
+ "work_address": "5840 Craig Turnpike Suite 634\nSeattle\nWashington\nUnited States\n78487",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 738,
+ "first_name": "Chelsea",
+ "last_name": "Burch",
+ "email": "chelsea-burch@gmail.com",
+ "phone_number": "7763361246",
+ "relationships": [
+  "sibling",
+  "sister"
+ ],
+ "birthday": "1992-03-22",
+ "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+ "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 745,
+ "first_name": "Cory",
+ "last_name": "Wilson",
+ "email": "corwils@gmail.com",
+ "phone_number": "5412564532",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1985-07-29",
+ "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+ "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 747,
+ "first_name": "Debra",
+ "last_name": "Ritter",
+ "email": "de_ritt@gmail.com",
+ "phone_number": "3375602296",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1994-11-30",
+ "home_address": "5309 Rios Cliff Suite 287\nSeattle\nWashington\nUnited States\n84348",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 739,
+ "first_name": "Denise",
+ "last_name": "Maldonado",
+ "email": "deniseburch@gmail.com",
+ "phone_number": "6279200672",
+ "relationships": [
+  "sibling",
+  "sister"
+ ],
+ "birthday": "1994-08-14",
+ "home_address": "727 Cannon Falls Suite 933\nSeattle\nWashington\nUnited States\n74687",
+ "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 741,
+ "first_name": "Jennifer",
+ "last_name": "Powell",
+ "email": "jepowell@gmail.com",
+ "phone_number": "4288705164",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1989-09-21",
+ "home_address": "34495 Michael Burg Suite 805\nSeattle\nWashington\nUnited States\n38887",
+ "work_address": "3850 Timothy Squares Suite 942\nSeattle\nWashington\nUnited States\n54179",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 740,
+ "first_name": "Jordan",
+ "last_name": "Harrison",
+ "email": "jo-harr@gmail.com",
+ "phone_number": "2254213734",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1988-04-06",
+ "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+ "work_address": "8875 Amy Extensions Suite 797\nSeattle\nWashington\nUnited States\n49596",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 734,
+ "first_name": "Kayla",
+ "last_name": "Burton",
+ "email": "ka_burt@gmail.com",
+ "phone_number": "4835398522",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1962-11-10",
+ "home_address": "395 Tamara Place Suite 807\nSeattle\nWashington\nUnited States\n42274",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 744,
+ "first_name": "Katie",
+ "last_name": "Simpson",
+ "email": "kat_simp@gmail.com",
+ "phone_number": "6727300099",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1965-01-15",
+ "home_address": "808 Richard Crescent Suite 750\nSeattle\nWashington\nUnited States\n18427",
+ "work_address": "97051 Keith Spur Suite 381\nSeattle\nWashington\nUnited States\n29218",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 746,
+ "first_name": "Kathryn",
+ "last_name": "Maldonado",
+ "email": "kathrynmaldonado@gmail.com",
+ "phone_number": "2473084266",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1989-07-29",
+ "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+ "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 742,
+ "first_name": "Kevin",
+ "last_name": "Blackburn",
+ "email": "kevin.blac@gmail.com",
+ "phone_number": "3654328626",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1987-07-06",
+ "home_address": "5183 Cabrera Trail Suite 457\nSeattle\nWashington\nUnited States\n66233",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 749,
+ "first_name": "Melissa",
+ "last_name": "Bailey",
+ "email": "mel.bailey@gmail.com",
+ "phone_number": "3383946795",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1986-08-02",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "774 Samuel Cape Suite 202\nSeattle\nWashington\nUnited States\n16844",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 737,
+ "first_name": "Michael",
+ "last_name": "Burch",
+ "email": "mi.burch@gmail.com",
+ "phone_number": "8095050664",
+ "relationships": [
+  "sibling",
+  "brother"
+ ],
+ "birthday": "1989-09-20",
+ "home_address": "07161 Wilkerson Haven Suite 848\nSeattle\nWashington\nUnited States\n49511",
+ "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 750,
+ "first_name": "Nicholas",
+ "last_name": "Weber",
+ "email": "nicholas.weber@gmail.com",
+ "phone_number": "9503658964",
+ "relationships": [
+  "roommate"
+ ],
+ "birthday": "1986-10-19",
+ "home_address": "247 Salinas Pines Suite 668\nSeattle\nWashington\nUnited States\n11799",
+ "work_address": "716 White Drive Suite 52\nSeattle\nWashington\nUnited States\n47529",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 732,
+ "first_name": "Sabrina",
+ "last_name": "Brown",
+ "email": "sab-brown@gmail.com",
+ "phone_number": "6639773608",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1954-02-03",
+ "home_address": "77032 Jason Viaduct Suite 482\nSeattle\nWashington\nUnited States\n89837",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 733,
+ "first_name": "Sandra",
+ "last_name": "Martinez",
+ "email": "saritt@gmail.com",
+ "phone_number": "9012831674",
+ "relationships": [
+  "coworker"
+ ],
+ "birthday": "1998-11-17",
+ "home_address": "6990 Nunez Corners Suite 644\nSeattle\nWashington\nUnited States\n88977",
+ "work_address": "7844 Joshua Shore Suite 460\nSeattle\nWashington\nUnited States\n46946",
+ "created_at": "2022-11-26T13:04:16"
+}
+{
+ "contact_id": 743,
+ "first_name": "Tammy",
+ "last_name": "Weaver",
+ "email": "ta.weav@gmail.com",
+ "phone_number": "2738013302",
+ "relationships": [
+  "friend"
+ ],
+ "birthday": "1987-10-28",
+ "home_address": "775 Curry Plains Suite 496\nSeattle\nWashington\nUnited States\n19221",
+ "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+ "created_at": "2022-11-26T13:04:16"
+}
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# Let's get all phone contacts with relationship "friend" using the relationship filter
+phone_friends = []
+page_index = 0
+while True:
+    resp = apis.phone.search_contacts(access_token=phone_token, relationship='friend', page_index=page_index, page_limit=20)
+    print(resp)
+    # We'll parse in next step
+    break
+```
+
+```
+[
+ {
+  "contact_id": 745,
+  "first_name": "Cory",
+  "last_name": "Wilson",
+  "email": "corwils@gmail.com",
+  "phone_number": "5412564532",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1985-07-29",
+  "home_address": "46567 Matthew Burg Suite 702\nSeattle\nWashington\nUnited States\n15473",
+  "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 747,
+  "first_name": "Debra",
+  "last_name": "Ritter",
+  "email": "de_ritt@gmail.com",
+  "phone_number": "3375602296",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1994-11-30",
+  "home_address": "5309 Rios Cliff Suite 287\nSeattle\nWashington\nUnited States\n84348",
+  "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 741,
+  "first_name": "Jennifer",
+  "last_name": "Powell",
+  "email": "jepowell@gmail.com",
+  "phone_number": "4288705164",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1989-09-21",
+  "home_address": "34495 Michael Burg Suite 805\nSeattle\nWashington\nUnited States\n38887",
+  "work_address": "3850 Timothy Squares Suite 942\nSeattle\nWashington\nUnited States\n54179",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 740,
+  "first_name": "Jordan",
+  "last_name": "Harrison",
+  "email": "jo-harr@gmail.com",
+  "phone_number": "2254213734",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1988-04-06",
+  "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+  "work_address": "8875 Amy Extensions Suite 797\nSeattle\nWashington\nUnited States\n49596",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 744,
+  "first_name": "Katie",
+  "last_name": "Simpson",
+  "email": "kat_simp@gmail.com",
+  "phone_number": "6727300099",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1965-01-15",
+  "home_address": "808 Richard Crescent Suite 750\nSeattle\nWashington\nUnited States\n18427",
+  "work_address": "97051 Keith Spur Suite 381\nSeattle\nWashington\nUnited States\n29218",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 746,
+  "first_name": "Kathryn",
+  "last_name": "Maldonado",
+  "email": "kathrynmaldonado@gmail.com",
+  "phone_number": "2473084266",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1989-07-29",
+  "home_address": "4912 Morales Divide Suite 845\nSeattle\nWashington\nUnited States\n24529",
+  "work_address": "265 Carpenter Loop Suite 064\nSeattle\nWashington\nUnited States\n44564",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 742,
+  "first_name": "Kevin",
+  "last_name": "Blackburn",
+  "email": "kevin.blac@gmail.com",
+  "phone_number": "3654328626",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1987-07-06",
+  "home_address": "5183 Cabrera Trail Suite 457\nSeattle\nWashington\nUnited States\n66233",
+  "work_address": "162 Smith Lake Suite 664\nSeattle\nWashington\nUnited States\n18461",
+  "created_at": "2022-11-26T13:04:16"
+ },
+ {
+  "contact_id": 743,
+  "first_name": "Tammy",
+  "last_name": "Weaver",
+  "email": "ta.weav@gmail.com",
+  "phone_number": "2738013302",
+  "relationships": [
+   "friend"
+  ],
+  "birthday": "1987-10-28",
+  "home_address": "775 Curry Plains Suite 496\nSeattle\nWashington\nUnited States\n19221",
+  "work_address": "406 Lindsay Courts Suite 522\nSeattle\nWashington\nUnited States\n26281",
+  "created_at": "2022-11-26T13:04:16"
+ }
+]
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+# Let's check if there are more pages of friends
+resp = apis.phone.search_contacts(access_token=phone_token, relationship='friend', page_index=1, page_limit=20)
+print(resp)
+```
+
+```
+[]
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+# Let's get all venmo friends with their emails
+venmo_friends = []
+page_index = 0
+while True:
+    resp = apis.venmo.search_friends(access_token=venmo_token, page_index=page_index, page_limit=20)
+    print(resp)
+    if len(resp) < 20:
+        break
+    page_index += 1
+```
+
+```
+[
+ {
+  "first_name": "Tammy",
+  "last_name": "Weaver",
+  "email": "ta.weav@gmail.com",
+  "registered_at": "2023-01-24T08:24:07",
+  "friends_since": "2023-05-11T07:36:04"
+ },
+ {
+  "first_name": "Cory",
+  "last_name": "Wilson",
+  "email": "corwils@gmail.com",
+  "registered_at": "2022-08-29T18:50:33",
+  "friends_since": "2023-05-02T17:47:10"
+ },
+ {
+  "first_name": "Jennifer",
+  "last_name": "Powell",
+  "email": "jepowell@gmail.com",
+  "registered_at": "2023-01-10T09:03:33",
+  "friends_since": "2023-05-06T19:58:10"
+ },
+ {
+  "first_name": "Kathryn",
+  "last_name": "Maldonado",
+  "email": "kathrynmaldonado@gmail.com",
+  "registered_at": "2022-10-08T10:30:22",
+  "friends_since": "2023-04-29T02:45:18"
+ },
+ {
+  "first_name": "Anthony",
+  "last_name": "Harrison",
+  "email": "an-harrison@gmail.com",
+  "registered_at": "2022-12-23T16:09:19",
+  "friends_since": "2023-05-12T12:42:41"
+ },
+ {
+  "first_name": "Stacy",
+  "last_name": "Maldonado",
+  "email": "st-maldonado@gmail.com",
+  "registered_at": "2022-08-19T16:12:47",
+  "friends_since": "2023-05-03T06:26:43"
+ },
+ {
+  "first_name": "Jamie",
+  "last_name": "Solomon",
+  "email": "jamie-solomon@gmail.com",
+  "registered_at": "2023-01-17T09:00:50",
+  "friends_since": "2023-05-02T03:34:23"
+ },
+ {
+  "first_name": "Travis",
+  "last_name": "Wilson",
+  "email": "tra_wils@gmail.com",
+  "registered_at": "2022-04-28T16:40:41",
+  "friends_since": "2023-05-08T06:24:57"
+ },
+ {
+  "first_name": "Kayla",
+  "last_name": "Burton",
+  "email": "ka_burt@gmail.com",
+  "registered_at": "2022-07-14T13:15:05",
+  "friends_since": "2023-05-06T17:22:29"
+ },
+ {
+  "first_name": "Kristin",
+  "last_name": "White",
+  "email": "kri-powe@gmail.com",
+  "registered_at": "2022-12-17T11:05:29",
+  "friends_since": "2023-05-01T08:25:52"
+ }
+]
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+# Let me check the venmo API docs for add_friend and remove_friend
+print(apis.api_docs.show_api_doc(app_name='venmo', api_name='add_friend'))
+print(apis.api_docs.show_api_doc(app_name='venmo', api_name='remove_friend'))
+```
+
+```
+{
+ "app_name": "venmo",
+ "api_name": "add_friend",
+ "path": "/friends/{user_email}",
+ "method": "POST",
+ "description": "Add a friend to your friend list.",
+ "parameters": [
+  {
+   "name": "user_email",
+   "type": "string",
+   "required": true,
+   "description": "Email address of the friend to add.",
+   "default": null,
+   "constraints": [
+    "value is email address"
+   ]
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+{
+ "app_name": "venmo",
+ "api_name": "remove_friend",
+ "path": "/friends/{user_email}",
+ "method": "DELETE",
+ "description": "Remove a friend from your friend list.",
+ "parameters": [
+  {
+   "name": "user_email",
+   "type": "string",
+   "required": true,
+   "description": "Email address of the friend to remove.",
+   "default": null,
+   "constraints": [
+    "value is email address"
+   ]
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+# Let's add the phone friends that are not yet on venmo
+# Phone friends to add: Debra Ritter, Jordan Harrison, Katie Simpson, Kevin Blackburn
+phone_friends_to_add = [
+    "de_ritt@gmail.com",   # Debra Ritter
+    "jo-harr@gmail.com",   # Jordan Harrison
+    "kat_simp@gmail.com",  # Katie Simpson
+    "kevin.blac@gmail.com" # Kevin Blackburn
+]
+
+for email in phone_friends_to_add:
+    result = apis.venmo.add_friend(access_token=venmo_token, user_email=email)
+    print(f"Added {email}: {result}")
+```
+
+```
+Added de_ritt@gmail.com: {'message': 'Added to your friend list.'}
+Added jo-harr@gmail.com: {'message': 'Added to your friend list.'}
+Added kat_simp@gmail.com: {'message': 'Added to your friend list.'}
+Added kevin.blac@gmail.com: {'message': 'Added to your friend list.'}
+```
+
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+# Now remove venmo friends that are not phone friends
+# Venmo friends to remove: Anthony Harrison, Stacy Maldonado, Jamie Solomon, Travis Wilson, Kayla Burton, Kristin White
+venmo_friends_to_remove = [
+    "an-harrison@gmail.com",   # Anthony Harrison
+    "st-maldonado@gmail.com",  # Stacy Maldonado
+    "jamie-solomon@gmail.com", # Jamie Solomon
+    "travis.wilson@gmail.com", # Travis Wilson
+    "ka_burt@gmail.com",       # Kayla Burton
+    "kri-powe@gmail.com"       # Kristin White
+]
+
+for email in venmo_friends_to_remove:
+    result = apis.venmo.remove_friend(access_token=venmo_token, user_email=email)
+    print(f"Removed {email}: {result}")
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 13, in <module>
+    result = apis.venmo.remove_friend(access_token=venmo_token, user_email=email)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 409:
+{"message":["The user with email travis.wilson@gmail.com does not exist."]}
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# Let me check the current venmo friends to get the correct emails
+friends = apis.venmo.search_friends(access_token=venmo_token, page_index=0, page_limit=20)
+print(friends)
+```
+
+```
+[
+ {
+  "first_name": "Tammy",
+  "last_name": "Weaver",
+  "email": "ta.weav@gmail.com",
+  "registered_at": "2023-01-24T08:24:07",
+  "friends_since": "2023-05-11T07:36:04"
+ },
+ {
+  "first_name": "Cory",
+  "last_name": "Wilson",
+  "email": "corwils@gmail.com",
+  "registered_at": "2022-08-29T18:50:33",
+  "friends_since": "2023-05-02T17:47:10"
+ },
+ {
+  "first_name": "Jennifer",
+  "last_name": "Powell",
+  "email": "jepowell@gmail.com",
+  "registered_at": "2023-01-10T09:03:33",
+  "friends_since": "2023-05-06T19:58:10"
+ },
+ {
+  "first_name": "Kathryn",
+  "last_name": "Maldonado",
+  "email": "kathrynmaldonado@gmail.com",
+  "registered_at": "2022-10-08T10:30:22",
+  "friends_since": "2023-04-29T02:45:18"
+ },
+ {
+  "first_name": "Travis",
+  "last_name": "Wilson",
+  "email": "tra_wils@gmail.com",
+  "registered_at": "2022-04-28T16:40:41",
+  "friends_since": "2023-05-08T06:24:57"
+ },
+ {
+  "first_name": "Kayla",
+  "last_name": "Burton",
+  "email": "ka_burt@gmail.com",
+  "registered_at": "2022-07-14T13:15:05",
+  "friends_since": "2023-05-06T17:22:29"
+ },
+ {
+  "first_name": "Kristin",
+  "last_name": "White",
+  "email": "kri-powe@gmail.com",
+  "registered_at": "2022-12-17T11:05:29",
+  "friends_since": "2023-05-01T08:25:52"
+ },
+ {
+  "first_name": "Debra",
+  "last_name": "Ritter",
+  "email": "de_ritt@gmail.com",
+  "registered_at": "2022-03-18T12:24:05",
+  "friends_since": "2023-05-18T12:00:00"
+ },
+ {
+  "first_name": "Jordan",
+  "last_name": "Harrison",
+  "email": "jo-harr@gmail.com",
+  "registered_at": "2022-04-10T14:26:20",
+  "friends_since": "2023-05-18T12:00:00"
+ },
+ {
+  "first_name": "Katie",
+  "last_name": "Simpson",
+  "email": "kat_simp@gmail.com",
+  "registered_at": "2022-09-17T13:41:29",
+  "friends_since": "2023-05-18T12:00:00"
+ },
+ {
+  "first_name": "Kevin",
+  "last_name": "Blackburn",
+  "email": "kevin.blac@gmail.com",
+  "registered_at": "2022-05-15T18:48:46",
+  "friends_since": "2023-05-18T12:00:00"
+ }
+]
+```
+
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+# Remove the remaining non-phone friends with correct emails
+venmo_friends_to_remove = [
+    "tra_wils@gmail.com",   # Travis Wilson
+    "ka_burt@gmail.com",    # Kayla Burton
+    "kri-powe@gmail.com"    # Kristin White
+]
+
+for email in venmo_friends_to_remove:
+    result = apis.venmo.remove_friend(access_token=venmo_token, user_email=email)
+    print(f"Removed {email}: {result}")
+```
+
+```
+Removed tra_wils@gmail.com: {'message': 'Friend removed.'}
+Removed ka_burt@gmail.com: {'message': 'Friend removed.'}
+Removed kri-powe@gmail.com: {'message': 'Friend removed.'}
+```
+
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# All phone friends are now on venmo and non-phone friends removed.
+# Verify the final list matches phone friends.
+final_friends = apis.venmo.search_friends(access_token=venmo_token, page_index=0, page_limit=20)
+print("Final venmo friends:", [f"{f['first_name']} {f['last_name']}" for f in final_friends])
+
+# Complete the task
+apis.supervisor.complete_task(answer="Venmo friends reset to match phone friends.")
+```
+
+```
+Final venmo friends: ['Tammy Weaver', 'Cory Wilson', 'Jennifer Powell', 'Kathryn Maldonado', 'Debra Ritter', 'Jordan Harrison', 'Katie Simpson', 'Kevin Blackburn']
+```
+

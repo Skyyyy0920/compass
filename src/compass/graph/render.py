@@ -152,6 +152,14 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
     if other:
         L += ["", "FACTS"] + [f"- {f['text']}" for f in other[-15:]]
 
+    generic = all(st["status"] == "unknown" for st in g.steps.values()) and g.steps
+    if generic and level <= 2:
+        # generic adapter: no outcome or schema; keep the raw record of what was executed
+        recent = sorted(g.steps, key=lambda s: int(s[1:]))[-12:]
+        L += ["", "ACTIONS ALREADY EXECUTED (most recent; tool -> observation excerpt)"]
+        for s in recent:
+            st = g.steps[s]
+            L.append(f"- {s} {','.join(st['api_names'][:3]) or 'code'} -> {_short(st['observation'], 100)}")
     warn = [g.steps[s] for s in g.steps if g.steps[s]["status"] == "blocked" and not g.steps[s].get("call_forms")]
     if warn and level <= 2:
         L += ["", "WARNINGS (non-API errors seen; avoid repeating)"]

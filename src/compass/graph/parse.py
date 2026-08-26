@@ -281,7 +281,39 @@ def error_line(observation: str) -> str:
     return lines[-1][:160] if lines else ""
 
 
-def parse_step(turn: dict) -> dict:
+ADAPTERS = ("generic", "schema", "codeact")
+
+
+def parse_step(turn: dict, adapter: str = "codeact") -> dict:
+    """Normalize one action--observation pair into a canonical event.
+
+    Adapter tiers (paper Sec. 'Trace adapters'):
+      generic  action/observation verbatim, tool names from the action text, evidence id;
+               no outcome, no argument shapes, no interface knowledge, no program state
+      schema   + environment error contract (outcome), argument shapes of tool calls,
+               returned/printed objects, interface knowledge from tool documentation
+      codeact  + program state: AST def/use dataflow and literal/derived values
+    """
+    step = _parse_codeact(turn)
+    if adapter == "codeact":
+        return step
+    if adapter not in ADAPTERS:
+        raise ValueError(f"unknown adapter {adapter}")
+    # schema tier: forget program state
+    step["defs"], step["uses"], step["ast_ok"] = [], [], True
+    if adapter == "schema":
+        return step
+    # generic tier: forget everything the environment's schema/error contract gave us
+    step["status"] = "unknown"
+    step["error_class"] = None
+    step["error_line"] = None
+    step["call_forms"] = []
+    step["api_specs"], step["api_lists"], step["api_list_truncated"] = [], {}, False
+    step["printed"] = {}
+    return step
+
+
+def _parse_codeact(turn: dict) -> dict:
     code = turn.get("code") or ""
     obs = turn.get("observation") or ""
     defs, uses, ok = defs_uses(code)

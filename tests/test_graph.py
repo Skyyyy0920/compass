@@ -71,11 +71,27 @@ def test_status_grounding():
     assert g.log[-1]["drop"] == "intent_parent_missing"
 
 
-def test_fact_dedup():
+def test_fact_dedup_and_citation():
     g = Graph("goal")
-    assert g.add_fact("Friends are contacts with relationship 'friend'.", "constraint") is not None
-    assert g.add_fact("friends are contacts with relationship friend", "constraint") is None
+    g.add_turn({"step": 1, "code": "print(1)", "observation": "1"})
+    assert g.add_fact("Friends are contacts with relationship 'friend'.", "constraint") is None   # no citation
+    assert g.add_fact("Friends are contacts with relationship 'friend'.", "constraint", ["s1"]) is not None
+    assert g.add_fact("friends are contacts with relationship friend", "constraint", ["s1"]) is None  # duplicate
     assert len(g.facts) == 1
+
+
+def test_adapter_tiers():
+    turn = {"step": 1, "code": "tok = apis.venmo.login(username=u, password=p)\nprint(tok)",
+            "observation": "Execution failed. Traceback:\n  x\nNameError: name 'u' is not defined"}
+    g = Graph("goal")
+    s = g.add_turn(turn, "generic")
+    assert s["status"] == "unknown" and s["call_forms"] == [] and s["defs"] == []
+    g2 = Graph("goal")
+    s2 = g2.add_turn(turn, "schema")
+    assert s2["status"] == "blocked" and s2["call_forms"] == ["venmo.login(username, password)"] and s2["defs"] == []
+    g3 = Graph("goal")
+    s3 = g3.add_turn(turn, "codeact")
+    assert s3["defs"] == ["tok"] and set(s3["uses"]) == {"u", "p"}
 
 
 def test_render_within_budget():

@@ -33,12 +33,14 @@ class CompassCompressor(Compressor):
     name = "compass_v2"
 
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
-                 use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True):
+                 use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
+                 adapter: str = "codeact"):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * 0.4))
         self.use_llm = use_llm and llm is not None
         self.hide_sections = tuple(hide_sections)
         self.det_needs = det_needs
+        self.adapter = adapter
         self._graphs: dict[str, dict] = {}
         self.last_extra: dict | None = None
 
@@ -55,7 +57,7 @@ class CompassCompressor(Compressor):
         for t in clip_turns(turns):
             if f"s{t['step']}" in g.steps:
                 continue
-            s = g.add_turn(t)
+            s = g.add_turn(t, self.adapter)
             new_ids.append(s["id"])
         stats: dict = {}
         if self.use_llm and new_ids:
@@ -115,6 +117,10 @@ VARIANTS = {
     "compass_nodone": {"hide_sections": ("CALL FORMS THAT", "API DOCS ALREADY READ", "RESULTS ALREADY")},  # A5 no history
     "compass_noplan": {"hide_sections": ("PLAN (", "NEXT", "CONSTRAINTS", "FACTS")},        # A2 no intent layer
     "compass_llmneeds": {"det_needs": False},                             # A4b LLM-only needs
+    # adapter tiers (paper: Generic <= Schema-aware <= Domain-specific); compass_v2 == codeact
+    "compass_generic": {"adapter": "generic"},
+    "compass_schema": {"adapter": "schema"},
+    "compass_codeaware": {},
 }
 
 
