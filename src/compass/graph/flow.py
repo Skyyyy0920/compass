@@ -222,22 +222,44 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
             L.append(line)
             for kind, payload in getattr(it, "carry", [])[:cap]:
                 L.append(f"{ind}    {TAG[kind]}: {_excerpt(payload, chars + (60 if kind == 'api' else 0))}")
-    if executed_all and level <= 2:
-        L += ["", "ALREADY EXECUTED (do not re-login or redo): " + ", ".join(list(dict.fromkeys(executed_all))[-25:])]
+    # ---- global evidence layer (kept: it is where the measured gains come from); items a node
+    # already carries are not repeated here
+    carried = {p for it in g.intents.values() for _, p in getattr(it, "carry", [])}
+    carried_short = {p[:60] for p in carried}
+    forms = [f for f in list(g.calls_ok) if f[:60] not in carried_short]
+    if forms and level <= 2:
+        L += ["", "CALL SHAPES THAT WORKED (argument names; reuse, do not re-login)"] + [f"- {f}" for f in forms[-(24 if level <= 1 else 12):]]
     if g.calls_failed and level <= 2:
         L += ["", "CALL SHAPES THAT FAILED"] + [f"- {f} -> {_excerpt(e, 80)}" for f, e in list(g.calls_failed.items())[-4:]]
-    carried = {p for it in g.intents.values() for _, p in getattr(it, "carry", [])}
+    specs = [i for i in g.infos.values() if i.kind == "api_spec" and (i.value_hint or "")[:60] not in carried_short]
+    if specs and level <= 2:
+        L += ["", "API SIGNATURES READ (exact; do not re-read docs)"] + [
+            f"- {_excerpt(i.value_hint, 200 if level <= 1 else 120)}" for i in specs[-(20 if level <= 1 else 8):]]
+    lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
+    if lists and level <= 1:
+        L += ["", "APPS EXPLORED: " + "; ".join(
+            f"{i.name} ({len((i.value_hint or '').split(','))} apis{', listing truncated' if 'TRUNCATED' in (i.value_hint or '') else ''})"
+            for i in lists[-6:])]
+    carried_vars = {p.split(" =", 1)[0].strip() for it in g.intents.values() for k, p in getattr(it, "carry", []) if k == "var"}
+    live = [i for i in g.infos.values() if i.kind == "runtime_reference" and not i.superseded and i.name not in carried_vars]
+    if live and level <= 2:
+        L += ["", "OTHER LIVE VARIABLES (still bound in the Python session)"]
+        for i in live[-(30 if level <= 1 else 12):]:
+            src = f" = {i.source_api}(...)" if i.source_api else ""
+            hint = f" -> {_excerpt(i.value_hint, 100 if level <= 1 else 50)}" if (i.value_hint and level <= 1) else ""
+            L.append(f"- {i.name}{src}{hint}")
+    results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
+    if results and level <= 1:
+        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored)"] + [
+            f"- {_excerpt(i.name, 70)} -> {_excerpt(i.value_hint, 120)}" for i in results[-12:]]
+    if executed_all and level <= 2:
+        L += ["", "ALREADY EXECUTED: " + ", ".join(list(dict.fromkeys(executed_all))[-25:])]
     loose = [f for f in g.facts if f["kind"] == "data" and f["text"] not in carried]
     if loose and level <= 1:
         L += ["", "OTHER DATA EXTRACTED"] + [f"- {_excerpt(f['text'], 160)}" for f in loose[-8:]]
     other = [f for f in g.facts if f["kind"] in ("fact", "failure")]
     if other and level <= 1:
         L += ["", "NOTES"] + [f"- {_excerpt(f['text'], 140)}" for f in other[-5:]]
-    lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
-    if lists and level <= 1:
-        L += ["", "APPS EXPLORED: " + "; ".join(
-            f"{i.name} ({len((i.value_hint or '').split(','))} apis{', listing truncated' if 'TRUNCATED' in (i.value_hint or '') else ''})"
-            for i in lists[-6:])]
     front = g.frontier()
     if front:
         L += ["", "NEXT: " + "; ".join(f"{it.id} {_excerpt(it.description, 80)}" for it in front[:4])]
