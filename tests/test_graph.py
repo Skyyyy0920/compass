@@ -36,7 +36,8 @@ def test_extract_code_strips_model_markup():
     from compass.harness.episode import extract_code
     assert extract_code("\n\n<｜DSML｜python>\nprint(1)\n</｜DSML｜python>") == "print(1)"
     assert extract_code("```python\nx = 1\n```") == "x = 1"
-    assert extract_code("<think>hmm</think>\nprint(2)") == "print(2)"
+    # ACON semantics: think *tags* are removed, their content is kept
+    assert extract_code("<think>hmm</think>\nprint(2)") == "hmm\nprint(2)"
 
 
 def test_error_class():
