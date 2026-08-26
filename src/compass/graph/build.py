@@ -307,7 +307,7 @@ class Graph:
             if re.sub(r"\W+", " ", f["text"].lower()).strip() == norm:
                 return None
         self._n_fact += 1
-        f = {"id": f"f{self._n_fact}", "kind": kind if kind in ("fact", "constraint", "failure") else "fact",
+        f = {"id": f"f{self._n_fact}", "kind": kind if kind in ("fact", "constraint", "failure", "data") else "fact",
              "text": text.strip()[:300], "steps": [s for s in (steps or []) if s in self.steps]}
         self.facts.append(f)
         return f
@@ -421,6 +421,10 @@ def _value_hint(step: dict, name: str) -> str | None:
         return None
     p = step["printed"]
     if (name.endswith("token") or name.endswith("login")) and p.get("tokens"):
+        j = p.get("json")
+        if isinstance(j, dict) and "access_token" in j:
+            # a login *response*, not the token itself: say so, or the agent passes the dict as a token
+            return "{access_token: " + p["tokens"][0][:10] + "..., token_type} (dict; use " + name + "['access_token'])"
         return "access_token " + p["tokens"][0][:10] + "..."
     printed = re.findall(r"print\(([^)]*)\)", code)
     hits = [pp for pp in printed if re.search(rf"\b{re.escape(name)}\b", pp)]

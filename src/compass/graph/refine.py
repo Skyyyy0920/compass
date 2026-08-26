@@ -42,7 +42,7 @@ Return JSON:
      "note": "one short line, e.g. why blocked or what remains" }}
  ],
  "realizes": {{"s12": "c2"}},
- "facts": [ {{"kind": "constraint|fact|failure", "text": "...", "steps": ["s3"]}} ],
+ "facts": [ {{"kind": "constraint|fact|failure|data", "text": "...", "steps": ["s3"]}} ],
  "remove_facts": ["f2"]
 }}
 Rules:
@@ -58,6 +58,11 @@ Rules:
   count as 'friends', pagination limits, note strings, amounts), and failures worth not repeating. Keep each <= 200 chars.
   EVERY fact must cite the step ids it comes from in "steps" (a fact about the goal cites the first step); facts
   without a citation are discarded.
+- kind "data": CONCRETE VALUES read from observations that the remaining sub-goals will need and that are not
+  simply a variable still bound in the session -- e.g. "Brenda (9312015677) asked: add 'Song A' by X, remove
+  'Song B'", "playlist 'Roadtrip' id=654 has songs [12, 40, 88]", "invoice total 128.00, split 4 ways = 32.00".
+  Write each as one dense line (<= 200 chars) with the exact ids/names/amounts; cite the steps. These survive
+  compaction verbatim, so include everything the plan's open items depend on."""
 - Do not restate steps as sub-goals; sub-goals are outcomes.
 - NEVER conclude that an API or capability does not exist unless a COMPLETE, untruncated API listing for that app
   was observed. A failed guess of an API name (404 / "No API named ...") only proves that name is wrong.

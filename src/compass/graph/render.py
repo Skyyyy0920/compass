@@ -163,7 +163,12 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
         for i in results[-keep:]:
             L.append(f"- {_short(i.name, 90)} -> {_short(i.value_hint, chars)}")
 
-    other = [f for f in g.facts if f["kind"] != "constraint"]
+    data = [f for f in g.facts if f["kind"] == "data"]
+    if data:
+        # extracted content the remaining work depends on: kept at every fold level
+        L += ["", "DATA EXTRACTED SO FAR (verbatim from observations; cite step ids)"]
+        L += [f"- {f['text']} [{','.join(f['steps'][:2])}]" for f in data[-20:]]
+    other = [f for f in g.facts if f["kind"] not in ("constraint", "data")]
     if other:
         L += ["", "FACTS"] + [f"- {f['text']}" for f in other[-15:]]
 
