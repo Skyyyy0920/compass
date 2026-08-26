@@ -1040,3 +1040,110 @@ print(apis.api_docs.show_api_descriptions(app_name='file_system'))
 ]
 ```
 
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+# List directories in meetings to see the empty date directories
+dirs = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/', entry_type='directories', recursive=False)
+print(dirs)
+```
+
+```
+[
+ "/home/catherine/documents/work/meetings/2023-apr-05/",
+ "/home/catherine/documents/work/meetings/2023-apr-12/",
+ "/home/catherine/documents/work/meetings/2023-apr-19/",
+ "/home/catherine/documents/work/meetings/2023-apr-26/",
+ "/home/catherine/documents/work/meetings/2023-mar-08/",
+ "/home/catherine/documents/work/meetings/2023-mar-15/",
+ "/home/catherine/documents/work/meetings/2023-mar-22/",
+ "/home/catherine/documents/work/meetings/2023-mar-29/",
+ "/home/catherine/documents/work/meetings/2023-may-03/",
+ "/home/catherine/documents/work/meetings/2023-may-10/",
+ "/home/catherine/documents/work/meetings/slides/",
+ "/home/catherine/documents/work/meetings/video_recording/"
+]
+```
+
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# Get delete_directory API documentation
+print(apis.api_docs.show_api_doc(app_name='file_system', api_name='delete_directory'))
+```
+
+```
+{
+ "app_name": "file_system",
+ "api_name": "delete_directory",
+ "path": "/directory",
+ "method": "DELETE",
+ "description": "Delete a directory with its sub-directories and files.",
+ "parameters": [
+  {
+   "name": "directory_path",
+   "type": "string",
+   "required": true,
+   "description": "Path of the directory. Path can be absolute, starting with '/', or relative to the user's home directory, starting with '~/'.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from file_system app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 24
+----------------------------------------------------------------------------
+```python
+# The reorganization is already correct (slides/2023-mar-08.ppt, video_recording/2023-mar-08.mp4).
+# Now clean up the empty date directories that were left over from the original structure.
+date_dirs = [
+    '~/documents/work/meetings/2023-apr-05/',
+    '~/documents/work/meetings/2023-apr-12/',
+    '~/documents/work/meetings/2023-apr-19/',
+    '~/documents/work/meetings/2023-apr-26/',
+    '~/documents/work/meetings/2023-mar-08/',
+    '~/documents/work/meetings/2023-mar-15/',
+    '~/documents/work/meetings/2023-mar-22/',
+    '~/documents/work/meetings/2023-mar-29/',
+    '~/documents/work/meetings/2023-may-03/',
+    '~/documents/work/meetings/2023-may-10/'
+]
+
+for dir_path in date_dirs:
+    result = apis.file_system.delete_directory(directory_path=dir_path, access_token=access_token)
+    print(f"Deleted {dir_path}: {result}")
+```
+
+```
+Deleted ~/documents/work/meetings/2023-apr-05/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-apr-12/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-apr-19/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-apr-26/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-mar-08/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-mar-15/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-mar-22/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-mar-29/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-may-03/: {'message': 'Directory deleted.'}
+Deleted ~/documents/work/meetings/2023-may-10/: {'message': 'Directory deleted.'}
+```
+

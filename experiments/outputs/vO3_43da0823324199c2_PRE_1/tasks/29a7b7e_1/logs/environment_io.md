@@ -975,3 +975,88 @@ print(apis.api_docs.show_api_doc(app_name='file_system', api_name='move_file'))
 }
 ```
 
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+# Check the show_directory API documentation to understand path format
+print(apis.api_docs.show_api_doc(app_name='file_system', api_name='show_directory'))
+```
+
+```
+{
+ "app_name": "file_system",
+ "api_name": "show_directory",
+ "path": "/directory",
+ "method": "GET",
+ "description": "Show a list of files and/or sub-directories, optionally recursively, in a directory.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from file_system app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "directory_path",
+   "type": "string",
+   "required": false,
+   "description": "Path of the directory. Path can be absolute, starting with '/', or relative to the user's home directory, starting with '~/'.",
+   "default": "/",
+   "constraints": [
+    "length >= 1"
+   ]
+  },
+  {
+   "name": "substring",
+   "type": "string",
+   "required": false,
+   "description": "If passed, only files and sub-directories containing the given substring (ignoring case) will be shown.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "entry_type",
+   "type": "string",
+   "required": false,
+   "description": "Whether to show all files and sub-directories, only files, or only sub-directories.",
+   "default": "all",
+   "constraints": [
+    "value in ['all', 'files', 'directories']"
+   ]
+  },
+  {
+   "name": "recursive",
+   "type": "boolean",
+   "required": false,
+   "description": "Whether to show files recursively.",
+   "default": true,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   "string"
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+# List the slides directory to see its contents
+slides_dir = apis.file_system.show_directory(access_token=access_token, directory_path='~/documents/work/meetings/slides/', recursive=True)
+print(slides_dir)
+```
+
+```
+[]
+```
+

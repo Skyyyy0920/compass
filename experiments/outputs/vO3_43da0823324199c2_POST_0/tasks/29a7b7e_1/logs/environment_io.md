@@ -1066,3 +1066,82 @@ print(apis.api_docs.show_api_descriptions(app_name='file_system'))
 ]
 ```
 
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# Check the delete_directory API specification
+print(apis.api_docs.show_api_doc(app_name='file_system', api_name='delete_directory'))
+```
+
+```
+{
+ "app_name": "file_system",
+ "api_name": "delete_directory",
+ "path": "/directory",
+ "method": "DELETE",
+ "description": "Delete a directory with its sub-directories and files.",
+ "parameters": [
+  {
+   "name": "directory_path",
+   "type": "string",
+   "required": true,
+   "description": "Path of the directory. Path can be absolute, starting with '/', or relative to the user's home directory, starting with '~/'.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from file_system app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 24
+----------------------------------------------------------------------------
+```python
+# Delete the empty date directories to complete the reorganization
+date_dirs = [
+    '~/documents/work/meetings/2023-mar-08/',
+    '~/documents/work/meetings/2023-mar-15/',
+    '~/documents/work/meetings/2023-mar-22/',
+    '~/documents/work/meetings/2023-mar-29/',
+    '~/documents/work/meetings/2023-apr-05/',
+    '~/documents/work/meetings/2023-apr-12/',
+    '~/documents/work/meetings/2023-apr-19/',
+    '~/documents/work/meetings/2023-apr-26/',
+    '~/documents/work/meetings/2023-may-03/',
+    '~/documents/work/meetings/2023-may-10/'
+]
+for d in date_dirs:
+    result = apis.file_system.delete_directory(directory_path=d, access_token=access_token)
+    print(d, result)
+```
+
+```
+~/documents/work/meetings/2023-mar-08/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-mar-15/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-mar-22/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-mar-29/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-apr-05/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-apr-12/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-apr-19/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-apr-26/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-may-03/ {'message': 'Directory deleted.'}
+~/documents/work/meetings/2023-may-10/ {'message': 'Directory deleted.'}
+```
+
