@@ -1,0 +1,28 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "supervisor", "api_name": "show_account_passwords"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "get", "url": "/supervisor/active_task", "data": {}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "ce-maldonado@gmail.com", "password": "nT]NcWO"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI", "query": "liked"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/simple_note/notes/3085", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "login"}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "ce-maldonado@gmail.com", "password": "!Y@Bv&B"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "show_song"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "show_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "update_note"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZStjZS1tYWxkb25hZG9AZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.mCaePHNWoMw31GvUFiIHDyL4IhoeSvC4hIHMfPH8aRI"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lost in the Embrace of Night"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Lonely Skies"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Caught in a Web of Lies"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "On the Border of Reality"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "A Love That Never Was"}}

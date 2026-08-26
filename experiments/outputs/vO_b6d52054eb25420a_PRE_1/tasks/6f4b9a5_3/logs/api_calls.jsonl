@@ -1,0 +1,22 @@
+{"method": "get", "url": "/api_docs/app_descriptions", "data": {}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
+{"method": "get", "url": "/supervisor/account_passwords", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "login"}}
+{"method": "post", "url": "/simple_note/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "sTv9L0p"}}
+{"method": "get", "url": "/simple_note/notes", "data": {}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "search_notes"}}
+{"method": "get", "url": "/simple_note/notes", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "spotify"}}
+{"method": "post", "url": "/spotify/auth/token", "data": {"username": "alexwhite@gmail.com", "password": "=ql86Wp"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "spotify", "api_name": "search_songs"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Silver Lining Ava Morgan"}}
+{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "simple_note"}}
+{"method": "get", "url": "/api_docs/api_doc", "data": {"app_name": "simple_note", "api_name": "update_note"}}
+{"method": "get", "url": "/simple_note/notes/3084", "data": {"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaW1wbGVfbm90ZSthbGV4d2hpdGVAZ21haWwuY29tIiwiZXhwIjoxNjg0NDEyMDk4fQ.VMhraCsVPjQJj_BspbHcmYtryXaeQ8QSyrJBz1oWxuU"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Walking Through the Valley of Shadows Lily Moon Zoey James"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Where Shadows Come to Life Olivia Roberts"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Crimson Veil Phoenix Rivers"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Elusive Joy Orion Steele"}}
+{"method": "get", "url": "/spotify/songs", "data": {"query": "Ephemeral Beauty Eliana Harper"}}

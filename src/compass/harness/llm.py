@@ -60,7 +60,10 @@ class LLM:
         kw = dict(model=self.model, messages=messages,
                   max_tokens=max_tokens or self.max_tokens,
                   temperature=self.temperature if temperature is None else temperature)
-        if json_mode:
+        # JSON mode only on OpenAI: on Ollama Cloud, response_format=json_object makes
+        # reasoning models (deepseek-v4) spend the token budget on hidden reasoning and
+        # return a truncated object; plain prompting yields complete JSON there.
+        if json_mode and self.provider == "openai":
             kw["response_format"] = {"type": "json_object"}
         last = None
         for i in range(self.retries):

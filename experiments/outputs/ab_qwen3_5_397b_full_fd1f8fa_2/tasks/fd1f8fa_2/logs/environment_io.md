@@ -1105,3 +1105,184 @@ print(liked_song_ids)
 {1, 5, 102, 15, 60}
 ```
 
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# Now I need to identify which songs in the queue are NOT liked and remove them. I'll remove songs from highest position to lowest to avoid position shifting issues.
+
+# First, let me identify the positions of songs that are NOT liked
+unliked_positions = [song['position'] for song in queue if song['song_id'] not in liked_song_ids]
+print(unliked_positions)
+```
+
+```
+[0, 1, 2, 3, 4, 6, 7, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20, 22, 23]
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# I need to remove songs from highest position to lowest to avoid position shifting. Let me sort in descending order.
+
+unliked_positions_desc = sorted(unliked_positions, reverse=True)
+print(unliked_positions_desc)
+```
+
+```
+[23, 22, 20, 19, 18, 17, 16, 15, 14, 12, 11, 9, 7, 6, 4, 3, 2, 1, 0]
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# Now I'll remove the unliked songs from the queue, starting from the highest position to avoid position shifting issues.
+
+for pos in unliked_positions_desc:
+    apis.spotify.remove_song_from_queue(access_token=access_token, position=pos)
+print("Removed all unliked songs from queue")
+```
+
+```
+Removed all unliked songs from queue
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Let me verify the queue now only contains liked songs.
+
+queue_after = apis.spotify.show_song_queue(access_token=access_token)
+print(queue_after)
+```
+
+```
+[
+ {
+  "song_id": 60,
+  "title": "The Haunting Echo of Goodbye",
+  "album_id": 12,
+  "duration": 224,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "position": 0,
+  "is_playing": false,
+  "is_current": true
+ },
+ {
+  "song_id": 1,
+  "title": "Painting Shadows on the Wall",
+  "album_id": 1,
+  "duration": 217,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   },
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   },
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "position": 1,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 15,
+  "title": "In the Depths of Despair",
+  "album_id": 3,
+  "duration": 210,
+  "artists": [
+   {
+    "id": 16,
+    "name": "Apollo Serenade"
+   },
+   {
+    "id": 2,
+    "name": "Phoenix Rivers"
+   }
+  ],
+  "position": 2,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 5,
+  "title": "Chasing the Ghosts of Yesterday",
+  "album_id": 1,
+  "duration": 255,
+  "artists": [
+   {
+    "id": 3,
+    "name": "Jasper Skye"
+   },
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   },
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "position": 3,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 102,
+  "title": "Autumn's Lament",
+  "album_id": null,
+  "duration": 292,
+  "artists": [
+   {
+    "id": 4,
+    "name": "Marigold Muse"
+   }
+  ],
+  "position": 4,
+  "is_playing": false,
+  "is_current": false
+ }
+]
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+# The queue now only contains the 5 liked songs. Now I need to start the player by calling play_music.
+
+apis.spotify.play_music(access_token=access_token)
+print("Music player started")
+```
+
+```
+Music player started
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+# The task is complete. I've removed all unliked songs from the queue and started the player. Let me mark the task as complete.
+
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

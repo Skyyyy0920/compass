@@ -719,3 +719,703 @@ print(liked_songs)
 ]
 ```
 
+
+### Environment Interaction 8
+----------------------------------------------------------------------------
+```python
+# Let me first check the current song queue to see what songs are in it.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_song_queue'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "show_song_queue",
+ "path": "/music_player/song_queue",
+ "method": "GET",
+ "description": "Get the music player song queue. Songs are played in the order of the queue in a cycle.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": [
+   {
+    "song_id": 1,
+    "title": "string",
+    "album_id": 1,
+    "album_title": "string",
+    "duration": 1,
+    "artists": [
+     {
+      "id": 1,
+      "name": "string"
+     }
+    ],
+    "position": 1,
+    "is_playing": true,
+    "is_current": true
+   }
+  ],
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 9
+----------------------------------------------------------------------------
+```python
+# Let me get the current song queue to see which songs are in it.
+queue = apis.spotify.show_song_queue(access_token=access_token)
+print(queue)
+```
+
+```
+[
+ {
+  "song_id": 268,
+  "title": "Empty Pages",
+  "album_id": null,
+  "duration": 293,
+  "artists": [
+   {
+    "id": 28,
+    "name": "Evelyn Rose"
+   }
+  ],
+  "position": 0,
+  "is_playing": false,
+  "is_current": true
+ },
+ {
+  "song_id": 290,
+  "title": "Whispers in the Wind",
+  "album_id": null,
+  "duration": 253,
+  "artists": [
+   {
+    "id": 31,
+    "name": "Hazel Winter"
+   }
+  ],
+  "position": 1,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 153,
+  "title": "Love's Aftermath",
+  "album_id": null,
+  "duration": 265,
+  "artists": [
+   {
+    "id": 12,
+    "name": "Mia Sullivan"
+   }
+  ],
+  "position": 2,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 134,
+  "title": "Lost in a Sea of Echoes",
+  "album_id": null,
+  "duration": 224,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "position": 3,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 158,
+  "title": "Siren's Call",
+  "album_id": null,
+  "duration": 200,
+  "artists": [
+   {
+    "id": 13,
+    "name": "Luna Starlight"
+   }
+  ],
+  "position": 4,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 132,
+  "title": "Shadow Dance",
+  "album_id": null,
+  "duration": 210,
+  "artists": [
+   {
+    "id": 8,
+    "name": "Aria Sterling"
+   }
+  ],
+  "position": 5,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 139,
+  "title": "Momentary Bliss",
+  "album_id": null,
+  "duration": 236,
+  "artists": [
+   {
+    "id": 10,
+    "name": "Zoe Mitchell"
+   }
+  ],
+  "position": 6,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 178,
+  "title": "Sorrow's Silent Symphony",
+  "album_id": null,
+  "duration": 287,
+  "artists": [
+   {
+    "id": 16,
+    "name": "Apollo Serenade"
+   }
+  ],
+  "position": 7,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 180,
+  "title": "The Intricacies of a Broken Heart",
+  "album_id": null,
+  "duration": 244,
+  "artists": [
+   {
+    "id": 16,
+    "name": "Apollo Serenade"
+   }
+  ],
+  "position": 8,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 121,
+  "title": "Astral Serenity",
+  "album_id": null,
+  "duration": 200,
+  "artists": [
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "position": 9,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 130,
+  "title": "Longing for Another Chance",
+  "album_id": null,
+  "duration": 274,
+  "artists": [
+   {
+    "id": 8,
+    "name": "Aria Sterling"
+   }
+  ],
+  "position": 10,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 76,
+  "title": "Whispers of the Heart",
+  "album_id": 16,
+  "duration": 270,
+  "artists": [
+   {
+    "id": 34,
+    "name": "Lily Moon"
+   },
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "position": 11,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 111,
+  "title": "Lonesome Road",
+  "album_id": null,
+  "duration": 277,
+  "artists": [
+   {
+    "id": 6,
+    "name": "Seraphina Dawn"
+   }
+  ],
+  "position": 12,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 82,
+  "title": "Lost in the Twilight of Hope",
+  "album_id": 18,
+  "duration": 193,
+  "artists": [
+   {
+    "id": 33,
+    "name": "Felix Blackwood"
+   }
+  ],
+  "position": 13,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 251,
+  "title": "Trapped in the Snare of Love",
+  "album_id": null,
+  "duration": 268,
+  "artists": [
+   {
+    "id": 26,
+    "name": "Isabella Cruz"
+   }
+  ],
+  "position": 14,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 58,
+  "title": "Cursed Love",
+  "album_id": 12,
+  "duration": 214,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "position": 15,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 157,
+  "title": "Chasing the Elusive Horizon",
+  "album_id": null,
+  "duration": 201,
+  "artists": [
+   {
+    "id": 13,
+    "name": "Luna Starlight"
+   }
+  ],
+  "position": 16,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 219,
+  "title": "Strangers Again",
+  "album_id": null,
+  "duration": 292,
+  "artists": [
+   {
+    "id": 21,
+    "name": "Oceanic Odyssey"
+   }
+  ],
+  "position": 17,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 71,
+  "title": "Eternal Fade",
+  "album_id": 15,
+  "duration": 267,
+  "artists": [
+   {
+    "id": 29,
+    "name": "Lucas Diaz"
+   },
+   {
+    "id": 7,
+    "name": "Orion Steele"
+   }
+  ],
+  "position": 18,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 265,
+  "title": "Secrets of the Heart",
+  "album_id": null,
+  "duration": 183,
+  "artists": [
+   {
+    "id": 27,
+    "name": "Carter Knight"
+   }
+  ],
+  "position": 19,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 60,
+  "title": "The Haunting Echo of Goodbye",
+  "album_id": 12,
+  "duration": 224,
+  "artists": [
+   {
+    "id": 9,
+    "name": "Zoey James"
+   }
+  ],
+  "position": 20,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 14,
+  "title": "Memories Etched in Melancholy",
+  "album_id": 3,
+  "duration": 196,
+  "artists": [
+   {
+    "id": 16,
+    "name": "Apollo Serenade"
+   },
+   {
+    "id": 2,
+    "name": "Phoenix Rivers"
+   }
+  ],
+  "position": 21,
+  "is_playing": false,
+  "is_current": false
+ },
+ {
+  "song_id": 275,
+  "title": "In the Arms of Solitude",
+  "album_id": null,
+  "duration": 187,
+  "artists": [
+   {
+    "id": 29,
+    "name": "Lucas Diaz"
+   }
+  ],
+  "position": 22,
+  "is_playing": false,
+  "is_current": false
+ }
+]
+```
+
+
+### Environment Interaction 10
+----------------------------------------------------------------------------
+```python
+# Let me check the specification for remove_song_from_queue to understand how to remove songs.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='remove_song_from_queue'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "remove_song_from_queue",
+ "path": "/music_player/song_queue/{position}",
+ "method": "DELETE",
+ "description": "Remove a song at the given position from the music player song queue.",
+ "parameters": [
+  {
+   "name": "position",
+   "type": "integer",
+   "required": true,
+   "description": "The 0-indexed position of the song in the queue.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string"
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 11
+----------------------------------------------------------------------------
+```python
+# I need to identify which songs in the queue are liked songs and remove them. Let me create a set of liked song IDs first.
+liked_song_ids = set(song['song_id'] for song in liked_songs)
+print(liked_song_ids)
+```
+
+```
+{130, 132, 134, 265, 268, 251, 82, 275, 58, 219, 60}
+```
+
+
+### Environment Interaction 12
+----------------------------------------------------------------------------
+```python
+# I need to remove songs from the queue that are in the liked songs list. I'll remove them from highest position first to avoid position shifts.
+# Positions to remove (in descending order): 22, 20, 19, 17, 15, 14, 13, 10, 5, 3, 0
+# Let me start removing them one by one from highest position first.
+
+apis.spotify.remove_song_from_queue(position=22, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 13
+----------------------------------------------------------------------------
+```python
+# Position 22 removed. Now let me remove position 20 (song_id 60).
+apis.spotify.remove_song_from_queue(position=20, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 14
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=19, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 15
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=17, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 16
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=15, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 17
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=14, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 18
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=13, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 19
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=10, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 20
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=5, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 21
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=3, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 22
+----------------------------------------------------------------------------
+```python
+apis.spotify.remove_song_from_queue(position=0, access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 23
+----------------------------------------------------------------------------
+```python
+# Now I need to start the player. Let me check the play_music API specification.
+print(apis.api_docs.show_api_doc(app_name='spotify', api_name='play_music'))
+```
+
+```
+{
+ "app_name": "spotify",
+ "api_name": "play_music",
+ "path": "/music_player/play",
+ "method": "POST",
+ "description": "Play music based on various criteria. You can pass, at most, any one of queue_position, song_id, album_id or playlist_id. If one of song_id, album_id or playlist_id is passed, that song, album or playlist will be added to the queue and played. Otherwise, the queue will remain unchanged. If queue_position is passed, the song at that position in the queue will be played. If none is passed, the current song in the queue will be played.",
+ "parameters": [
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from spotify app login.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "song_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the song to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "album_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the album to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "playlist_id",
+   "type": "integer",
+   "required": false,
+   "description": "ID of the playlist to play.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "queue_position",
+   "type": "integer",
+   "required": false,
+   "description": "Position of the song in the queue to play.",
+   "default": null,
+   "constraints": [
+    "value >= 0.0"
+   ]
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "song_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 24
+----------------------------------------------------------------------------
+```python
+# Now let me start the player by calling play_music with just the access token (no other arguments means it will play the current song in the queue).
+apis.spotify.play_music(access_token=access_token)
+```
+
+```
+Execution successful.
+```
+
+
+### Environment Interaction 25
+----------------------------------------------------------------------------
+```python
+# The task is complete. I have removed all liked songs from the Spotify queue and started the player. Let me mark the task as complete.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

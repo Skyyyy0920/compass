@@ -1,0 +1,16 @@
+{
+    "venmo": {
+        "User": 4,
+        "PaymentRequest": 3,
+        "Notification": 4,
+        "Transaction": 1
+    },
+    "gmail": {
+        "Email": 2,
+        "GlobalEmailThread": 2,
+        "UserEmailThread": 4
+    },
+    "supervisor": {
+        "Task": 1
+    }
+}

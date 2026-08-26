@@ -87,12 +87,30 @@ def _fact_lines(g: Graph) -> str:
 
 
 def _json_load(text: str) -> dict | None:
+    text = re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$", "", text.strip())
     m = re.search(r"\{.*\}", text, re.DOTALL)
     if not m:
         return None
     try:
         return json.loads(m.group(0))
     except json.JSONDecodeError:
+        pass
+    # truncated output: keep the complete plan_updates items that were emitted
+    try:
+        dec = json.JSONDecoder()
+        i = text.find('"plan_updates"')
+        j = text.find("[", i)
+        items, k = [], j + 1
+        while True:
+            while k < len(text) and text[k] in " \n\r\t,":
+                k += 1
+            if k >= len(text) or text[k] != "{":
+                break
+            obj, end = dec.raw_decode(text, k)
+            items.append(obj)
+            k = end
+        return {"plan_updates": items, "_truncated": True} if items else None
+    except Exception:  # noqa: BLE001
         return None
 
 
@@ -102,7 +120,7 @@ def refine_graph(g: Graph, new_step_ids: list[str], llm: LLM, *, obs_chars: int 
     user = USER.format(goal=g.goal, legacy=legacy, plan=_plan_lines(g), infos=_info_lines(g),
                        facts=_fact_lines(g), steps=steps)
     raw = llm.chat([{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}],
-                   tag="refine", json_mode=True, max_tokens=3000)
+                   tag="refine", json_mode=True, max_tokens=4096)
     prop = _json_load(raw)
     stats = {"parsed": prop is not None, "applied": 0, "dropped_before": len(g.log)}
     if prop is None:
