@@ -62,7 +62,7 @@ Rules:
   simply a variable still bound in the session -- e.g. "Brenda (9312015677) asked: add 'Song A' by X, remove
   'Song B'", "playlist 'Roadtrip' id=654 has songs [12, 40, 88]", "invoice total 128.00, split 4 ways = 32.00".
   Write each as one dense line (<= 200 chars) with the exact ids/names/amounts; cite the steps. These survive
-  compaction verbatim, so include everything the plan's open items depend on."""
+  compaction verbatim, so include everything the plan's open items depend on.
 - Do not restate steps as sub-goals; sub-goals are outcomes.
 - NEVER conclude that an API or capability does not exist unless a COMPLETE, untruncated API listing for that app
   was observed. A failed guess of an API name (404 / "No API named ...") only proves that name is wrong.
