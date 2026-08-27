@@ -36,7 +36,7 @@ class CompassCompressor(Compressor):
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
                  adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
-                 narrate: bool = False):
+                 narrate: bool = False, proj: bool = False, mem: bool = False):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.flow = flow
@@ -47,6 +47,9 @@ class CompassCompressor(Compressor):
         self.adapter = adapter
         self._graphs: dict[str, dict] = {}
         self.last_extra: dict | None = None
+        self.proj = proj      # field-wise value projection + fill-to-budget
+        self.mem = mem        # externalize full observations into the session (_mem) and cite the keys
+        self.last_setup_code: str | None = None
 
     def compress(self, task: str, prev_summary: str | None, turns: list[dict]) -> str:
         key = _h(prev_summary)
@@ -72,6 +75,12 @@ class CompassCompressor(Compressor):
                 g.log.append({"drop": "refine_call_failed", "err": str(e)[:200]})
         if self.det_needs:
             g.augment_needs(new_ids[-3:])
+        self.last_setup_code = None
+        if self.mem:
+            saved = {sid: g.steps[sid]["observation"] for sid in new_ids if _worth_saving(g.steps[sid])}
+            if saved:
+                g.mem_keys.extend(k for k in saved if k not in g.mem_keys)
+                self.last_setup_code = mem_setup_code(saved)
         attached = pruned = 0
         if self.flow:
             attached = attach_to_frontier(g, new_ids[-3:])
@@ -86,7 +95,7 @@ class CompassCompressor(Compressor):
                 except Exception:  # noqa: BLE001
                     text = structured
         else:
-            text, level = render_to_budget(g, self.summary_budget, new_ids[-3:])
+            text, level = render_to_budget(g, self.summary_budget, new_ids[-3:], proj=self.proj, fill=self.proj)
         degraded = False
         if level == 4 and self.llm is not None:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
@@ -108,9 +117,27 @@ class CompassCompressor(Compressor):
         return text
 
     def render_context(self, summary: str) -> str:
-        return ("\n\n<history_summary>\nThe conversation so far was compacted into this plan-graph checkpoint. "
-                "Variables listed as LIVE are still defined in the Python session.\n"
-                f"{summary}\n</history_summary>\n\n")
+        head = ("\n\n<history_summary>\nThe conversation so far was compacted into this plan-graph checkpoint. "
+                "Variables listed as LIVE are still defined in the Python session.\n")
+        if self.mem:
+            head += ("Full observations marked _mem['sN'] are saved in the Python session: print(_mem['sN']) "
+                     "to read one instead of calling the API again.\n")
+        return head + f"{summary}\n</history_summary>\n\n"
+
+
+
+def _worth_saving(step: dict) -> bool:
+    obs = (step.get("observation") or "").strip()
+    return bool(step.get("api_names")) and step.get("status") == "ok" and len(obs) > 40 \
+        and obs != "Execution successful."
+
+
+def mem_setup_code(saved: dict[str, str], limit: int = 20000) -> str:
+    """Code executed in the agent's Python session at the boundary: it stores the full observations
+    of the absorbed steps under their step ids. Nothing is sent to the model; the checkpoint only
+    cites the keys."""
+    items = ", ".join(f"{k!r}: {v[:limit]!r}" for k, v in saved.items())
+    return "try:\n    _mem\nexcept NameError:\n    _mem = {}\n_mem.update({" + items + "})"
 
 
 def _drop_sections(text: str, headers: tuple[str, ...]) -> str:
@@ -144,6 +171,13 @@ VARIANTS = {
     "compass_schema": {"adapter": "schema"},
     "compass_codeaware": {},
     "compass_wide": {"summary_frac": 0.6},                                 # A6b larger handover budget
+    # beyond v3: keep fields not characters (proj), and let the session hold the full observations (mem)
+    "compass_proj": {"proj": True},
+    "compass_mem": {"mem": True},
+    "compass_pm": {"proj": True, "mem": True},
+    "compass_det_proj": {"use_llm": False, "proj": True},
+    "compass_det_mem": {"use_llm": False, "mem": True},
+    "compass_det_pm": {"use_llm": False, "proj": True, "mem": True},
 }
 
 

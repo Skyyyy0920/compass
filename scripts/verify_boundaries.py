@@ -38,7 +38,7 @@ def job(args):
     from compass.eval.replay import rollout
     from compass.harness.llm import LLM
     agent = LLM(agent_model, agent_provider, max_tokens=2048)
-    summary, render, extra = None, None, None
+    summary, render, extra, setup = None, None, None, None
     if arm == "POST" and post_method:
         from run_episodes import make_compressor
         comp = make_compressor(post_method, comp_model, comp_provider, budget)
@@ -50,8 +50,9 @@ def job(args):
             summary = comp.compress(spec["instruction"], spec["prev_summary"], spec["absorbable_turns"])
         render = comp.render_context
         extra = getattr(comp, "last_extra", None)
+        setup = getattr(comp, "last_setup_code", None)
     r = rollout(spec, arm, agent, summary=summary, render_context=render, sample=sample,
-                experiment_name=f"{tag}_{spec['replay_identity']}")
+                experiment_name=f"{tag}_{spec['replay_identity']}", setup_code=setup)
     r["post_method"] = post_method if arm == "POST" else None
     r["extra"] = extra
     return r

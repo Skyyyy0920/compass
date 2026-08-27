@@ -68,7 +68,7 @@ def boundary_specs(ep: dict) -> list[dict]:
 
 def rollout(spec: dict, arm: str, agent: LLM, *, summary: str | None = None,
             render_context=None, k_max: int = K_MAX, sample: int = 0,
-            experiment_name: str = "replay") -> dict:
+            experiment_name: str = "replay", setup_code: str | None = None) -> dict:
     from appworld import AppWorld
 
     ctx = spec[arm.lower()]
@@ -82,6 +82,8 @@ def rollout(spec: dict, arm: str, agent: LLM, *, summary: str | None = None,
     try:
         for code in spec["prefix_codes"]:
             world.execute(code)
+        if setup_code:
+            world.execute(setup_code)
         base = render_agent_prompt(world)
         turns = [{"code": t["code"], "observation": t["observation"]} for t in ctx["turns"]]
         block = render(summ) if summ else None

@@ -95,6 +95,9 @@ def run_episode(task_id: str, agent: LLM, compressor: Compressor | None, *, budg
                         try:
                             summary = compressor.compress(world.task.instruction, prev, absorbable)
                             status = "ok"
+                            setup = getattr(compressor, "last_setup_code", None)
+                            if setup:
+                                world.execute(setup)   # externalized observations enter the session, not the prompt
                         except Exception as e:  # noqa: BLE001
                             status, summary = f"compressor_error: {e}", prev
                         rec["boundaries"].append({

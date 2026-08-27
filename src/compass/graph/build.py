@@ -33,6 +33,9 @@ class Info:
     producer: str | None = None    # step id
     source_api: str | None = None  # app.api that produced it (if known)
     value_hint: str | None = None  # short canonical excerpt of the value
+    value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
+    value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
+    value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
     description: str | None = None
     consumers: list[str] = field(default_factory=list)   # step ids that read it
     needed_by: list[str] = field(default_factory=list)   # intent ids predicted to need it
@@ -65,6 +68,9 @@ class Graph:
         self.legacy_summary: str | None = None  # a non-graph previous summary, kept verbatim-ish
         self.calls_ok: dict[str, int] = {}       # call form -> times it executed without error
         self.calls_failed: dict[str, str] = {}   # call form -> last error line (cleared on later success)
+        self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
+        self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
+        self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
         self._n_info = 0
         self._n_intent = 0
         self._n_fact = 0
@@ -115,7 +121,9 @@ class Graph:
             self._n_info += 1
             info = Info(id=f"i{self._n_info}", kind="runtime_reference", name=name, producer=sid,
                         source_api=src,
-                        value_hint=literals.get(name) or _value_hint(s, name))
+                        value_hint=literals.get(name) or _value_hint(s, name),
+                        value_full=(None if literals.get(name) or not _value_hint(s, name)
+                                    else s["observation"][:VALUE_FULL_CHARS]))
             self.infos[info.id] = info
             s["produces"].append(info.id)
         # API documentation read by the agent -> api_spec / api_list infos (deduped by name)
@@ -155,11 +163,11 @@ class Graph:
                 old = next((i for i in self.infos.values() if i.kind == "api_result" and i.name == key), None)
                 hint = _excerpt(obs, SMALL_VALUE_CHARS if len(obs) <= SMALL_VALUE_CHARS else 240)
                 if old is not None:
-                    old.value_hint, old.producer = hint, sid
+                    old.value_hint, old.producer, old.value_full = hint, sid, obs[:VALUE_FULL_CHARS]
                     continue
                 self._n_info += 1
                 info = Info(id=f"i{self._n_info}", kind="api_result", name=key, producer=sid, source_api=api,
-                            value_hint=hint)
+                            value_hint=hint, value_full=obs[:VALUE_FULL_CHARS])
                 self.infos[info.id] = info
                 s["produces"].append(info.id)
         return s
@@ -344,7 +352,7 @@ class Graph:
         return {"goal": self.goal, "steps": self.steps, "infos": {k: asdict(v) for k, v in self.infos.items()},
                 "intents": {k: asdict(v) for k, v in self.intents.items()}, "facts": self.facts,
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
-                "calls_ok": self.calls_ok, "calls_failed": self.calls_failed,
+                "calls_ok": self.calls_ok, "calls_failed": self.calls_failed, "mem_keys": self.mem_keys,
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
@@ -358,6 +366,9 @@ class Graph:
         g.legacy_summary = d.get("legacy_summary")
         g.calls_ok = d.get("calls_ok", {})
         g.calls_failed = d.get("calls_failed", {})
+        g.mem_keys = d.get("mem_keys", [])
+        g.mem_keys = d.get("mem_keys", [])
+        g.mem_keys = d.get("mem_keys", [])
         g._n_info, g._n_intent, g._n_fact = d["counters"]
         g.log = d.get("log", [])
         return g
@@ -441,6 +452,9 @@ def _value_hint(step: dict, name: str) -> str | None:
 
 
 SMALL_VALUE_CHARS = 900
+VALUE_FULL_CHARS = 6000
+VALUE_FULL_CHARS = 6000
+VALUE_FULL_CHARS = 6000
 
 
 def _excerpt(text: str, n: int) -> str:

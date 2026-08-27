@@ -15,6 +15,7 @@ already called (the refetch guard v1 lacked).
 from __future__ import annotations
 
 from ..harness.prompt import count_tokens
+from compass.graph.project import focus_tokens, project
 from .build import Graph, Info, Intent, compact_step_view
 
 
@@ -56,7 +57,21 @@ def _executed_apis(g: Graph, step_ids: list[str]) -> list[str]:
     return list(dict.fromkeys(out))
 
 
-def render(g: Graph, level: int, recent_ids: list[str]) -> str:
+def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, scale: float = 1.0) -> str:
+    """``proj``: render values field-wise (see project.py) instead of as character prefixes;
+    ``scale`` widens every value width (fill-to-budget)."""
+    focus = focus_tokens(g.goal, *[it.description for it in g.intents.values()
+                                   if it.status not in ("done", "invalidated")]) if proj else set()
+    mem = set(g.mem_keys)
+
+    def V(i: Info, n: int) -> str:
+        if proj:
+            return project(i.value_full or i.value_hint, int(n * scale), focus)
+        return _short(i.value_hint, n)
+
+    def M(i: Info) -> str:
+        return f"_mem['{i.producer}'] " if (i.kind == "api_result" and i.producer in mem) else ""
+
     L: list[str] = ["GOAL", g.goal.strip()]
     if g.legacy_summary and level <= 1:
         L += ["", "EARLIER SUMMARY (pre-graph)", g.legacy_summary.strip()[:1500]]
@@ -132,8 +147,8 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
             L += ["", "LIVE VARIABLES (still bound in the Python session; reuse them, do not recompute)"]
             for i in rt[-40:]:
                 src = f" = {i.source_api}(...)" if i.source_api else ""
-                hint = f" -> {i.value_hint}" if i.value_hint else ""
-                L.append(f"- {i.name}{src}{hint}")
+                hint = f" -> {V(i, 900)}" if i.value_hint else ""
+                L.append(f"- {M(i)}{i.name}{src}{hint}")
     else:
         rt = [i for i in g.live_infos(recent_steps=2) if i.kind == "runtime_reference"]
         if rt:
@@ -154,14 +169,15 @@ def render(g: Graph, level: int, recent_ids: list[str]) -> str:
         if needed:
             L += ["", "VALUES THE NEXT STEPS NEED (still bound; reuse instead of recomputing)"]
             for i in needed[-12:]:
-                L.append(f"- {i.name} = {_short(i.value_hint, 160)}")
+                L.append(f"- {M(i)}{i.name} = {V(i, 160)}")
 
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
     if results and level <= 2:
         keep, chars = (20, 160) if level <= 1 else (12, 90)
-        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again)"]
+        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again"
+              + ("; the full text is saved in the session: print(_mem['<step>']) to read it)" if mem else ")")]
         for i in results[-keep:]:
-            L.append(f"- {_short(i.name, 90)} -> {_short(i.value_hint, chars)}")
+            L.append(f"- {M(i)}{_short(i.name, 90)} -> {V(i, chars)}")
 
     data = [f for f in g.facts if f["kind"] == "data"]
     if data:
@@ -270,11 +286,18 @@ def render_bounded(g: Graph, recent_ids: list[str], *, max_items: int = 8, hint_
     return "\n".join(L)
 
 
-def render_to_budget(g: Graph, budget: int, recent_ids: list[str]) -> tuple[str, int]:
+def render_to_budget(g: Graph, budget: int, recent_ids: list[str], *, proj: bool = False,
+                     fill: bool = False) -> tuple[str, int]:
     """Levels 0-2 are progressively folded renders, level 3 is the hard-bounded render
     (a smaller item cap is tried before giving up); 4 means the caller must degrade."""
+    if fill:
+        # spend the budget that level 0 leaves unused on wider values before folding anything
+        for scale in (4.0, 2.5, 1.6):
+            text = render(g, 0, recent_ids, proj=proj, scale=scale)
+            if count_tokens(text) <= budget:
+                return text, 0
     for level in (0, 1, 2):
-        text = render(g, level, recent_ids)
+        text = render(g, level, recent_ids, proj=proj)
         if count_tokens(text) <= budget:
             return text, level
     for cap, chars in ((8, 100), (5, 60), (3, 40)):

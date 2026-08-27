@@ -132,3 +132,33 @@ def test_render_within_budget():
     if level < 3:
         assert count_tokens(text) <= 500
     assert "GOAL" in text and "PLAN" in text
+
+
+def test_projection_keeps_fields_not_prefixes():
+    from compass.graph.project import focus_tokens, project
+    obs = ('[{"song_id": 55, "title": "Tangled Lies", "album_id": 11, "duration": 186, '
+           '"artists": [{"id": 3, "name": "Ava Morgan"}], "release_date": "2022-03-12", "lyrics": "' + "la " * 200 + '"}]')
+    out = project(obs, 200, focus_tokens("add the release month for each song"))
+    assert out.startswith("1 items: [{") and "lyrics" not in out
+    assert out.index("release_date=") < out.index("duration=")   # goal-named field before the rest
+    assert project('{"a": 1, "b": [1, 2]}', 100) == "{a=1, b=[1, 2]}"
+    assert project("plain text " * 30, 40).endswith("...")
+
+
+def test_proj_render_and_mem_setup():
+    from compass.graph.compressor import mem_setup_code
+    from compass.graph.render import render
+    g = Graph("Add release month for every liked song")
+    obs = '[{"song_id": 55, "title": "Tangled Lies", "release_date": "2022-03-12", "duration": 186}]'
+    g.add_turn({"step": 1, "code": "print(apis.spotify.search_songs(query='Tangled Lies'))", "observation": obs})
+    g.add_turn({"step": 2, "code": "r = apis.spotify.search_songs(query='Other')\nprint(r)", "observation": obs})
+    proj = render(g, 0, ["s2"], proj=True)
+    assert proj.count("release_date=") >= 2 and "_mem[" not in proj
+    g.mem_keys.append("s1")
+    assert "_mem['s1'] " in render(g, 0, ["s2"], proj=True)
+    code = mem_setup_code({"s1": obs})
+    ns: dict = {}
+    exec(code, ns)
+    assert ns["_mem"]["s1"] == obs
+    exec(mem_setup_code({"s2": "x"}), ns)
+    assert set(ns["_mem"]) == {"s1", "s2"}
