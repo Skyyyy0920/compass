@@ -80,6 +80,29 @@ def test_fact_dedup_and_citation():
     assert len(g.facts) == 1
 
 
+def test_flow_render_all_levels():
+    from compass.graph.flow import attach_to_frontier, prune_evidence, render_flow
+    g = Graph("Update the playlist with the siblings' suggestions")
+    for k in range(1, 12):
+        g.add_turn({"step": k, "code": f"r{k} = apis.spotify.search_songs(query='q{k}', page_limit=3)\nprint(r{k})",
+                    "observation": "[{\"song_id\": %d, \"title\": \"Song %d\"}]" % (k, k)})
+    g.add_turn({"step": 12, "code": "tok = apis.spotify.login(username=u, password=p)['access_token']",
+                "observation": "Execution successful."})
+    a = g.add_intent("Search release dates on Spotify")
+    b = g.add_intent("Update the playlist")
+    g.add_fact("Brenda asked: add 'Song 1', remove 'Song 2'", "data", ["s1"])
+    g.add_fact("Playlist id=654 'Roadtrip'", "data", ["s2"])
+    g.augment_needs(["s12"])
+    attach_to_frontier(g, ["s12"])
+    assert prune_evidence(g, ["s12"]) > 0
+    for level in range(4):
+        text = render_flow(g, level, ["s12"])
+        assert "GOAL" in text and "PLAN" in text
+        for line in text.splitlines():
+            if "(see " in line:
+                assert line.split("(see ")[-1].rstrip(")") in (a.id, b.id)
+
+
 def test_adapter_tiers():
     turn = {"step": 1, "code": "tok = apis.venmo.login(username=u, password=p)\nprint(tok)",
             "observation": "Execution failed. Traceback:\n  x\nNameError: name 'u' is not defined"}
