@@ -229,6 +229,7 @@ VARIANTS = {
     "compass_det_mem_nar": {"use_llm": False, "mem": True, "narrative": True},
     "compass_det_mem_nar2": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress2",
                              "narrative_tokens": 350},
+    "compass_det_nar2": {"use_llm": False, "narrative": True, "nar_prompts": "progress2", "narrative_tokens": 350},
 }
 
 
