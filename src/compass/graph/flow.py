@@ -84,7 +84,7 @@ def attach_to_frontier(g: Graph, recent_ids: list[str], *, per_node: int = 6) ->
         for n in it.needs:
             i = g.infos.get(n)
             if i and i.kind == "runtime_reference" and not i.superseded and not CRED.search(i.name):
-                add("var", i.name + (f" = {_excerpt(i.value_hint, 120)}" if i.value_hint else
+                add("var", i.name + (f" = {i.value_hint}" if i.value_hint else
                                      (f" = {i.source_api}(...)" if i.source_api else "")))
         # (c) values produced by this node's own or its parent's evidence
         parent = g.intents.get(it.parent) if it.parent else None
@@ -97,14 +97,14 @@ def attach_to_frontier(g: Graph, recent_ids: list[str], *, per_node: int = 6) ->
                     i = g.infos.get(iid)
                     if i and i.kind == "runtime_reference" and not i.superseded and i.value_hint \
                             and not CRED.search(i.name):
-                        add("var", f"{i.name} = {_excerpt(i.value_hint, 120)}")
+                        add("var", f"{i.name} = {i.value_hint}")
         # (d) data facts and observed results about the same entities
         for f in data_facts:
             if len(toks & _tokens(f["text"])) >= 2:
                 add("data", f["text"])
         for r in results[-20:]:
             if len(toks & _tokens(r.name + " " + (r.value_hint or ""))) >= 2:
-                add("result", f"{_excerpt(r.name, 70)} -> {_excerpt(r.value_hint, 120)}")
+                add("result", f"{_excerpt(r.name, 70)} -> {r.value_hint}")
         firsts = [c for c in carry if c[0] != "ref"]
         refs = [c for c in carry if c[0] == "ref"]
         it.carry = firsts[:per_node] + refs[:3]
@@ -186,6 +186,8 @@ TAG = {"api": "api ", "call": "call", "var": "var ", "data": "data", "result": "
 def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
     """Plan-first checkpoint. ``level`` 0..3 shrinks what each node carries."""
     cap, chars = {0: (10, 140), 1: (6, 100), 2: (3, 60), 3: (2, 40)}[level]
+    # carried values are what the agent will act on: never cut them below the v2 floor while budget allows
+    vchars = {0: 900, 1: 400, 2: 160, 3: 60}[level]
     L: list[str] = ["GOAL", g.goal.strip()]
     cons = [f for f in g.facts if f["kind"] == "constraint"]
     if cons:
@@ -237,7 +239,7 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
                     target = payload.split("(see ", 1)[-1].rstrip(")")
                     if target not in rendered_nodes:
                         continue
-                L.append(f"{ind}    {TAG[kind]}: {_excerpt(payload, chars + (60 if kind == 'api' else 0))}")
+                L.append(f"{ind}    {TAG[kind]}: {_excerpt(payload, vchars if kind in ('var', 'result', 'data') else chars + (60 if kind == 'api' else 0))}")
             rendered_nodes.add(it.id)
     # ---- global evidence layer (kept: it is where the measured gains come from); items a node
     # already carries are not repeated here

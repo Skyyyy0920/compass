@@ -132,3 +132,6 @@
 ["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["hv2NsfhxPog=",0.0,219],false]
 ["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["1Wmvliec7no=",551.0,217],false]
 ["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["R30tLdJeLyg=",551.0,218],false]
+["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["jkhBiD43t/Q=",54.0,217],false]
+["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["NeryCy7jPKQ=",49.0,217],false]
+["UPDATE payment_cards SET record_hash=?, balance=? WHERE payment_cards.id = ?",["AmvuVLDRyE8=",34.0,217],false]

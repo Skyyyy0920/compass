@@ -2500,3 +2500,341 @@ for req in all_requests:
 }
 ```
 
+
+### Environment Interaction 25
+----------------------------------------------------------------------------
+```python
+# Approve the 4 still-pending roommate requests from June using payment card 217
+pending_ids = [6137, 6138, 6139, 6131]
+for req_id in pending_ids:
+    result = apis.venmo.approve_payment_request(
+        payment_request_id=req_id,
+        access_token=venmo_access_token,
+        payment_card_id=217
+    )
+    print(f"Approved request {req_id}: {result}")
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 4, in <module>
+    result = apis.venmo.approve_payment_request(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"Insufficient money in the payment card."}
+```
+
+
+### Environment Interaction 26
+----------------------------------------------------------------------------
+```python
+# Let's check the payment card details and see if we can add money to Venmo balance
+print(apis.api_docs.show_api_doc(app_name='venmo', api_name='add_to_venmo_balance'))
+print(apis.api_docs.show_api_doc(app_name='venmo', api_name='show_payment_card'))
+```
+
+```
+{
+ "app_name": "venmo",
+ "api_name": "add_to_venmo_balance",
+ "path": "/balance",
+ "method": "POST",
+ "description": "Add money to your Venmo balance.",
+ "parameters": [
+  {
+   "name": "amount",
+   "type": "number",
+   "required": true,
+   "description": "Amount to add to Venmo balance.",
+   "default": null,
+   "constraints": [
+    "value > 0.0"
+   ]
+  },
+  {
+   "name": "payment_card_id",
+   "type": "integer",
+   "required": true,
+   "description": "ID of the payment card to use for adding balance.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "message": "string",
+   "bank_transfer_id": 1
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+{
+ "app_name": "venmo",
+ "api_name": "show_payment_card",
+ "path": "/payment_cards/{payment_card_id}",
+ "method": "GET",
+ "description": "Get details of a payment card.",
+ "parameters": [
+  {
+   "name": "payment_card_id",
+   "type": "integer",
+   "required": true,
+   "description": "ID of the payment card to be shown.",
+   "default": null,
+   "constraints": []
+  },
+  {
+   "name": "access_token",
+   "type": "string",
+   "required": true,
+   "description": "Access token obtained from venmo app login.",
+   "default": null,
+   "constraints": []
+  }
+ ],
+ "response_schemas": {
+  "success": {
+   "payment_card_id": 1,
+   "card_name": "string",
+   "owner_name": "string",
+   "card_number": 1000000000000000.0,
+   "expiry_year": 1,
+   "expiry_month": 1.0,
+   "cvv_number": 100.0
+  },
+  "failure": {
+   "message": "string"
+  }
+ }
+}
+```
+
+
+### Environment Interaction 27
+----------------------------------------------------------------------------
+```python
+# Let's check payment card 218 details
+print(apis.venmo.show_payment_card(payment_card_id=218, access_token=venmo_access_token))
+```
+
+```
+{
+ "payment_card_id": 218,
+ "card_name": "Chase",
+ "owner_name": "Nicholas Weber",
+ "card_number": 3765118917061094,
+ "expiry_year": 2024,
+ "expiry_month": 1,
+ "cvv_number": 393
+}
+```
+
+
+### Environment Interaction 28
+----------------------------------------------------------------------------
+```python
+# Let's check supervisor's payment cards for available balance info
+print(apis.supervisor.show_payment_cards())
+```
+
+```
+[
+ {
+  "owner_name": "Nicholas Weber",
+  "card_name": "Discover",
+  "card_number": 9832458809315956,
+  "expiry_year": 2022,
+  "expiry_month": 8,
+  "cvv_number": 729
+ },
+ {
+  "owner_name": "Nicholas Weber",
+  "card_name": "Visa",
+  "card_number": 9228490382699282,
+  "expiry_year": 2024,
+  "expiry_month": 1,
+  "cvv_number": 290
+ },
+ {
+  "owner_name": "Nicholas Weber",
+  "card_name": "Chase",
+  "card_number": 3765118917061094,
+  "expiry_year": 2024,
+  "expiry_month": 1,
+  "cvv_number": 393
+ },
+ {
+  "owner_name": "Nicholas Weber",
+  "card_name": "Wells Fargo",
+  "card_number": 8815119833112314,
+  "expiry_year": 2022,
+  "expiry_month": 11,
+  "cvv_number": 309
+ }
+]
+```
+
+
+### Environment Interaction 29
+----------------------------------------------------------------------------
+```python
+# Let's try approving the smallest request with card 218
+result = apis.venmo.approve_payment_request(
+    payment_request_id=6138,
+    access_token=venmo_access_token,
+    payment_card_id=218
+)
+print(result)
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 2, in <module>
+    result = apis.venmo.approve_payment_request(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"This payment request has already been completed."}
+```
+
+
+### Environment Interaction 30
+----------------------------------------------------------------------------
+```python
+# Let's re-fetch pending requests to see current state
+pending_requests = []
+page_index = 0
+while True:
+    page = apis.venmo.show_received_payment_requests(access_token=venmo_access_token, status="pending", page_index=page_index, page_limit=20)
+    if not page:
+        break
+    pending_requests.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+
+# Filter roommate June pending
+june_roommate_pending = [
+    req for req in pending_requests
+    if req["sender"]["email"] in roommate_emails and req["created_at"].startswith("2023-06")
+]
+print(f"Pending roommate June requests: {len(june_roommate_pending)}")
+for req in june_roommate_pending:
+    print(req["payment_request_id"], req["amount"], req["sender"]["email"])
+```
+
+```
+Pending roommate June requests: 1
+6131 44.0 an-harrison@gmail.com
+```
+
+
+### Environment Interaction 31
+----------------------------------------------------------------------------
+```python
+# Try approving the remaining request using Venmo balance (no payment_card_id)
+result = apis.venmo.approve_payment_request(
+    payment_request_id=6131,
+    access_token=venmo_access_token
+)
+print(result)
+```
+
+```
+{"message": "Payment request approved."}
+```
+
+
+### Environment Interaction 32
+----------------------------------------------------------------------------
+```python
+# Verify all roommate June requests are now approved
+pending_requests = []
+page_index = 0
+while True:
+    page = apis.venmo.show_received_payment_requests(access_token=venmo_access_token, status="pending", page_index=page_index, page_limit=20)
+    if not page:
+        break
+    pending_requests.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+
+june_roommate_pending = [
+    req for req in pending_requests
+    if req["sender"]["email"] in roommate_emails and req["created_at"].startswith("2023-06")
+]
+print(f"Pending roommate June requests remaining: {len(june_roommate_pending)}")
+
+# Also check all requests from roommates in June to confirm they are all approved
+all_requests = []
+page_index = 0
+while True:
+    page = apis.venmo.show_received_payment_requests(access_token=venmo_access_token, page_index=page_index, page_limit=20)
+    if not page:
+        break
+    all_requests.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+
+june_roommate_all = [
+    req for req in all_requests
+    if req["sender"]["email"] in roommate_emails and req["created_at"].startswith("2023-06")
+]
+print(f"Total roommate June requests: {len(june_roommate_all)}")
+for req in june_roommate_all:
+    print(req["payment_request_id"], req["amount"], "approved_at:", req["approved_at"], "denied_at:", req["denied_at"])
+```
+
+```
+Pending roommate June requests remaining: 0
+Total roommate June requests: 25
+6171 19.0 approved_at: None denied_at: 2023-06-25T03:01:31
+6172 20.0 approved_at: 2023-06-25T07:04:32 denied_at: None
+6170 16.0 approved_at: 2023-06-23T02:29:35 denied_at: None
+6169 58.0 approved_at: 2023-06-23T17:21:18 denied_at: None
+6166 20.0 approved_at: None denied_at: 2023-06-21T12:49:59
+6167 22.0 approved_at: None denied_at: 2023-06-23T07:15:59
+6168 26.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6152 121.0 approved_at: 2023-06-14T07:26:08 denied_at: None
+6153 79.0 approved_at: 2023-06-14T08:02:59 denied_at: None
+6149 28.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6150 31.0 approved_at: 2023-06-13T10:13:20 denied_at: None
+6151 12.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6145 8.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6146 13.0 approved_at: None denied_at: 2023-06-13T10:14:02
+6147 171.0 approved_at: 2023-06-12T03:44:51 denied_at: None
+6143 116.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6137 497.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6138 5.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6139 15.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6133 14.0 approved_at: 2023-06-06T20:08:26 denied_at: None
+6134 135.0 approved_at: None denied_at: 2023-06-05T19:35:45
+6135 75.0 approved_at: None denied_at: 2023-06-06T11:14:45
+6130 8.0 approved_at: None denied_at: 2023-06-04T19:31:33
+6131 44.0 approved_at: 2023-06-25T15:22:27 denied_at: None
+6132 23.0 approved_at: 2023-06-05T13:28:19 denied_at: None
+```
+
+
+### Environment Interaction 33
+----------------------------------------------------------------------------
+```python
+# All pending roommate requests from June have been approved. Complete the task.
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

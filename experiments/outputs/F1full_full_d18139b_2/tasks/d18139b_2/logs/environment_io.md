@@ -2141,3 +2141,129 @@ Card 363 failed: Response status code is 422:
 {"message":"This payment request has already been completed."}
 ```
 
+
+### Environment Interaction 34
+----------------------------------------------------------------------------
+```python
+# Re-fetch all pending requests to see which June roommate requests are still pending
+all_pending_now = []
+page_index = 0
+while True:
+    page = apis.venmo.show_received_payment_requests(access_token=venmo_token, status="pending", page_index=page_index, page_limit=20)
+    if not page:
+        break
+    all_pending_now.extend(page)
+    if len(page) < 20:
+        break
+    page_index += 1
+
+roommate_emails = {"an-harrison@gmail.com", "anita.burch@gmail.com", "nicholas.weber@gmail.com"}
+june_roommate_pending = []
+for req in all_pending_now:
+    if req["sender"]["email"] in roommate_emails and req["created_at"][:7] == "2023-06":
+        june_roommate_pending.append(req)
+
+print(f"June roommate pending: {len(june_roommate_pending)}")
+for r in june_roommate_pending:
+    print(r["payment_request_id"], r["sender"]["email"], r["created_at"], r["amount"])
+```
+
+```
+June roommate pending: 6
+6154 anita.burch@gmail.com 2023-06-17T17:07:00 78.0
+6150 an-harrison@gmail.com 2023-06-15T17:03:25 11.0
+6143 anita.burch@gmail.com 2023-06-12T11:09:14 19.0
+6140 an-harrison@gmail.com 2023-06-11T12:10:56 25.0
+6141 nicholas.weber@gmail.com 2023-06-11T12:10:56 12.0
+6139 anita.burch@gmail.com 2023-06-10T16:10:37 11.0
+```
+
+
+### Environment Interaction 35
+----------------------------------------------------------------------------
+```python
+# Try to add money to Venmo balance from card 360 (Discover)
+print(apis.venmo.add_to_venmo_balance(amount=200, payment_card_id=360, access_token=venmo_token))
+```
+
+```
+Execution failed. Traceback:
+  File "<python-input>", line 2, in <module>
+    print(apis.venmo.add_to_venmo_balance(amount=200, payment_card_id=360, access_token=venmo_token))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: Response status code is 422:
+{"message":"The payment card has expired."}
+```
+
+
+### Environment Interaction 36
+----------------------------------------------------------------------------
+```python
+# Try adding money to Venmo balance from Wells Fargo (361)
+print(apis.venmo.add_to_venmo_balance(amount=200, payment_card_id=361, access_token=venmo_token))
+```
+
+```
+{"message": "Money added to Venmo balance.", "bank_transfer_id": 1}
+```
+
+
+### Environment Interaction 37
+----------------------------------------------------------------------------
+```python
+# Now approve the remaining June roommate payment requests using Venmo balance
+for req in june_roommate_pending:
+    result = apis.venmo.approve_payment_request(payment_request_id=req["payment_request_id"], access_token=venmo_token)
+    print(f"Approved {req['payment_request_id']}: {result}")
+```
+
+```
+Approved 6154: {'message': 'Payment request approved.'}
+Approved 6150: {'message': 'Payment request approved.'}
+Approved 6143: {'message': 'Payment request approved.'}
+Approved 6140: {'message': 'Payment request approved.'}
+Approved 6141: {'message': 'Payment request approved.'}
+Approved 6139: {'message': 'Payment request approved.'}
+```
+
+
+### Environment Interaction 38
+----------------------------------------------------------------------------
+```python
+# Verify all June roommate requests are approved
+all_approved = apis.venmo.show_received_payment_requests(access_token=venmo_token, status="approved", page_limit=20)
+roommate_emails = {"an-harrison@gmail.com", "anita.burch@gmail.com", "nicholas.weber@gmail.com"}
+june_roommate_approved = [r for r in all_approved if r["sender"]["email"] in roommate_emails and r["created_at"][:7] == "2023-06"]
+print(f"Approved June roommate requests: {len(june_roommate_approved)}")
+for r in june_roommate_approved:
+    print(r["payment_request_id"], r["sender"]["email"], r["created_at"], r["amount"])
+```
+
+```
+Approved June roommate requests: 13
+6167 nicholas.weber@gmail.com 2023-06-23T10:24:50 49.0
+6168 an-harrison@gmail.com 2023-06-23T10:24:50 148.0
+6166 nicholas.weber@gmail.com 2023-06-22T14:46:31 168.0
+6157 nicholas.weber@gmail.com 2023-06-18T08:29:35 148.0
+6158 anita.burch@gmail.com 2023-06-18T08:29:35 415.0
+6159 an-harrison@gmail.com 2023-06-18T08:29:35 10.0
+6154 anita.burch@gmail.com 2023-06-17T17:07:00 78.0
+6155 nicholas.weber@gmail.com 2023-06-17T17:07:00 68.0
+6156 an-harrison@gmail.com 2023-06-17T17:07:00 11.0
+6150 an-harrison@gmail.com 2023-06-15T17:03:25 11.0
+6147 anita.burch@gmail.com 2023-06-14T08:12:23 16.0
+6148 an-harrison@gmail.com 2023-06-14T08:12:23 13.0
+6149 nicholas.weber@gmail.com 2023-06-14T08:12:23 257.0
+```
+
+
+### Environment Interaction 39
+----------------------------------------------------------------------------
+```python
+apis.supervisor.complete_task()
+```
+
+```
+Execution successful.
+```
+

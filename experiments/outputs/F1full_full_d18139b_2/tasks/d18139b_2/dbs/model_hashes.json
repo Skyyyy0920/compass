@@ -1,11 +1,25 @@
 {
     "venmo": {
-        "User": 5,
-        "PaymentRequest": 3,
-        "Transaction": 3,
-        "Notification": 3
+        "User": 18,
+        "PaymentRequest": 9,
+        "Transaction": 9,
+        "Notification": 9,
+        "BankTransfer": 1
     },
     "admin": {
-        "PaymentCard": 1
+        "PaymentCard": 2
+    },
+    "file_system": {
+        "Directory": 2,
+        "File": 1
+    },
+    "gmail": {
+        "Email": 1,
+        "Attachment": 1,
+        "GlobalEmailThread": 1,
+        "UserEmailThread": 2
+    },
+    "supervisor": {
+        "Task": 1
     }
 }

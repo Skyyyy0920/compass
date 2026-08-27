@@ -15,3 +15,4 @@
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["v7MxzwWWvzQ=",1,"todoist","$3Vx2Pe"],false]
 ["INSERT INTO account_passwords (record_hash, supervisor_id, account_name, password) VALUES (?, ?, ?, ?)",["DQ3l/JXJw3w=",1,"venmo","+vNSutx"],false]
 ["INSERT INTO tasks (status, record_hash, supervisor_id, instruction, answer) VALUES (?, ?, ?, ?, ?)",[null,"GwI+AV13U+k=",1,"Approve all venmo payment requests from my roommates from this calendar month.","\"<<NOT_GIVEN>>\""],false]
+["UPDATE tasks SET status=?, record_hash=?, answer=? WHERE tasks.id = ?",["success","Xw8jPSGJcWo=","null",1],false]
