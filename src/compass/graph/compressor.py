@@ -37,7 +37,7 @@ class CompassCompressor(Compressor):
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
                  adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
                  narrate: bool = False, proj: bool = False, mem: bool = False,
-                 narrative: bool = False, narrative_tokens: int = 450):
+                 narrative: bool = False, narrative_tokens: int = 450, nar_prompts: str = "progress"):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.flow = flow
@@ -53,6 +53,7 @@ class CompassCompressor(Compressor):
         self.last_setup_code: str | None = None
         self.narrative = narrative and llm is not None   # OpenClaw-style progress note above the evidence layer
         self.narrative_tokens = narrative_tokens
+        self.nar_prompts = nar_prompts
 
     def compress(self, task: str, prev_summary: str | None, turns: list[dict]) -> str:
         key = _h(prev_summary)
@@ -83,7 +84,7 @@ class CompassCompressor(Compressor):
             try:
                 g.narrative = progress_note(self.llm, task, g.narrative, [t for t in clip_turns(turns)
                                                                        if f"s{t['step']}" in new_ids],
-                                            self.narrative_tokens)
+                                            self.narrative_tokens, self.nar_prompts)
             except Exception as e:  # noqa: BLE001
                 g.log.append({"drop": "narrative_call_failed", "err": str(e)[:200]})
             note_tokens = count_tokens(g.narrative or "")
@@ -110,7 +111,8 @@ class CompassCompressor(Compressor):
             text, level = render_to_budget(g, max(400, self.summary_budget - note_tokens), new_ids[-3:],
                                            proj=self.proj, fill=self.proj)
             if g.narrative:
-                text = "PROGRESS NOTE (written at the last compaction; evidence below is exact)\n" \
+                text = ("PROGRESS NOTE (written at the last compaction; advisory -- before completing the task, "
+                        "check its remaining items against the exact evidence below)\n") \
                        + g.narrative.strip() + "\n\n" + text
         degraded = False
         if level == 4 and self.llm is not None and self.use_llm:
@@ -142,11 +144,12 @@ class CompassCompressor(Compressor):
 
 
 
-def progress_note(llm: LLM, task: str, prev: str | None, turns: list[dict], max_tokens: int) -> str:
+def progress_note(llm: LLM, task: str, prev: str | None, turns: list[dict], max_tokens: int,
+                  prompts: str = "progress") -> str:
     """OpenClaw-style progress note (done / in progress / blocked / decisions / next), incrementally
     updated; the evidence layer is rendered separately, so the note is told not to repeat values."""
     hist = turns_to_text(turns)
-    tpl = "progress_update.jinja" if prev else "progress_first.jinja"
+    tpl = f"{prompts}_update.jinja" if prev else f"{prompts}_first.jinja"
     user = Template(load_prompt(tpl)).render(history=hist, prev_summary=prev or "", task=task)
     out = llm.chat([{"role": "system", "content": load_prompt("openclaw_system.jinja")},
                     {"role": "user", "content": user}], tag="narrative").strip()
@@ -224,6 +227,8 @@ VARIANTS = {
     # progress narrative (OpenClaw-style done/in-progress/next) on top of the evidence layer
     "compass_det_nar": {"use_llm": False, "narrative": True},
     "compass_det_mem_nar": {"use_llm": False, "mem": True, "narrative": True},
+    "compass_det_mem_nar2": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress2",
+                             "narrative_tokens": 350},
 }
 
 
