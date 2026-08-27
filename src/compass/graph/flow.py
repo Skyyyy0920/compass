@@ -283,6 +283,7 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
             f"- {_excerpt(i.name, 70)} -> {_excerpt(i.value_hint, 120)}" for i in results[-12:]]
     if executed_all and level <= 2:
         L += ["", "ALREADY EXECUTED: " + ", ".join(list(dict.fromkeys(executed_all))[-25:])]
+    carried = {p for it in g.intents.values() for k, p in getattr(it, "carry", []) if k + p[:60] in shown_keys}
     loose = [f for f in g.facts if f["kind"] == "data" and f["text"] not in carried]
     if loose and level <= 1:
         L += ["", "OTHER DATA EXTRACTED"] + [f"- {_excerpt(f['text'], 160)}" for f in loose[-8:]]
