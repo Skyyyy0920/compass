@@ -257,10 +257,14 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
         L += ["", "API SIGNATURES READ (exact; do not re-read docs)"] + [
             f"- {_excerpt(i.value_hint, 200 if level <= 1 else 120)}" for i in specs[-(20 if level <= 1 else 8):]]
     lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
-    if lists and level <= 1:
-        L += ["", "APPS EXPLORED: " + "; ".join(
-            f"{i.name} ({len((i.value_hint or '').split(','))} apis{', listing truncated' if 'TRUNCATED' in (i.value_hint or '') else ''})"
-            for i in lists[-6:])]
+    if lists and level <= 2:
+        # the per-app api-name listing is what stops api_docs re-reads (v2 kept it through level 2)
+        L += ["", "APPS EXPLORED (api names already listed; do not call api_docs.show_api_descriptions again)"]
+        for i in lists[-6:]:
+            hint = i.value_hint or ""
+            if level == 2 and len(hint) > 300:
+                hint = hint[:300] + " ... (more; listing shortened here)"
+            L.append(f"- {i.name} apis: {hint}")
     carried_vars = {p.split(" =", 1)[0].strip() for it in g.intents.values() for k, p in getattr(it, "carry", [])
                     if k == "var" and k + p[:60] in shown_keys}
     cred_names = {c.split(" =", 1)[0].strip() for c in creds}
@@ -280,9 +284,10 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
             hint = f" -> {_excerpt(i.value_hint, 100 if level <= 1 else 60)}" if keep_hint else ""
             L.append(f"- {i.name}{src}{hint}")
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
-    if results and level <= 1:
-        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored)"] + [
-            f"- {_excerpt(i.name, 70)} -> {_excerpt(i.value_hint, 120)}" for i in results[-12:]]
+    if results and level <= 2:
+        keep, rchars = (20, 160) if level <= 1 else (12, 90)
+        L += ["", "RESULTS ALREADY OBSERVED (printed, not stored; do not call again)"] + [
+            f"- {_excerpt(i.name, 70)} -> {_excerpt(i.value_hint, rchars)}" for i in results[-keep:]]
     if executed_all and level <= 2:
         L += ["", "ALREADY EXECUTED: " + ", ".join(list(dict.fromkeys(executed_all))[-25:])]
     carried = {p for it in g.intents.values() for k, p in getattr(it, "carry", []) if k + p[:60] in shown_keys}
