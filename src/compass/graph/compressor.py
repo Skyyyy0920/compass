@@ -17,7 +17,7 @@ import hashlib
 
 from jinja2 import Template
 
-from ..harness.compressors import Compressor, clip_turns
+from ..harness.compressors import Compressor, clip_turns, turns_to_text
 from ..harness.llm import LLM
 from ..harness.prompt import count_tokens, load_prompt
 from .build import Graph
@@ -36,7 +36,8 @@ class CompassCompressor(Compressor):
     def __init__(self, llm: LLM | None, budget: int = 4096, *, summary_budget: int | None = None,
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
                  adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
-                 narrate: bool = False, proj: bool = False, mem: bool = False):
+                 narrate: bool = False, proj: bool = False, mem: bool = False,
+                 narrative: bool = False, narrative_tokens: int = 450):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.flow = flow
@@ -50,6 +51,8 @@ class CompassCompressor(Compressor):
         self.proj = proj      # field-wise value projection + fill-to-budget
         self.mem = mem        # externalize full observations into the session (_mem) and cite the keys
         self.last_setup_code: str | None = None
+        self.narrative = narrative and llm is not None   # OpenClaw-style progress note above the evidence layer
+        self.narrative_tokens = narrative_tokens
 
     def compress(self, task: str, prev_summary: str | None, turns: list[dict]) -> str:
         key = _h(prev_summary)
@@ -75,6 +78,15 @@ class CompassCompressor(Compressor):
                 g.log.append({"drop": "refine_call_failed", "err": str(e)[:200]})
         if self.det_needs:
             g.augment_needs(new_ids[-3:])
+        note_tokens = 0
+        if self.narrative and new_ids:
+            try:
+                g.narrative = progress_note(self.llm, task, g.narrative, [t for t in clip_turns(turns)
+                                                                       if f"s{t['step']}" in new_ids],
+                                            self.narrative_tokens)
+            except Exception as e:  # noqa: BLE001
+                g.log.append({"drop": "narrative_call_failed", "err": str(e)[:200]})
+            note_tokens = count_tokens(g.narrative or "")
         self.last_setup_code = None
         if self.mem:
             saved = {sid: g.steps[sid]["observation"] for sid in new_ids if _worth_saving(g.steps[sid])}
@@ -95,9 +107,13 @@ class CompassCompressor(Compressor):
                 except Exception:  # noqa: BLE001
                     text = structured
         else:
-            text, level = render_to_budget(g, self.summary_budget, new_ids[-3:], proj=self.proj, fill=self.proj)
+            text, level = render_to_budget(g, max(400, self.summary_budget - note_tokens), new_ids[-3:],
+                                           proj=self.proj, fill=self.proj)
+            if g.narrative:
+                text = "PROGRESS NOTE (written at the last compaction; evidence below is exact)\n" \
+                       + g.narrative.strip() + "\n\n" + text
         degraded = False
-        if level == 4 and self.llm is not None:
+        if level == 4 and self.llm is not None and self.use_llm:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
             try:
                 text = self.llm.chat([{"role": "system", "content": load_prompt("openclaw_system.jinja")},
@@ -124,6 +140,25 @@ class CompassCompressor(Compressor):
                      "use them directly instead of calling the API again.\n")
         return head + f"{summary}\n</history_summary>\n\n"
 
+
+
+def progress_note(llm: LLM, task: str, prev: str | None, turns: list[dict], max_tokens: int) -> str:
+    """OpenClaw-style progress note (done / in progress / blocked / decisions / next), incrementally
+    updated; the evidence layer is rendered separately, so the note is told not to repeat values."""
+    hist = turns_to_text(turns)
+    tpl = "progress_update.jinja" if prev else "progress_first.jinja"
+    user = Template(load_prompt(tpl)).render(history=hist, prev_summary=prev or "", task=task)
+    out = llm.chat([{"role": "system", "content": load_prompt("openclaw_system.jinja")},
+                    {"role": "user", "content": user}], tag="narrative").strip()
+    if count_tokens(out) > max_tokens:
+        lines, kept = out.splitlines(), []
+        for ln in lines:
+            kept.append(ln)
+            if count_tokens("\n".join(kept)) > max_tokens:
+                kept.pop()
+                break
+        out = "\n".join(kept)
+    return out
 
 
 def _worth_saving(step: dict) -> bool:
@@ -186,6 +221,9 @@ VARIANTS = {
     "compass_det_proj": {"use_llm": False, "proj": True},
     "compass_det_mem": {"use_llm": False, "mem": True},
     "compass_det_pm": {"use_llm": False, "proj": True, "mem": True},
+    # progress narrative (OpenClaw-style done/in-progress/next) on top of the evidence layer
+    "compass_det_nar": {"use_llm": False, "narrative": True},
+    "compass_det_mem_nar": {"use_llm": False, "mem": True, "narrative": True},
 }
 
 
@@ -193,7 +231,8 @@ def make_compass(method: str, llm: LLM, budget: int) -> CompassCompressor:
     if method not in VARIANTS:
         raise ValueError(f"unknown compass variant {method}; known: {sorted(VARIANTS)}")
     kw = dict(VARIANTS[method])
-    c = CompassCompressor(None if kw.pop("use_llm", True) is False else llm, budget, **kw,
-                          **({"use_llm": False} if VARIANTS[method].get("use_llm") is False else {}))
+    # the model is always passed: use_llm only governs the intent/plan layer; the narrative and the
+    # level-4 fallback check their own switches
+    c = CompassCompressor(llm, budget, **kw)
     c.name = method
     return c

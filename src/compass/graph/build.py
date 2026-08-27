@@ -34,8 +34,6 @@ class Info:
     source_api: str | None = None  # app.api that produced it (if known)
     value_hint: str | None = None  # short canonical excerpt of the value
     value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
-    value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
-    value_full: str | None = None  # the observation the hint was cut from (for field-wise projection)
     description: str | None = None
     consumers: list[str] = field(default_factory=list)   # step ids that read it
     needed_by: list[str] = field(default_factory=list)   # intent ids predicted to need it
@@ -69,8 +67,7 @@ class Graph:
         self.calls_ok: dict[str, int] = {}       # call form -> times it executed without error
         self.calls_failed: dict[str, str] = {}   # call form -> last error line (cleared on later success)
         self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
-        self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
-        self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
+        self.narrative: str | None = None        # LLM progress note (done / in progress / next), if enabled
         self._n_info = 0
         self._n_intent = 0
         self._n_fact = 0
@@ -353,6 +350,7 @@ class Graph:
                 "intents": {k: asdict(v) for k, v in self.intents.items()}, "facts": self.facts,
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
                 "calls_ok": self.calls_ok, "calls_failed": self.calls_failed, "mem_keys": self.mem_keys,
+                "narrative": self.narrative,
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
@@ -367,8 +365,7 @@ class Graph:
         g.calls_ok = d.get("calls_ok", {})
         g.calls_failed = d.get("calls_failed", {})
         g.mem_keys = d.get("mem_keys", [])
-        g.mem_keys = d.get("mem_keys", [])
-        g.mem_keys = d.get("mem_keys", [])
+        g.narrative = d.get("narrative")
         g._n_info, g._n_intent, g._n_fact = d["counters"]
         g.log = d.get("log", [])
         return g
@@ -452,8 +449,6 @@ def _value_hint(step: dict, name: str) -> str | None:
 
 
 SMALL_VALUE_CHARS = 900
-VALUE_FULL_CHARS = 6000
-VALUE_FULL_CHARS = 6000
 VALUE_FULL_CHARS = 6000
 
 
