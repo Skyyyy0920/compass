@@ -15,7 +15,7 @@ already called (the refetch guard v1 lacked).
 from __future__ import annotations
 
 from ..harness.prompt import count_tokens
-from compass.graph.project import focus_tokens, project
+from .project import focus_tokens, parse, project
 from .build import Graph, Info, Intent, compact_step_view
 
 
@@ -70,7 +70,11 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
         return _short(i.value_hint, n)
 
     def M(i: Info) -> str:
-        return f"_mem['{i.producer}'] " if (i.kind == "api_result" and i.producer in mem) else ""
+        if i.kind != "api_result" or i.producer not in mem:
+            return ""
+        obj = parse(i.value_full) if i.value_full else None
+        kind = (f"list of {len(obj)}" if isinstance(obj, list) else "dict" if isinstance(obj, dict) else "str")
+        return f"_mem['{i.producer}'] ({kind}) "
 
     L: list[str] = ["GOAL", g.goal.strip()]
     if g.legacy_summary and level <= 1:
@@ -175,7 +179,7 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
     if results and level <= 2:
         keep, chars = (20, 160) if level <= 1 else (12, 90)
         L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again"
-              + ("; the full text is saved in the session: print(_mem['<step>']) to read it)" if mem else ")")]
+              + ("; full results are saved in the session as _mem['<step>'] -- parsed JSON, index it like the API result or print it)" if mem else ")")]
         for i in results[-keep:]:
             L.append(f"- {M(i)}{_short(i.name, 90)} -> {V(i, chars)}")
 

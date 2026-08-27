@@ -120,8 +120,8 @@ class CompassCompressor(Compressor):
         head = ("\n\n<history_summary>\nThe conversation so far was compacted into this plan-graph checkpoint. "
                 "Variables listed as LIVE are still defined in the Python session.\n")
         if self.mem:
-            head += ("Full observations marked _mem['sN'] are saved in the Python session: print(_mem['sN']) "
-                     "to read one instead of calling the API again.\n")
+            head += ("Results marked _mem['sN'] are saved in the Python session as parsed objects (list/dict or text): "
+                     "use them directly instead of calling the API again.\n")
         return head + f"{summary}\n</history_summary>\n\n"
 
 
@@ -132,11 +132,19 @@ def _worth_saving(step: dict) -> bool:
         and obs != "Execution successful."
 
 
+def mem_value(obs: str, limit: int = 20000):
+    from compass.graph.project import parse
+    obj = parse(obs) if len(obs) <= limit else None
+    return obj if obj is not None else obs[:limit]
+
+
 def mem_setup_code(saved: dict[str, str], limit: int = 20000) -> str:
     """Code executed in the agent's Python session at the boundary: it stores the full observations
     of the absorbed steps under their step ids. Nothing is sent to the model; the checkpoint only
     cites the keys."""
-    items = ", ".join(f"{k!r}: {v[:limit]!r}" for k, v in saved.items())
+    # JSON observations are stored parsed (list/dict), so the agent can index them the way it
+    # indexes an API result; anything else is stored as the text that was printed
+    items = ", ".join(f"{k!r}: {mem_value(v, limit)!r}" for k, v in saved.items())
     return "try:\n    _mem\nexcept NameError:\n    _mem = {}\n_mem.update({" + items + "})"
 
 

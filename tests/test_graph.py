@@ -155,10 +155,10 @@ def test_proj_render_and_mem_setup():
     proj = render(g, 0, ["s2"], proj=True)
     assert proj.count("release_date=") >= 2 and "_mem[" not in proj
     g.mem_keys.append("s1")
-    assert "_mem['s1'] " in render(g, 0, ["s2"], proj=True)
+    assert "_mem['s1'] (list of 1) " in render(g, 0, ["s2"], proj=True)
     code = mem_setup_code({"s1": obs})
     ns: dict = {}
     exec(code, ns)
-    assert ns["_mem"]["s1"] == obs
+    assert ns["_mem"]["s1"][0]["song_id"] == 55      # parsed, indexable like the API result
     exec(mem_setup_code({"s2": "x"}), ns)
     assert set(ns["_mem"]) == {"s1", "s2"}
