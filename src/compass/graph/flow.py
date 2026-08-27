@@ -83,7 +83,7 @@ def attach_to_frontier(g: Graph, recent_ids: list[str], *, per_node: int = 6) ->
         # (b) values this node needs (proposal + deterministic needs)
         for n in it.needs:
             i = g.infos.get(n)
-            if i and i.kind == "runtime_reference" and not i.superseded:
+            if i and i.kind == "runtime_reference" and not i.superseded and not CRED.search(i.name):
                 add("var", i.name + (f" = {_excerpt(i.value_hint, 120)}" if i.value_hint else
                                      (f" = {i.source_api}(...)" if i.source_api else "")))
         # (c) values produced by this node's own or its parent's evidence
@@ -95,7 +95,8 @@ def attach_to_frontier(g: Graph, recent_ids: list[str], *, per_node: int = 6) ->
                     continue
                 for iid in st["produces"]:
                     i = g.infos.get(iid)
-                    if i and i.kind == "runtime_reference" and not i.superseded and i.value_hint:
+                    if i and i.kind == "runtime_reference" and not i.superseded and i.value_hint \
+                            and not CRED.search(i.name):
                         add("var", f"{i.name} = {_excerpt(i.value_hint, 120)}")
         # (d) data facts and observed results about the same entities
         for f in data_facts:
@@ -104,14 +105,18 @@ def attach_to_frontier(g: Graph, recent_ids: list[str], *, per_node: int = 6) ->
         for r in results[-20:]:
             if len(toks & _tokens(r.name + " " + (r.value_hint or ""))) >= 2:
                 add("result", f"{_excerpt(r.name, 70)} -> {_excerpt(r.value_hint, 120)}")
-        # (e) credentials go with the first open node (every call needs them)
-        if pos == 0:
-            for c in creds[-4:]:
-                add("var", c.name + (f" = {_excerpt(c.value_hint, 80)}" if c.value_hint else ""))
         firsts = [c for c in carry if c[0] != "ref"]
         refs = [c for c in carry if c[0] == "ref"]
-        it.carry = firsts[:(per_node + 4 if pos == 0 else per_node)] + refs[:3]
+        it.carry = firsts[:per_node] + refs[:3]
+        # anything that fell off this node's cap must not be referenced by later nodes
+        kept = {k + p[:60] for k, p in it.carry}
+        for key, owner in list(placed.items()):
+            if owner == it.id and key not in kept:
+                del placed[key]
         total += len(firsts)
+    # credentials are rendered once, globally (every call needs them; they must never be cap-cut)
+    g.credentials = [c.name + (f" = {_excerpt(c.value_hint, 80)}" if c.value_hint else
+                              (f" = {c.source_api}(...)" if c.source_api else "")) for c in creds[-6:]]
     return total
 
 
@@ -190,6 +195,11 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
         if g.steps[s]["status"] == "ok":
             executed_all += [a for a in g.steps[s]["api_names"] if not a.startswith("api_docs")]
     tree = _tree(g)
+    creds = getattr(g, "credentials", [])
+    if creds:
+        L += ["", "CREDENTIALS (still bound; reuse, do not re-login): " + "; ".join(creds)]
+    shown_keys: set[str] = set()
+    rendered_nodes: set[str] = set()
     if tree:
         L += ["", "PLAN  ([x] done  [>] active  [ ] pending  [!] blocked  [-] invalidated; open nodes list what they carry)"]
         skip: set[str] = set()
@@ -220,12 +230,21 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
             if it.note and it.status in ("blocked", "active"):
                 line += f"  -- {_excerpt(it.note, 100)}"
             L.append(line)
-            for kind, payload in getattr(it, "carry", [])[:cap]:
+            shown = getattr(it, "carry", [])[:cap]
+            shown_keys.update(k + p[:60] for k, p in shown)
+            for kind, payload in shown:
+                if kind == "ref":
+                    target = payload.split("(see ", 1)[-1].rstrip(")")
+                    if target not in rendered_nodes:
+                        continue
                 L.append(f"{ind}    {TAG[kind]}: {_excerpt(payload, chars + (60 if kind == 'api' else 0))}")
+            rendered_nodes.add(it.id)
     # ---- global evidence layer (kept: it is where the measured gains come from); items a node
     # already carries are not repeated here
-    carried = {p for it in g.intents.values() for _, p in getattr(it, "carry", [])}
-    carried_short = {p[:60] for p in carried}
+    # only items actually rendered on a node count as carried; cap-cut ones fall back to the global sections
+    carried_short = {k[4:] if k.startswith(("api", "call", "var", "data")) else k for k in shown_keys}
+    carried_short = {p[:60] for k, p in ((k2, p2) for it in g.intents.values() for k2, p2 in getattr(it, "carry", []))
+                     if k + p[:60] in shown_keys}
     forms = [f for f in list(g.calls_ok) if f[:60] not in carried_short]
     if forms and level <= 2:
         L += ["", "CALL SHAPES THAT WORKED (argument names; reuse, do not re-login)"] + [f"- {f}" for f in forms[-(24 if level <= 1 else 12):]]
@@ -240,13 +259,23 @@ def render_flow(g: Graph, level: int, recent_ids: list[str]) -> str:
         L += ["", "APPS EXPLORED: " + "; ".join(
             f"{i.name} ({len((i.value_hint or '').split(','))} apis{', listing truncated' if 'TRUNCATED' in (i.value_hint or '') else ''})"
             for i in lists[-6:])]
-    carried_vars = {p.split(" =", 1)[0].strip() for it in g.intents.values() for k, p in getattr(it, "carry", []) if k == "var"}
-    live = [i for i in g.infos.values() if i.kind == "runtime_reference" and not i.superseded and i.name not in carried_vars]
-    if live and level <= 2:
+    carried_vars = {p.split(" =", 1)[0].strip() for it in g.intents.values() for k, p in getattr(it, "carry", [])
+                    if k == "var" and k + p[:60] in shown_keys}
+    cred_names = {c.split(" =", 1)[0].strip() for c in creds}
+    live = [i for i in g.infos.values() if i.kind == "runtime_reference" and not i.superseded
+            and i.name not in carried_vars and i.name not in cred_names]
+    if live:
+        # needed-by-frontier values keep their hint at every level (v2's floor); the rest thin out
+        needed = set()
+        for it in g.frontier():
+            needed.update(g.infos[n].name for n in it.needs if n in g.infos)
+        recent = set(recent_ids)
+        live.sort(key=lambda i: (i.name not in needed, not any(c in recent for c in i.consumers)))
         L += ["", "OTHER LIVE VARIABLES (still bound in the Python session)"]
-        for i in live[-(30 if level <= 1 else 12):]:
+        for i in live[:(30 if level <= 1 else 14)]:
             src = f" = {i.source_api}(...)" if i.source_api else ""
-            hint = f" -> {_excerpt(i.value_hint, 100 if level <= 1 else 50)}" if (i.value_hint and level <= 1) else ""
+            keep_hint = i.value_hint and (level <= 1 or i.name in needed)
+            hint = f" -> {_excerpt(i.value_hint, 100 if level <= 1 else 60)}" if keep_hint else ""
             L.append(f"- {i.name}{src}{hint}")
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
     if results and level <= 1:
