@@ -112,8 +112,10 @@ class CompassCompressor(Compressor):
                                            proj=self.proj, fill=self.proj)
             if g.narrative:
                 text = ("PROGRESS NOTE (written at the last compaction; advisory -- before completing the task, "
-                        "check its remaining items against the exact evidence below)\n") \
-                       + g.narrative.strip() + "\n\n" + text
+                        "check its remaining items against the exact evidence below"
+                        + ("; do only what the task asks -- no extra modifications, and pass an answer to "
+                           "complete_task only if the task asks for one" if self.nar_prompts == "progress4" else "")
+                        + ")\n") + g.narrative.strip() + "\n\n" + text
         degraded = False
         if level == 4 and self.llm is not None and self.use_llm:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
@@ -230,6 +232,8 @@ VARIANTS = {
     "compass_det_mem_nar2": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress2",
                              "narrative_tokens": 350},
     "compass_det_nar2": {"use_llm": False, "narrative": True, "nar_prompts": "progress2", "narrative_tokens": 350},
+    "compass_det_mem_nar4": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress4",
+                             "narrative_tokens": 420},
     "compass_det_mem_nar3": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress3",
                              "narrative_tokens": 420},
     "compass_det_nar3": {"use_llm": False, "narrative": True, "nar_prompts": "progress3", "narrative_tokens": 420},
