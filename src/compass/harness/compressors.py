@@ -100,4 +100,47 @@ class AconUTCO(AconUT):
     template = "acon_utco.jinja"
 
 
-BASELINES = {c.name: c for c in (FIFO, OpenClaw, Hermes, AconUT, AconUTCO)}
+class OpenClawMem(OpenClaw):
+    """OpenClaw with the same environment-side memory interface as COMPASS+ExternalMemory:
+    the absorbed observations are stored parsed in the session as _mem['sN'] and the
+    summary gets an index of the keys. Fairness control for the externalization channel."""
+    name = "openclaw_mem"
+
+    def compress(self, task, prev_summary, turns):
+        from ..eval.signatures import is_error, sigs
+        from ..graph.compressor import mem_setup_code, mem_value
+        from ..graph.project import parse
+        self.last_setup_code = None
+        base = prev_summary.split(NL_MARK, 1)[0].strip() if prev_summary and NL_MARK in prev_summary else prev_summary
+        text = super().compress(task, base, turns)
+        saved, lines = {}, []
+        for t in clip_turns(turns):
+            obs = (t.get("observation") or "").strip()
+            calls = sigs(t.get("code") or "")
+            if not calls or is_error(obs) or len(obs) <= 40 or obs == "Execution successful.":
+                continue
+            key = f"s{t['step']}"
+            saved[key] = obs
+            obj = parse(obs)
+            shape = (f"list of {len(obj)}" if isinstance(obj, list) else "dict" if isinstance(obj, dict) else "str")
+            lines.append(f"- _mem['{key}'] ({shape}) {calls[0][:80]} -> {obs[:90].replace(NL_CHR, ' ')}")
+        if saved:
+            self.last_setup_code = mem_setup_code(saved)
+        index = getattr(self, "_index", [])
+        index = (index + lines)[-40:]
+        self._index = index
+        if index:
+            text += NL_CHR + NL_CHR + NL_MARK + NL_CHR + NL_CHR.join(index)
+        return text
+
+    def render_context(self, summary):
+        return ("\n\n<history_summary>\n" + summary + "\n\nResults marked _mem['sN'] are saved in the Python session "
+                "as parsed objects: use them directly instead of calling the API again.\n</history_summary>\n\n")
+
+
+
+NL_MARK = "SAVED RESULTS (full objects kept in the Python session; index them instead of re-calling)"
+NL_CHR = "\n"
+
+
+BASELINES = {c.name: c for c in (FIFO, OpenClaw, OpenClawMem, Hermes, AconUT, AconUTCO)}
