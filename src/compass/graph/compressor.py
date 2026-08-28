@@ -14,6 +14,7 @@ Variants (method names accepted by ``make_compass``):
 from __future__ import annotations
 
 import hashlib
+import re
 
 from jinja2 import Template
 
@@ -88,6 +89,9 @@ class CompassCompressor(Compressor):
                                             self.narrative_tokens, self.nar_prompts)
             except Exception as e:  # noqa: BLE001
                 g.log.append({"drop": "narrative_call_failed", "err": str(e)[:200]})
+            if g.narrative and self.nar_prompts == "progress5":
+                g.narrative, ng = ground_note(g.narrative, g)
+                stats["note_downgraded"] = ng
             note_tokens = count_tokens(g.narrative or "")
         self.last_setup_code = None
         if self.mem:
@@ -115,7 +119,7 @@ class CompassCompressor(Compressor):
                 text = ("PROGRESS NOTE (written at the last compaction; advisory -- before completing the task, "
                         "check its remaining items against the exact evidence below"
                         + ("; do only what the task asks -- no extra modifications, and pass an answer to "
-                           "complete_task only if the task asks for one" if self.nar_prompts == "progress4" else "")
+                           "complete_task only if the task asks for one" if self.nar_prompts in ("progress4", "progress5") else "")
                         + ")\n") + g.narrative.strip() + "\n\n" + text
         degraded = False
         if level == 4 and self.llm is not None and self.use_llm:
@@ -165,6 +169,26 @@ def progress_note(llm: LLM, task: str, prev: str | None, turns: list[dict], max_
                 break
         out = "\n".join(kept)
     return out
+
+
+STEP_ID_RE = re.compile(r"\bs\d+\b")
+STATUS_RE = re.compile(r"(?<!NOT )(?<!NOT_)\b(DONE|PARTIAL)\b")
+
+
+def ground_note(note: str, g) -> tuple[str, int]:
+    """Requirement-state grounding by construction: a DONE / PARTIAL status survives only if the
+    line cites step ids that exist in the graph and executed without error; otherwise the status
+    is rewritten as NOT DONE (unverified). Returns the note and the number of downgraded lines."""
+    out, n = [], 0
+    for line in note.splitlines():
+        if STATUS_RE.search(line) and not line.lstrip().startswith("#"):
+            ids = STEP_ID_RE.findall(line)
+            ok = bool(ids) and all(i in g.steps and g.steps[i].get("status") == "ok" for i in ids)
+            if not ok:
+                line = STATUS_RE.sub("NOT DONE (unverified)", line, count=1)
+                n += 1
+        out.append(line)
+    return "\n".join(out), n
 
 
 def _worth_saving(step: dict) -> bool:
@@ -236,6 +260,9 @@ VARIANTS = {
     "compass_det_mem_nar4": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress4",
                              "narrative_tokens": 420},
     "compass_det_nar4": {"use_llm": False, "narrative": True, "nar_prompts": "progress4", "narrative_tokens": 420},
+    "compass_det_nar5": {"use_llm": False, "narrative": True, "nar_prompts": "progress5", "narrative_tokens": 450},
+    "compass_det_mem_nar5": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress5",
+                             "narrative_tokens": 450},
     "compass_det_mem_nar3": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress3",
                              "narrative_tokens": 420},
     "compass_det_nar3": {"use_llm": False, "narrative": True, "nar_prompts": "progress3", "narrative_tokens": 420},
