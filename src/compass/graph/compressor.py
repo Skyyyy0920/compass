@@ -62,6 +62,7 @@ class CompassCompressor(Compressor):
             rebuilt = False
         else:
             g = Graph(task)
+            g.call_prefix = "apis." if self.adapter == "codeact" else ""
             g.legacy_summary = prev_summary
             rebuilt = prev_summary is not None
         new_ids = []

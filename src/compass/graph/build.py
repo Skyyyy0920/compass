@@ -68,6 +68,7 @@ class Graph:
         self.calls_failed: dict[str, str] = {}   # call form -> last error line (cleared on later success)
         self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
         self.narrative: str | None = None        # LLM progress note (done / in progress / next), if enabled
+        self.call_prefix: str = ""              # how the agent must spell a tool call (CodeAct: 'apis.')
         self._n_info = 0
         self._n_intent = 0
         self._n_fact = 0
@@ -350,7 +351,7 @@ class Graph:
                 "intents": {k: asdict(v) for k, v in self.intents.items()}, "facts": self.facts,
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
                 "calls_ok": self.calls_ok, "calls_failed": self.calls_failed, "mem_keys": self.mem_keys,
-                "narrative": self.narrative,
+                "narrative": self.narrative, "call_prefix": self.call_prefix,
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
@@ -366,6 +367,7 @@ class Graph:
         g.calls_failed = d.get("calls_failed", {})
         g.mem_keys = d.get("mem_keys", [])
         g.narrative = d.get("narrative")
+        g.call_prefix = d.get("call_prefix", "")
         g._n_info, g._n_intent, g._n_fact = d["counters"]
         g.log = d.get("log", [])
         return g

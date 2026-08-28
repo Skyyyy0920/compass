@@ -73,7 +73,13 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
         if i.kind != "api_result" or i.producer not in mem:
             return ""
         obj = parse(i.value_full) if i.value_full else None
-        kind = (f"list of {len(obj)}" if isinstance(obj, list) else "dict" if isinstance(obj, dict) else "str")
+        if isinstance(obj, list):
+            keys = list(obj[0].keys())[:6] if obj and isinstance(obj[0], dict) else []
+            kind = f"list of {len(obj)}" + (f" dicts with keys {', '.join(keys)}" if keys else "")
+        elif isinstance(obj, dict):
+            kind = "dict with keys " + ", ".join(list(obj.keys())[:8])
+        else:
+            kind = "str"
         return f"_mem['{i.producer}'] ({kind}) "
 
     L: list[str] = ["GOAL", g.goal.strip()]
@@ -122,10 +128,10 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
 
     if g.calls_ok and level <= 2:
         L += ["", "CALL FORMS THAT WORKED (exact argument names; reuse them, do not re-login)"]
-        L += [f"- {f}" for f in list(g.calls_ok)[-30:]]
+        L += [f"- {g.call_prefix}{f}" for f in list(g.calls_ok)[-30:]]
     if g.calls_failed and level <= 2:
         L += ["", "CALL FORMS THAT FAILED (do not repeat as written)"]
-        L += [f"- {f} -> {e}" for f, e in list(g.calls_failed.items())[-8:]]
+        L += [f"- {g.call_prefix}{f} -> {e}" for f, e in list(g.calls_failed.items())[-8:]]
     lists = [i for i in g.infos.values() if i.kind == "api_list" and i.name != "apps"]
     specs = [i for i in g.infos.values() if i.kind == "api_spec"]
     if lists or specs:
@@ -137,7 +143,7 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
                     hint = hint[:300] + " ... (more; listing shortened here)"
                 L.append(f"- {i.name} apis: {hint}")
         for i in specs[-(25 if level <= 1 else 12):]:
-            L.append(f"- {_short(i.value_hint, 220 if level <= 1 else 150)}")
+            L.append(f"- {g.call_prefix}{_short(i.value_hint, 220 if level <= 1 else 150)}")
 
     if level <= 1:
         infos = g.live_infos(recent_steps=3 if level == 1 else 8)
@@ -254,12 +260,12 @@ def render_bounded(g: Graph, recent_ids: list[str], *, max_items: int = 8, hint_
     specs = [i for i in g.infos.values() if i.kind == "api_spec"]
     pri = [i for i in specs if i.name in used_recent] + [i for i in specs if i.name not in used_recent]
     if specs:
-        L += ["", "API SIGNATURES (exact; do not re-read docs)"] + [f"- {_short(i.value_hint, 150)}" for i in pri[:max_items]]
+        L += ["", "API SIGNATURES (exact; do not re-read docs)"] + [f"- {g.call_prefix}{_short(i.value_hint, 150)}" for i in pri[:max_items]]
     ok_forms = list(g.calls_ok)[-max_items:]
     if ok_forms:
-        L += ["", "CALL FORMS THAT WORKED"] + [f"- {f}" for f in ok_forms]
+        L += ["", "CALL FORMS THAT WORKED"] + [f"- {g.call_prefix}{f}" for f in ok_forms]
     if g.calls_failed:
-        L += ["", "CALL FORMS THAT FAILED"] + [f"- {f} -> {_short(e, 80)}" for f, e in list(g.calls_failed.items())[-4:]]
+        L += ["", "CALL FORMS THAT FAILED"] + [f"- {g.call_prefix}{f} -> {_short(e, 80)}" for f, e in list(g.calls_failed.items())[-4:]]
     # state: needed by open intents first, then recently consumed, then most recent bindings
     needed: list[Info] = []
     for it in front:

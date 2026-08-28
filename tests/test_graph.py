@@ -155,7 +155,9 @@ def test_proj_render_and_mem_setup():
     proj = render(g, 0, ["s2"], proj=True)
     assert proj.count("release_date=") >= 2 and "_mem[" not in proj
     g.mem_keys.append("s1")
-    assert "_mem['s1'] (list of 1) " in render(g, 0, ["s2"], proj=True)
+    assert "_mem['s1'] (list of 1 dicts with keys song_id, title, release_date, duration) " in render(g, 0, ["s2"], proj=True)
+    g.call_prefix = "apis."
+    assert "- apis.spotify.search_songs(" in render(g, 0, ["s2"])
     code = mem_setup_code({"s1": obs})
     ns: dict = {}
     exec(code, ns)
