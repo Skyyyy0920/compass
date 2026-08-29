@@ -69,6 +69,13 @@ class Graph:
         self.mem_keys: list[str] = []            # step ids whose full observation was saved in the session (_mem)
         self.narrative: str | None = None        # LLM progress note (done / in progress / next), if enabled
         self.call_prefix: str = ""              # how the agent must spell a tool call (CodeAct: 'apis.')
+        # bounded private state: raw observations are cut to obs_keep chars once extraction is done
+        # (0 = keep whole, only for the externalization / projection variants), and the whole graph
+        # payload is held under graph_budget chars (0 = unbounded) by evicting the oldest evidence first
+        self.obs_keep: int = 600
+        self.graph_budget: int = 0
+        self.requirements: list[dict] = []       # V^requirement: {id, text, status, supports: [step ids]}
+        self.bytes_log: list[dict] = []          # graph payload size per boundary
         self._n_info = 0
         self._n_intent = 0
         self._n_fact = 0
@@ -168,7 +175,52 @@ class Graph:
                             value_hint=hint, value_full=obs[:VALUE_FULL_CHARS])
                 self.infos[info.id] = info
                 s["produces"].append(info.id)
+        if self.obs_keep:
+            # Q_k = Extract(delta tau): everything above was read from the raw observation; from here on
+            # only the bounded excerpt survives in the graph, the raw text is dropped
+            s["observation"] = _excerpt(s["observation"], self.obs_keep)
+            s["printed"] = {}          # parsed observation, only needed while extracting hints above
+            for iid in s["produces"]:
+                self.infos[iid].value_full = None
         return s
+
+    # ------------------------------------------------------------------ bounded private state
+    def payload_bytes(self) -> int:
+        import json as _json
+        return len(_json.dumps(self.to_dict(), ensure_ascii=False))
+
+    def enforce_budget(self) -> dict:
+        """Hold the serialized graph under graph_budget chars: oldest steps lose their observation
+        excerpt and code first, then the oldest result hints shrink, then superseded infos go."""
+        before = self.payload_bytes()
+        if not self.graph_budget or before <= self.graph_budget:
+            self.bytes_log.append({"n_steps": len(self.steps), "bytes": before, "evicted": 0})
+            return {"before": before, "after": before, "evicted": 0}
+        evicted = 0
+        for s in list(self.steps.values()):
+            if self.payload_bytes() <= self.graph_budget:
+                break
+            if s.get("observation") or len(s.get("code", "")) > 200:
+                s["observation"] = ""
+                s["code"] = s.get("code", "")[:200]
+                evicted += 1
+        if self.payload_bytes() > self.graph_budget:
+            for i in list(self.infos.values()):
+                if self.payload_bytes() <= self.graph_budget:
+                    break
+                if i.kind == "api_result" and i.value_hint and len(i.value_hint) > 90:
+                    i.value_hint = i.value_hint[:90] + "..."
+                    evicted += 1
+        if self.payload_bytes() > self.graph_budget:
+            for k, i in list(self.infos.items()):
+                if self.payload_bytes() <= self.graph_budget:
+                    break
+                if i.superseded:
+                    del self.infos[k]
+                    evicted += 1
+        after = self.payload_bytes()
+        self.bytes_log.append({"n_steps": len(self.steps), "bytes": after, "evicted": evicted})
+        return {"before": before, "after": after, "evicted": evicted}
 
     # ------------------------------------------------------------------ intents
     def add_intent(self, description: str, parent: str | None = None, iid: str | None = None) -> Intent | None:
@@ -352,6 +404,8 @@ class Graph:
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
                 "calls_ok": self.calls_ok, "calls_failed": self.calls_failed, "mem_keys": self.mem_keys,
                 "narrative": self.narrative, "call_prefix": self.call_prefix,
+                "requirements": self.requirements, "obs_keep": self.obs_keep,
+                "graph_budget": self.graph_budget, "bytes_log": self.bytes_log[-50:],
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
@@ -368,6 +422,10 @@ class Graph:
         g.mem_keys = d.get("mem_keys", [])
         g.narrative = d.get("narrative")
         g.call_prefix = d.get("call_prefix", "")
+        g.requirements = d.get("requirements", [])
+        g.obs_keep = d.get("obs_keep", 600)
+        g.graph_budget = d.get("graph_budget", 0)
+        g.bytes_log = d.get("bytes_log", [])
         g._n_info, g._n_intent, g._n_fact = d["counters"]
         g.log = d.get("log", [])
         return g

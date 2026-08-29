@@ -149,6 +149,7 @@ def test_proj_render_and_mem_setup():
     from compass.graph.compressor import mem_setup_code
     from compass.graph.render import render
     g = Graph("Add release month for every liked song")
+    g.obs_keep = 0     # externalization / projection variants keep the raw observation
     obs = '[{"song_id": 55, "title": "Tangled Lies", "release_date": "2022-03-12", "duration": 186}]'
     g.add_turn({"step": 1, "code": "print(apis.spotify.search_songs(query='Tangled Lies'))", "observation": obs})
     g.add_turn({"step": 2, "code": "r = apis.spotify.search_songs(query='Other')\nprint(r)", "observation": obs})
@@ -164,3 +165,23 @@ def test_proj_render_and_mem_setup():
     assert ns["_mem"]["s1"][0]["song_id"] == 55      # parsed, indexable like the API result
     exec(mem_setup_code({"s2": "x"}), ns)
     assert set(ns["_mem"]) == {"s1", "s2"}
+
+
+def test_bounded_private_graph_and_requirements():
+    from compass.graph.compressor import parse_requirements, splice_requirements
+    g = Graph("Send $20 to each coworker")
+    g.obs_keep, g.graph_budget = 100, 7000
+    big = "[" + ", ".join('{"id": %d, "name": "user%d"}' % (i, i) for i in range(200)) + "]"
+    for k in range(1, 8):
+        g.add_turn({"step": k, "code": f"r{k} = apis.phone.search_contacts(page_index={k})\nprint(r{k})", "observation": big})
+    assert all(len(s["observation"]) <= 104 for s in g.steps.values())   # raw observation gone after Apply
+    assert all(i.value_full is None for i in g.infos.values())
+    st = g.enforce_budget()
+    assert st["after"] <= 7000 and st["evicted"] > 0 and g.bytes_log[-1]["bytes"] == st["after"]
+    note = ('## Task requirements\n- "send $20 to each coworker" -- PARTIAL (2 of 5) [s1, s2]\n'
+            '- "add a note" -- DONE\n- "refill balance" -- DONE [s99]\n## Next Steps\n1. continue')
+    reqs = parse_requirements(note, g)
+    assert [r["status"] for r in reqs] == ["PARTIAL", "NOT DONE", "NOT DONE"]
+    assert reqs[0]["supports"] == ["s1", "s2"] and reqs[2]["supports"] == []
+    out = splice_requirements(note, reqs)
+    assert "verified status" in out and "- r1:" in out and "## Next Steps" in out

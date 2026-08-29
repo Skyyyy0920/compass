@@ -64,6 +64,10 @@ class CompassCompressor(Compressor):
         else:
             g = Graph(task)
             g.call_prefix = "apis." if self.adapter == "codeact" else ""
+            # externalization / projection need the raw observation after Apply; the bounded main
+            # method does not, and holds the private graph under B_G = GRAPH_BUDGET_CHARS
+            g.obs_keep = 0 if (self.mem or self.proj) else OBS_KEEP_CHARS
+            g.graph_budget = 0 if (self.mem or self.proj) else GRAPH_BUDGET_CHARS
             g.legacy_summary = prev_summary
             rebuilt = prev_summary is not None
         new_ids = []
@@ -92,7 +96,12 @@ class CompassCompressor(Compressor):
             if g.narrative and self.nar_prompts == "progress5":
                 g.narrative, ng = ground_note(g.narrative, g)
                 stats["note_downgraded"] = ng
+                # V^requirement: the note's clauses become nodes with SUPPORTS edges to the cited
+                # steps; the rendered requirement section is regenerated from the nodes
+                g.requirements = parse_requirements(g.narrative, g)
+                g.narrative = splice_requirements(g.narrative, g.requirements)
             note_tokens = count_tokens(g.narrative or "")
+        budget_stats = g.enforce_budget()
         self.last_setup_code = None
         if self.mem:
             saved = {sid: g.steps[sid]["observation"] for sid in new_ids if _worth_saving(g.steps[sid])}
@@ -138,7 +147,9 @@ class CompassCompressor(Compressor):
                            "n_steps": len(g.steps), "n_intents": len(g.intents), "n_infos": len(g.infos),
                            "n_facts": len(g.facts), "summary_tokens": count_tokens(text),
                            "attached": attached, "pruned_steps": pruned,
-                           "refine": stats, "drops": g.log[-10:]}
+                           "refine": stats, "drops": g.log[-10:],
+                           "graph_bytes": budget_stats["after"], "graph_evicted": budget_stats["evicted"],
+                           "n_requirements": len(g.requirements)}
         return text
 
     def render_context(self, summary: str) -> str:
@@ -173,6 +184,53 @@ def progress_note(llm: LLM, task: str, prev: str | None, turns: list[dict], max_
 
 STEP_ID_RE = re.compile(r"\bs\d+\b")
 STATUS_RE = re.compile(r"(?<!NOT )(?<!NOT_)\b(DONE|PARTIAL)\b")
+
+
+OBS_KEEP_CHARS = 600          # bounded extraction: raw observation kept in the graph after Apply
+GRAPH_BUDGET_CHARS = 65536    # B_G: serialized private graph, ~16k tokens (4x the 4096 window)
+REQ_RE = re.compile(r'^\s*-\s*"(?P<text>[^"]{3,}?)"\s*(?:--|-|:)\s*(?P<status>DONE|PARTIAL|NOT DONE)(?P<rest>.*)$')
+
+
+def parse_requirements(note: str, g) -> list[dict]:
+    """Requirement nodes from the verified note: one per quoted instruction clause, with the
+    status the verifier left and SUPPORTS edges to the cited steps (only steps that exist)."""
+    reqs = []
+    for line in note.splitlines():
+        m = REQ_RE.match(line)
+        if not m:
+            continue
+        ids = [i for i in STEP_ID_RE.findall(m.group("rest")) if i in g.steps]
+        status = m.group("status")
+        if status != "NOT DONE" and not ids:
+            status = "NOT DONE"
+        detail = re.sub(r"\[[^\]]*\]", "", m.group("rest")).strip(" ,;()")
+        reqs.append({"id": f"r{len(reqs) + 1}", "text": m.group("text"), "status": status,
+                     "detail": detail[:120], "supports": ids})
+    return reqs
+
+
+def splice_requirements(note: str, reqs: list[dict]) -> str:
+    """Regenerate the requirement section of the note from the requirement nodes."""
+    if not reqs:
+        return note
+    lines = note.splitlines()
+    out, i, replaced = [], 0, False
+    while i < len(lines):
+        line = lines[i]
+        if not replaced and line.startswith("## ") and "requirement" in line.lower():
+            out.append("## Task requirements (quoted from the instruction) and verified status")
+            for r in reqs:
+                sup = f" [{', '.join(r['supports'])}]" if r["supports"] else ""
+                det = f" ({r['detail']})" if r["detail"] else ""
+                out.append(f"- {r['id']}: \"{r['text']}\" -- {r['status']}{det}{sup}")
+            i += 1
+            while i < len(lines) and not lines[i].startswith("## "):
+                i += 1
+            replaced = True
+            continue
+        out.append(line)
+        i += 1
+    return "\n".join(out)
 
 
 def ground_note(note: str, g) -> tuple[str, int]:
