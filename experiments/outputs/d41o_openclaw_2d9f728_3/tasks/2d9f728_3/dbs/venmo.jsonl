@@ -1,5 +1,0 @@
-["UPDATE users SET record_hash=?, venmo_balance=? WHERE users.id = ?",["J1pIKOGgK3A=",7743.0,15],false]
-["INSERT INTO transactions (created_at, updated_at, record_hash, sender_id, receiver_id, amount, description, private, receipt_download_count, like_count, payment_card_digits) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","2023-05-18 12:00:00.000000","6t1H9IGQ98Q=",15,95,166.0,"Dinner",0,0,0,null],false]
-["INSERT INTO transactions_fts (id, saved_search_text) VALUES (?, ?)",[8216,"dinner jordan harrison nancy ritter jo-harr@gmail.com nan_ritt@gmail.com"],false]
-["INSERT INTO notifications (data, created_at, record_hash, user_id, type, title, message, read) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["{\"transaction_id\": 8216, \"action_by_id\": 15}","2023-05-18 12:00:00.000000","VFp7tTnQETk=",95,"received_money","Received money","Jordan Harrison sent you $166.00.",0],false]
-["UPDATE users SET record_hash=?, venmo_balance=? WHERE users.id = ?",["/p1olxiv/tE=",8446.0,95],false]

@@ -1,9 +1,0 @@
-{
-    "spotify": {
-        "Playlist": 1,
-        "PlaylistSong": 2
-    },
-    "supervisor": {
-        "Task": 1
-    }
-}

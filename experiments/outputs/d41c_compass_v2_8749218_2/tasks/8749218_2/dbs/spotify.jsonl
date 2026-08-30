@@ -1,3 +1,0 @@
-["UPDATE music_players SET record_hash=?, is_playing=? WHERE music_players.id = ?",["cCrBx2OfVVs=",0,24],false]
-["INSERT INTO playlists (created_at, record_hash, title, user_id, is_public, rating, like_count, review_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","U/vUms/Qnxk=","AI Recommended & Shuffled",24,0,0.0,0,0],false]
-["INSERT INTO playlists_fts (id, saved_search_text) VALUES (?, ?)",[654,"ai recommended & shuffled"],false]

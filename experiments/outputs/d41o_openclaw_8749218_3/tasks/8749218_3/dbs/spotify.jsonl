@@ -1,7 +1,0 @@
-["INSERT INTO playlists (created_at, record_hash, title, user_id, is_public, rating, like_count, review_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","naoNl8hNz4Y=","Shuffled Liked Songs",100,0,0.0,0,0],false]
-["INSERT INTO playlists_fts (id, saved_search_text) VALUES (?, ?)",[654,"shuffled liked songs"],false]
-["INSERT INTO playlist_songs (added_at, record_hash, playlist_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","e5jBnDGOasQ=",654,301],false]
-["INSERT INTO playlist_songs (added_at, record_hash, playlist_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","iOsBQ0IMyZE=",654,240],false]
-["INSERT INTO playlist_songs (added_at, record_hash, playlist_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","if2px3xCfXg=",654,274],false]
-["INSERT INTO playlist_songs (added_at, record_hash, playlist_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","tHN1YXsAYb0=",654,97],false]
-["INSERT INTO playlist_songs (added_at, record_hash, playlist_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","llUZWxy0jb8=",654,180],false]

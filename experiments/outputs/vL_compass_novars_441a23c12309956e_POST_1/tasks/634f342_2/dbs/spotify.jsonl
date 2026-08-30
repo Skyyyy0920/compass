@@ -1,5 +1,0 @@
-["INSERT INTO playlists (created_at, record_hash, title, user_id, is_public, rating, like_count, review_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","D0PGz3+AW5Q=","Old Songs",27,0,0.0,0,0],false]
-["INSERT INTO playlists_fts (id, saved_search_text) VALUES (?, ?)",[654,"old songs"],false]
-["DELETE FROM playlist_songs WHERE playlist_songs.id = ?",[1155],false]
-["DELETE FROM playlist_songs WHERE playlist_songs.id = ?",[1160],false]
-["DELETE FROM playlist_songs WHERE playlist_songs.id = ?",[1162],false]

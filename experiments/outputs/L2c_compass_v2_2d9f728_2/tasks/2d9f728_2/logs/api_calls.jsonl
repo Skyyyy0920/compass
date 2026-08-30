@@ -1,5 +1,0 @@
-{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "phone"}}
-{"method": "get", "url": "/phone/contact_relationships", "data": {}}
-{"method": "get", "url": "/phone/account", "data": {}}
-{"method": "get", "url": "/api_docs/api_descriptions", "data": {"app_name": "supervisor"}}
-{"method": "post", "url": "/supervisor/message", "data": {"status": "fail"}}

@@ -1,4 +1,0 @@
-["INSERT INTO playlists (created_at, record_hash, title, user_id, is_public, rating, like_count, review_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",["2023-05-18 12:00:00.000000","D0PGz3+AW5Q=","Old Songs",27,0,0.0,0,0],false]
-["INSERT INTO playlists_fts (id, saved_search_text) VALUES (?, ?)",[654,"old songs"],false]
-["DELETE FROM user_library_songs WHERE user_library_songs.id = ?",[263],false]
-["INSERT INTO user_library_songs (created_at, record_hash, user_id, song_id) VALUES (?, ?, ?, ?)",["2023-05-18 12:00:00.000000","OHP9ikhVkuE=",27,188],false]
