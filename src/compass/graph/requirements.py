@@ -246,9 +246,11 @@ class ReqGraph:
         if not self.nodes:
             return ""
         front = {n["id"] for n in self.frontier()}
-        lines = ["TASK REQUIREMENTS (statuses verified against evidence AS OF THE LAST COMPACTION; "
-                 "work done in the turns after it is not reflected here -- trust your recent "
-                 "observations over this list; [>] = executable next)"]
+        # Lower-bound semantics: a status only ever states what evidence already confirmed at the
+        # last compaction. Everything else is rendered as open rather than as "not started", so a
+        # stale line can never contradict work the agent did after that boundary.
+        lines = ["TASK REQUIREMENTS (confirmed progress as of the last compaction -- a LOWER BOUND; "
+                 "anything you did since is simply not recorded here yet; [>] = still open, do next)"]
         shown = 0
 
         def emit(rid: str, depth: int) -> None:
@@ -256,10 +258,13 @@ class ReqGraph:
             if shown >= max_nodes:
                 return
             n = self.nodes[rid]
-            mark = "[>]" if rid in front else {"DONE": "[x]", "BLOCKED": "[!]"}.get(n["status"], "[ ]")
-            cov = f" ({n['count']} of {n['expect']})" if n["expect"] else ""
+            done = n["status"] == "DONE"
+            mark = "[x]" if done else ("[!]" if n["status"] == "BLOCKED" else ("[>]" if rid in front else "[ ]"))
+            state = "confirmed done" if done else ("blocked" if n["status"] == "BLOCKED" else "open")
+            cov = f" (at least {n['count']} of {n['expect']} done)" if n["expect"] and n["count"] else (
+                f" (0 of {n['expect']} confirmed)" if n["expect"] else "")
             ev = f" [{', '.join(n['evidence'][-4:])}]" if n["evidence"] else ""
-            lines.append(f"{'  ' * depth}{mark} {rid}: \"{n['text']}\" -- {n['status']}{cov}{ev}")
+            lines.append(f"{'  ' * depth}{mark} {rid}: \"{n['text']}\" -- {state}{cov}{ev}")
             if rid in front and n["next_action"]:
                 lines.append(f"{'  ' * depth}    next: {n['next_action']}")
             if rid in front and n["needs"]:
