@@ -75,6 +75,7 @@ class CompassCompressor(Compressor):
             g.legacy_summary = prev_summary
             rebuilt = prev_summary is not None
         rg = ReqGraph.from_dict(g.req_graph) if self.frontier_mode else None
+        req_tree = rg.render() if rg is not None else ""
         if self.needs_extract and rg is not None:
             g.extract_specs = [f for spec in rg.frontier_needs() for f in spec["fields"]]
         new_ids = []
@@ -104,7 +105,7 @@ class CompassCompressor(Compressor):
             g.protect_steps = {e for n in rg.frontier() for e in n["evidence"]} | \
                               {e for n in rg.frontier() for a in rg.ancestors(n) for e in a["evidence"]}
             g.protect_infos = set(rg.needed_infos(g.infos))
-            g.narrative = rg.render()
+            req_tree = rg.render()
         note_tokens = 0
         if self.narrative and new_ids:
             try:
@@ -142,19 +143,23 @@ class CompassCompressor(Compressor):
                 except Exception:  # noqa: BLE001
                     text = structured
         else:
-            if rg is not None and g.narrative:
-                note_tokens = count_tokens(g.narrative)
+            # the requirement graph renders the requirement section; the note keeps its
+            # handled / not-yet-done / next-steps content
+            head = req_tree.strip()
+            if g.narrative:
+                body = strip_requirements(g.narrative) if head else g.narrative.strip()
+                head = (head + "\n\n" + body) if (head and body) else (head or body)
+            if head:
+                note_tokens = count_tokens(head)
             text, level = render_to_budget(g, max(400, self.summary_budget - note_tokens), new_ids[-3:],
                                            proj=self.proj, fill=self.proj)
-            if rg is not None and g.narrative:
-                text = ("PROGRESS NOTE (advisory -- do only what the task asks; pass an answer to "
-                        "complete_task only if the task asks for one)\n") + g.narrative.strip() + "\n\n" + text
-            elif g.narrative:
+            if head:
                 text = ("PROGRESS NOTE (written at the last compaction; advisory -- before completing the task, "
                         "check its remaining items against the exact evidence below"
                         + ("; do only what the task asks -- no extra modifications, and pass an answer to "
-                           "complete_task only if the task asks for one" if self.nar_prompts in ("progress4", "progress5") else "")
-                        + ")\n") + g.narrative.strip() + "\n\n" + text
+                           "complete_task only if the task asks for one"
+                           if (rg is not None or self.nar_prompts in ("progress4", "progress5")) else "")
+                        + ")\n") + head + "\n\n" + text
         degraded = False
         if level == 4 and self.llm is not None and self.use_llm:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
@@ -307,6 +312,17 @@ def ground_note(note: str, g) -> tuple[str, int]:
     return "\n".join(out), n
 
 
+def strip_requirements(note: str) -> str:
+    """Drop the note's own requirement section: the requirement graph renders it instead."""
+    out, skip = [], False
+    for line in (note or "").splitlines():
+        if line.startswith("## "):
+            skip = "requirement" in line.lower()
+        if not skip:
+            out.append(line)
+    return "\n".join(out).strip()
+
+
 def _worth_saving(step: dict) -> bool:
     obs = (step.get("observation") or "").strip()
     return bool(step.get("api_names")) and step.get("status") == "ok" and len(obs) > 40 \
@@ -378,8 +394,12 @@ VARIANTS = {
     "compass_det_nar4": {"use_llm": False, "narrative": True, "nar_prompts": "progress4", "narrative_tokens": 420},
     "compass_det_nar5": {"use_llm": False, "narrative": True, "nar_prompts": "progress5", "narrative_tokens": 450},
     # v4: frontier-conditioned compaction (requirement engine + NEEDED_BY protection [+ needs extraction])
-    "compass_frontier": {"use_llm": False, "frontier": True},
-    "compass_frontier_ex": {"use_llm": False, "frontier": True, "needs_extract": True},
+    "compass_frontier": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                         "narrative_tokens": 450, "frontier": True},
+    "compass_frontier_ex": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                            "narrative_tokens": 450, "frontier": True, "needs_extract": True},
+    # first wiring: the tree replaced the note entirely (kept so its runs stay interpretable)
+    "compass_frontier_noteless": {"use_llm": False, "frontier": True},
     "compass_det_mem_nar5": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress5",
                              "narrative_tokens": 450},
     "compass_det_mem_nar3": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress3",

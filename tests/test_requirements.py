@@ -97,3 +97,14 @@ def test_needs_extraction_and_protected_eviction():
         g.add_turn({"step": k, "code": f"r{k} = apis.a.b()\nprint(r{k})", "observation": big})
     g.enforce_budget()
     assert g.steps["s1"]["observation"] != "" and extracted[0].id in g.infos
+
+
+def test_strip_requirements_keeps_the_rest_of_the_note():
+    from compass.graph.compressor import strip_requirements
+    note = ('## Task requirements (quoted from the instruction) and verified status\n'
+            '- r1: "send $20" -- PARTIAL (3 of 5) [s1]\n\n'
+            '## Handled so far\n- 3 of 5 transactions sent (ids 8216, 8217, 8218)\n\n'
+            '## Not yet done / unverified\n- 2 coworkers remain\n\n## Next Steps\n1. continue')
+    out = strip_requirements(note)
+    assert "Task requirements" not in out and "r1:" not in out
+    assert "Handled so far" in out and "8216" in out and "Next Steps" in out
