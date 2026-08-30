@@ -75,6 +75,9 @@ class Graph:
         self.obs_keep: int = 600
         self.graph_budget: int = 0
         self.requirements: list[dict] = []       # V^requirement: {id, text, status, supports: [step ids]}
+        self.req_graph: dict | None = None       # serialized ReqGraph (frontier-conditioned variants)
+        self.protect_steps: set = set()          # evidence of active requirements: never evicted
+        self.protect_infos: set = set()          # NEEDED_BY the frontier: never evicted, rendered first
         self.bytes_log: list[dict] = []          # graph payload size per boundary
         self._n_info = 0
         self._n_intent = 0
@@ -175,6 +178,16 @@ class Graph:
                             value_hint=hint, value_full=obs[:VALUE_FULL_CHARS])
                 self.infos[info.id] = info
                 s["produces"].append(info.id)
+        specs = getattr(self, "extract_specs", None)
+        if specs and len(s["observation"] or "") > self.obs_keep:
+            from .project import extract_fields
+            for path, val in extract_fields(s["observation"], specs):
+                self._n_info += 1
+                info = Info(id=f"i{self._n_info}", kind="api_result", name=f"{path} @ {sid}",
+                            producer=sid, source_api=(s["api_names"] or [None])[0],
+                            value_hint=f"{path} = {val}")
+                self.infos[info.id] = info
+                s["produces"].append(info.id)
         if self.obs_keep:
             # Q_k = Extract(delta tau): everything above was read from the raw observation; from here on
             # only the bounded excerpt survives in the graph, the raw text is dropped
@@ -198,6 +211,8 @@ class Graph:
             return {"before": before, "after": before, "evicted": 0}
         evicted = 0
         for s in list(self.steps.values()):
+            if s["id"] in self.protect_steps:
+                continue
             if self.payload_bytes() <= self.graph_budget:
                 break
             if s.get("observation") or len(s.get("code", "")) > 200:
@@ -208,6 +223,8 @@ class Graph:
             for i in list(self.infos.values()):
                 if self.payload_bytes() <= self.graph_budget:
                     break
+                if i.id in self.protect_infos:
+                    continue
                 if i.kind == "api_result" and i.value_hint and len(i.value_hint) > 90:
                     i.value_hint = i.value_hint[:90] + "..."
                     evicted += 1
@@ -215,7 +232,7 @@ class Graph:
             for k, i in list(self.infos.items()):
                 if self.payload_bytes() <= self.graph_budget:
                     break
-                if i.superseded:
+                if i.superseded and k not in self.protect_infos:
                     del self.infos[k]
                     evicted += 1
         after = self.payload_bytes()
@@ -404,7 +421,7 @@ class Graph:
                 "step_intent": self.step_intent, "legacy_summary": self.legacy_summary,
                 "calls_ok": self.calls_ok, "calls_failed": self.calls_failed, "mem_keys": self.mem_keys,
                 "narrative": self.narrative, "call_prefix": self.call_prefix,
-                "requirements": self.requirements, "obs_keep": self.obs_keep,
+                "requirements": self.requirements, "req_graph": self.req_graph, "obs_keep": self.obs_keep,
                 "graph_budget": self.graph_budget, "bytes_log": self.bytes_log[-50:],
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
@@ -423,6 +440,7 @@ class Graph:
         g.narrative = d.get("narrative")
         g.call_prefix = d.get("call_prefix", "")
         g.requirements = d.get("requirements", [])
+        g.req_graph = d.get("req_graph")
         g.obs_keep = d.get("obs_keep", 600)
         g.graph_budget = d.get("graph_budget", 0)
         g.bytes_log = d.get("bytes_log", [])
