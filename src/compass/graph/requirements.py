@@ -99,9 +99,11 @@ class ReqGraph:
             return False, "refine_done_parent"
         if parent["children"]:
             return False, "refine_already_refined"
+        if parent["parent"]:
+            return False, "refine_too_deep"            # at most two levels: rX and rX.Y
         children = op.get("children") or []
-        if not (1 < len(children) <= 8):
-            return False, "refine_bad_children"
+        if not (1 < len(children) <= 4):
+            return False, "refine_bad_children"       # coarse sub-goals; per-entity lists go into expect counts
         for i, c in enumerate(children, 1):
             text = ((c.get("text") if isinstance(c, dict) else str(c)) or "").strip()
             if not text:
@@ -244,8 +246,9 @@ class ReqGraph:
         if not self.nodes:
             return ""
         front = {n["id"] for n in self.frontier()}
-        lines = ["TASK REQUIREMENTS (quoted from the instruction; statuses verified against evidence; "
-                 "[>] = executable now)"]
+        lines = ["TASK REQUIREMENTS (statuses verified against evidence AS OF THE LAST COMPACTION; "
+                 "work done in the turns after it is not reflected here -- trust your recent "
+                 "observations over this list; [>] = executable next)"]
         shown = 0
 
         def emit(rid: str, depth: int) -> None:

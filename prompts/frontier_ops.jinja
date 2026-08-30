@@ -18,6 +18,7 @@ Propose local updates to the requirement graph as JSON only:
 Rules:
 - Only local updates; never restate the whole graph. Ops on unknown ids or DONE nodes are rejected.
 - "evidence" must cite step ids (sN) from the turns above whose observation confirms the status; a DONE/PARTIAL without valid evidence is rejected.
-- REFINE only when a node's work has split into concrete sub-items you can name from the observations (e.g. one per entity found); 2-8 children.
+- REFINE only top-level nodes, into 2-4 coarse sub-goals (e.g. 'find the entities', 'apply the change to all of them', 'verify'). NEVER one child per entity: when a node covers N discovered objects, set its expect/count instead.
+- A DONE on a clause that asks for an action must cite a step whose call performed that action (not just a lookup).
 - DECLARE_NEED for information the node's next action requires but which is not yet at hand.
 - [] is a valid answer when nothing changed.
