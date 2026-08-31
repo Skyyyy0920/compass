@@ -410,3 +410,105 @@ nar4 两次 168 共 66 个失败 episode（19.6%）。按 full 同题结果拆�
 实验（跑中）：预算版 nar5 168 ×2（`fullO_r7/r8`）、boundary 臂（`verify_O/compass_det_nar5b`）、30 题（`devO_mem3/`）；同时报告 graph bytes 随边界的变化。
 
 - 预算版 nar5 结果：30 题 **96.7**（full 83.3）；boundary Δ@k5 **−0.56\***（k2..k5 显著；未加预算版 −0.49\*）；图大小 ~21k 字符/边界（B_G 64k）。168 ×2 跑中。
+
+
+## 4. v4：frontier-conditioned compaction（师兄 2026-08-29 方案，当前主线）
+
+**冻结**：`compass_det_nar5` 为 strong baseline，不再调 prompt。
+
+**核心闭环**：trajectory → update intent graph → compute executable frontier → derive future information needs → retain/fold context。缺口 = Plan → What to preserve。
+
+设计（新模块 `graph/requirements.py` + 变体 `compass_frontier` / `compass_frontier_ex`）：
+1. **一次性分解**：episode 首次压缩时用 decompose prompt 把 instruction 拆成 requirement 节点（稳定 id、逐字 span、可选 expect 计数、可选 ordered 标志）；引擎校验 span ⊆ instruction。之后 LLM 只能提局部算子：
+   - `REFINE(parent → children)`（父未完成才可；子节点同样带 span/expect）
+   - `UPDATE_STATUS(id, status, evidence_ids, count)`（引擎校验证据存在且 ok；**coverage：带 expect 的节点 DONE 需要 count ≥ expect**——修复"一个成功步骤即 DONE"）
+   - `PROPOSE_NEXT(id, action_intent)`
+   - `DECLARE_NEED(id, information_spec{api, fields, desc})`
+   引擎负责 id/证据/状态转移/DAG 合法性；LLM 只做语义判断。
+2. **Executable frontier**：F_k = 未完成叶子且（ordered 组内）前置已完成；`NEEDED_BY(information, requirement)` 由 DECLARE_NEED 匹配 information 节点建立。checkpoint 保留优先级 = F_k ∪ Anc(F_k) ∪ Needs(F_k)；**B_G 驱逐不得删除支持 active requirement 的证据**（修复 oldest-first）。
+3. **Needs 条件化提取**：大 observation 按 Needs(F_k) 提取——结构化保留 JSON path/field + provenance，非结构化保留支持 span；提取后删原文，严格预算。不再默认整段挂图。
+4. **配对消融（同 cohort）**：(a) nar5；(b) nar5+frontier；(c) nar5+frontier+NEEDS 提取。指标：AppWorld success、遗漏 requirement、重复副作用、提前完成、压缩后 refetch/blocked、graph/context size——不只看 accuracy。
+5. **BCG 对照**：接 BCG 到同一 agent，或至少 BCG-style ablation（按 confidence/entity relevance 选证据）vs frontier-conditioned selection。
+定位语：COMPASS 按"哪些 computation 尚未完成且即将执行"组织上下文；BCG 按"哪些 belief 更可信"。claim 限定 CodeAct；通用 ReAct 在 frontier 闭环验证后再做。
+
+### 4.1 v4 实现状态（2026-08-30，commit `cbf04760`）
+- `graph/requirements.py`：ReqGraph 引擎——一次性 decompose（逐字 span 校验、expect、ordered）、四算子校验（REFINE 仅未完成且未细化的父节点；UPDATE_STATUS 证据须存在且 ok，DONE 需 count ≥ expect；PROPOSE_NEXT；DECLARE_NEED）、父状态 roll-up、frontier（ordered 前置门控）、NEEDED_BY 匹配、树渲染、序列化。
+- 接线：`compass_frontier`（arm b）= 证据层 + 需求引擎；`compass_frontier_ex`（arm c）= + 按 Needs(F_k) 的 JSON-path 字段提取（提取后原文照删）。frontier 证据与 NEEDED_BY 信息不被 B_G 驱逐并优先渲染。prompts：`decompose.jinja`、`frontier_ops.jinja`。16 个单测通过；2 边界冒烟：decompose 3–4 子句、ops applied/rejected 正常、`[>]` 渲染、保护生效。
+- 跑中：30 题两臂（`devO_mem3/`）、boundary 两臂（`verify_O/compass_frontier*`）。之后：168 ×2 两臂、遗漏 requirement/重复副作用/提前完成指标脚本、BCG-style 消融。
+
+### 4.2 v4 首轮结果与修正（2026-08-30）
+- 30 题（修复前）：frontier **83.3**、frontier_ex **80.0**（nar5 96.7；配对 −13.3 / −16.7）；premature 4、完成时开放 requirement 2.5/2.2、refetch 略升。
+- 案例诊断：(1) **树滞后**——requirement 图只在边界更新，agent 边界后完成的动作树里仍是 NOT_STARTED（3d9a636_2 全部做完树仍标 `[>]`），checkpoint 与现实矛盾；(2) **REFINE 过细**——per-entity 子节点（每好友/每歌单一个，出现三层）烧预算且永远滞后；(3) 无 expect 的动作子句一步即 DONE（29a7b7e_2 全 DONE 但 0.75）。
+- 修正（commit `7c448e5d`）：REFINE 仅顶层、2–4 个粗粒度子目标（实体数量走 expect/count）；树渲染注明"状态截至上次压缩，之后的进展以最近观测为准"；ops prompt 要求动作子句的 DONE 引用执行了该动作的步骤。修复版 30 题：**86.7**（修复前 83.3；nar5 96.7——差 3 题，单次在噪声边缘）；open_req@done 2.48→1.85。frontier 的主战场是长任务保留质量：boundary 两臂后跑 52 长任务三臂。
+
+- Boundary（修复前代码）：frontier **−0.31\***（nar5 −0.56\*）——boundary 级也不如 nar5；该臂为 per-entity 树 + 无 staleness 注明的版本。修复版 boundary 重跑中（`verify_O/compass_frontier_f`）；ex 臂（pre-fix）与 52 长任务两臂（fixed）在跑。判定标准：frontier 若在长任务保留质量上无优势且 boundary/30 题均逊于 nar5，则 arm b 的当前实现需要按"树滞后"根因重设计（如：边界外由确定性规则推进 count/状态，或树只渲染 frontier 与 next，不渲染全量状态）。
+
+### 4.3 接线错误与修正（2026-08-30，commit `04694362`）
+第一版 `compass_frontier` 的变体定义漏掉了 narrative 开关，实际跑的是"证据层 + 需求树"，**把 nar5 笔记换掉了**（不是师兄要求的 nar5 + frontier）。因此该臂丢掉了笔记的 handled/not-yet-done 计数，全面落后：
+
+| 臂（noteless，第一版接线） | 30 题 | 52 长任务 | boundary Δ@k5 |
+|---|---|---|---|
+| nar5（主方法） | 96.7 | 68.3 | −0.56\* |
+| frontier（pre-fix 约束） | 83.3 | – | −0.31\* |
+| frontier（fixed 约束） | 86.7 | 55.8（19 题跑满 50 步） | −0.32\* |
+| frontier_ex（pre-fix） | 80.0 | – | −0.33\* |
+
+修正：需求树只替换笔记里的"需求"小节，笔记其余内容保留；第一版保留为 `compass_frontier_noteless`（连同上述数字）。修正版 30 题 / 52 长任务 / boundary 重跑中（`devO_mem5`、`longO11`、`verify_O/compass_frontier`）。
+另外记录一个方法学结论：**需求树单独用不如 grounded 笔记**——树只在边界更新、粒度粗，缺少"已处理 N 个/剩余哪些"的具体计数；frontier 的价值应体现在保留策略（NEEDED_BY、抗驱逐、按需字段提取），而不是替代笔记本身。
+
+### 4.4 修正版 frontier 的 30 题结果与"短任务净成本"结论（2026-08-30）
+| 30 题（同 cohort） | acc | premature | open_req@done | sum_tok |
+|---|---|---|---|---|
+| nar5（主方法） | **96.7** | 1 | – | 1221 |
+| nar5 + frontier（修正接线，`devO_mem5`） | 83.3 | 4 | 2.13 | 1322 |
+| nar5 + frontier（+ 下界渲染，`devO_mem6`，commit `4447c7f9`） | 83.3 | 3 | 2.04 | 1286 |
+
+失败案例（5 题）显示：树在最后一次压缩时仍是 NOT_STARTED，而工作发生在压缩之后——短任务（每题 2.1–2.5 次压缩）里树**永远滞后**，只消耗预算并与轨迹矛盾。改为单调下界语义（只声明"至少已确认完成什么"，其余一律 open）后矛盾消失、premature 4→3，但 acc 不变。
+**结论 A（可写进论文的负结果）**：requirement 树对短任务是净成本；plan-state 只有在多次压缩的长任务上才可能回本。因此 frontier 的评估必须以长任务与 boundary 保留质量为准，而不是 30 题总 acc。
+
+### 4.5 Boundary 级：修正接线后 frontier ≈ nar5（2026-08-30）
+| 臂（109 边界，配对 Δ@k5 vs OpenClaw） | Δ@1 | Δ@3 | Δ@5 |
+|---|---|---|---|
+| nar5（主方法） | −0.07 | −0.32\* | **−0.56\*** |
+| nar5 + frontier（修正接线） | −0.05 | −0.24\* | **−0.50\*** |
+| frontier_noteless（树替代笔记） | −0.08 | −0.18\* | −0.31\* |
+| frontier_noteless_f（+ 约束修正） | −0.06 | −0.23\* | −0.32\* |
+| frontier_noteless_ex（+ 需求字段提取） | −0.07 | −0.19\* | −0.33\* |
+
+接线修正把 boundary 从 −0.31 拉回 −0.50，与 nar5（−0.56）CI 大幅重叠：**需求图不会损害 boundary 级保留质量，但也没有超过 grounded 笔记**。52 长任务是最后一个决定性数字。
+
+### 4.6 52 长任务：frontier 的定位（2026-08-30）
+同一 cohort、同一脚本口径（`scripts/report_ablation.py`）：
+
+| 臂 | acc | 跑满 50 步 | 提前完成 | refetch/题 | blocked/题 | 步数/题 |
+|---|---|---|---|---|---|---|
+| nar5 run7 / run8 | 65.4 / 71.2（均值 68.3） | 9 / 9 | 10 / 7 | 5.1 / 4.8 | 2.3 / 1.8 | 33.8 / 31.8 |
+| **nar5 + frontier（修正接线）** | 61.5 | 11 | 9 | 6.3 | 1.8 | 35.0 |
+| frontier_noteless（树替代笔记） | 55.8 | 19 | 3 | 7.9 | 2.4 | 38.6 |
+| OpenClaw（4 次） | 55.3 ± 3.6 | – | – | – | – | – |
+
+读法：需求图把 noteless 版的 55.8 拉到 61.5（步数耗尽 19→11、refetch 7.9→6.3），**高于 OpenClaw 但仍低于 nar5**。提前完成不是新问题（nar5 7–10 例）。
+决定性案例 `32616b5_1`：树里明确 `r3.2 ... (7 of 12)`，agent 仍 complete——且当时的渲染还写着"trust your recent observations over this list"，等于授权忽略覆盖计数。
+修正（commit `bf9ddf6e`）：**完成守卫**——凡有 expect 且已验证 count < expect 的子句，checkpoint 末尾列出 `COMPLETION CHECK: r3.2 at 7 of 12 …`，要求完成前补齐或复核。这是"plan 控制行为"的最小闭环（计数全部来自已执行调用）。52 长任务重跑中（`longO12/`）。
+
+### 4.7 短任务门控与 dev-30 的方差（2026-08-30）
+`compass_frontier_late`（commit 后新增变体）：前 2 次压缩只用 nar5，第 3 次起才启用需求图——依据是"plan state 每个边界要花一次 decompose/ops 调用与笔记预算，短任务回不了本"。
+30 题：frontier always-on 83.3 / 83.3 / 83.3（三种渲染），late-gate **86.7**，nar5 96.7。
+**重要修正**：nar5 自身在 30 题上跑出过 83.3（`devO_mem2`，无图预算版）与 96.7（`devO_mem3`），即该子集的运行间方差约 ±13 点（4 题）。因此"frontier 在短任务上稳定劣于 nar5"这一说法不能只靠 30 题成立；**决定性证据是 52 长任务与 109 边界**。
+
+### 4.8 v4 三臂消融的结论（2026-08-31）
+52 长任务（同 cohort，`scripts/report_ablation.py` 口径）：
+
+| 臂 | acc | 跑满 50 步 | 提前完成 | refetch/题 | 说明 |
+|---|---|---|---|---|---|
+| (a) nar5（冻结基线，2 次） | 65.4 / 71.2（68.3） | 9 / 9 | 10 / 7 | 5.1 / 4.8 | 主方法 |
+| (b) nar5 + 需求图 | 61.5 | 11 | 9 | 6.3 | +下界渲染 |
+| (b') 同上 + 完成守卫 | 59.6 | 12 | 8 | 6.7 | 守卫未见增益（差 1 题，噪声内） |
+| — 需求图替代笔记（noteless） | 55.8 | 19 | 3 | 7.9 | 第一版接线 |
+| — OpenClaw（4 次） | 55.3 ± 3.6 | – | – | – | 基线 |
+
+boundary（109 边界，Δ@k5）：nar5 −0.56\*，nar5+需求图 −0.50\*，noteless −0.31\*。
+30 题：需求图 always-on 83.3（×3），late-gate 86.7，nar5 83.3–96.7（该子集方差 ±13 点）。
+
+**结论 B（对师兄方案的回答）**：把 plan 编译成可执行 frontier 并用它保护/优先证据，确实修好了"树替代笔记"版本的所有病症（步数耗尽 19→11、refetch 7.9→6.3、boundary −0.31→−0.50），也把长任务从 55.8 拉到 61.5，**高于 OpenClaw**；但**仍未超过已冻结的 nar5（68.3 / −0.56\*）**。即：在当前实现下，"requirement frontier 控制保留"没有比"证据层 + 已核验的需求状态笔记"带来额外收益；plan→retention 这条因果链的收益被 nar5 的笔记（同样带覆盖计数、同样由证据核验）大部分已经吃掉了。
+剩余可查方向：(1) arm (c) 需求字段提取在修正接线下的长任务数（`longO13/` 跑中）；(2) frontier 目前只保护/排序证据，尚未真正"丢弃 frontier 不需要的证据"——把 NEEDED_BY 用作**删除**准则而非仅优先级，可能才是差异所在；(3) 每边界两次额外 LLM 调用的成本（长任务每题 ~6 次边界 = 12 次调用）未计入收益核算。

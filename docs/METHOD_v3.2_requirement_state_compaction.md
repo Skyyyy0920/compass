@@ -1,6 +1,6 @@
 # COMPASS v3.2：evidence-grounded requirement-state compaction（2026-08-29，第二轮评审后）
 
-> 给合作者的完整版。**主方法 = bounded + budgeted `compass_det_nar5`**（私有图有预算、raw observation 在 Apply 后删除、需求子句为图节点并程序核验）。主张范围：CodeAct / 结构丰富的 tool-use agent；一般 ReAct 未验证。第 0 节是对两轮评审意见的逐条回应；第 1–3 节是方法；第 4 节是全部实验结果；第 5 节是否定结果与局限。所有实验：agent 与压缩模型均为开源模型（Ollama Cloud），除注明外为 deepseek-v4-flash；AppWorld test_normal，窗口 B=4096，保留最后一轮，50 步上限；OfficeBench 95 个非图像测试 episode。
+> 给合作者的完整版。**主方法 = bounded + budgeted `compass_det_nar5`**（私有图有预算、raw observation 在 Apply 后删除、需求子句为图节点并程序核验）。主张范围：CodeAct / 结构丰富的 tool-use agent；一般 ReAct 未验证。第 0 节是对两轮评审意见的逐条回应；第 1–3 节是方法；第 4 节是全部实验结果；第 5 节是否定结果与局限；**第 7 节是按第三轮评审（executable frontier）实现并跑完的三臂消融及其结论**。所有实验：agent 与压缩模型均为开源模型（Ollama Cloud），除注明外为 deepseek-v4-flash；AppWorld test_normal，窗口 B=4096，保留最后一轮，50 步上限；OfficeBench 95 个非图像测试 episode。
 
 ---
 
@@ -186,3 +186,34 @@ B=2048：66.7 / 66.7；B=4096：73.3 / 83.3；B=8192：86.7 / 86.7（full 83.3�
 COMPASS 是一个 bounded、evidence-grounded 的 requirement-state compaction 协议。在每个压缩边界，adapter 把被吸收的轮次确定性地提取为有界事件 Q_k（调用形式、outcome、产物与来源、接口签名、≤600 字符的观测摘录），原始观测随即销毁；私有图 G_k = V^requirement ∪ V^evidence ∪ V^information 在 B_G 预算下增量更新。一次 LLM 调用把任务指令的每个子句写成 requirement 节点并给出状态，状态必须引用支持它的 evidence 步骤，压缩器核验引用存在且成功，否则降级——因此 DONE 是 G_k 上可验证的谓词。checkpoint C_k（≤0.4B）由需求节点、已处理/未完成清单与逐级折叠的证据分节渲染而成，agent 只见 C_k 与最后一轮。在 AppWorld（CodeAct，B=4096）上，该协议使成功率与 full context 持平（81.0 vs 81.0）并显著高于自然语言压缩 OpenClaw（+6.3±2.7），boundary 级重取/阻塞显著更少（−0.56\*）；主张限定于 CodeAct 及结构丰富的 tool-use agent。
 
 代码：`W:\context_compression\compass_v2`（主方法 `compass_det_nar5`；消融 `compass_det_nar4`；变体 `compass_det_mem_nar4`、`openclaw_mem`；核验 `ground_note` / 需求节点 `parse_requirements`，`graph/compressor.py`；预算 `Graph.enforce_budget`，`graph/build.py`）。数据与日志：PLAN.md §3.10–3.17。
+
+
+---
+
+## 7. 第三轮评审：executable frontier（已实现并跑完，2026-08-31）
+
+### 7.1 实现（`src/compass/graph/requirements.py`，变体 `compass_frontier*`）
+- **一次性分解**：episode 首个边界用 decompose 调用把指令拆成 requirement 节点；每个节点必须逐字引用指令片段（引擎校验 span ⊆ instruction，否则丢弃），可带 `expect`（对象数量）与 `ordered`（组内顺序）。
+- **只允许局部算子**（引擎校验，LLM 只做语义判断）：`REFINE`（仅顶层、未完成、未细化，2–4 个粗粒度子目标）、`UPDATE_STATUS`（证据步骤必须存在且执行成功；带 expect 的节点 `DONE` 需 count ≥ expect，否则降级 PARTIAL）、`PROPOSE_NEXT`、`DECLARE_NEED`。父节点状态由子节点 roll-up，不可直接设置。
+- **可执行 frontier**：F_k = 未完成叶子且（ordered 组内）前置已完成；`NEEDED_BY` 由 DECLARE_NEED 的 {api, fields} 与 information 节点匹配。frontier 证据与其祖先证据、NEEDED_BY 信息**不被 B_G 驱逐**并在渲染中优先。
+- **需求条件化提取**（arm c）：大 observation 按 Needs(F_k) 的字段做 JSON-path 提取，生成 information 节点后再删原文。
+- **下界渲染**：状态只声明"已确认完成什么"（confirmed done / at least N of M done / open），杜绝滞后的 NOT_STARTED 与轨迹矛盾。**完成守卫**：凡 count < expect 的子句，checkpoint 末尾列出 `COMPLETION CHECK: r3.2 at 7 of 12 …`。
+
+### 7.2 三臂消融结果（52 长任务，同 cohort；指标不止 accuracy）
+
+| 臂 | acc | 跑满 50 步 | 提前完成 | refetch/题 | boundary Δ@k5 | 30 题 |
+|---|---|---|---|---|---|---|
+| (a) nar5（冻结基线，2 次） | **65.4 / 71.2** | 9 / 9 | 10 / 7 | 5.1 / 4.8 | **−0.56\*** | 83.3–96.7 |
+| (b) nar5 + 需求 frontier | 61.5 | 11 | 9 | 6.3 | −0.50\* | 83.3 |
+| (b') (b) + 完成守卫 | 59.6 | 12 | 8 | 6.7 | – | 83.3 |
+| (b'') (b) + 晚启用门控（2 次压缩后才启用） | – | – | – | – | – | 86.7 |
+| — 需求树**替代**笔记（第一版接线） | 55.8 | 19 | 3 | 7.9 | −0.31\* | 83.3 |
+| — OpenClaw（4 次） | 55.3 ± 3.6 | – | – | – | 0 | 73.3 |
+| (c) needs-conditioned 提取 | 跑中（`longO13/`） | | | | −0.33\*（旧接线） | 80.0（旧接线） |
+
+### 7.3 结论
+1. **frontier 修好了自己的病**：相对"树替代笔记"的第一版，步数耗尽 19→11、refetch 7.9→6.3、boundary −0.31→−0.50、长任务 55.8→61.5，**明显高于 OpenClaw**。说明 plan→保留 这条链条本身是有效的工程机制。
+2. **但它没有超过 nar5**：长任务 61.5 vs 68.3，boundary −0.50 vs −0.56。原因是 nar5 的已核验笔记本身就带覆盖计数与"未完成清单"，frontier 想提供的信息大部分已经在里面；额外的两次 LLM 调用与树的预算占用抵消了收益。
+3. **完成守卫无增益**（59.6 vs 61.5，一题之差）：agent 并非因为"不知道还差多少"而提前完成。
+4. **短任务上是净成本**：30 题 2.1–2.5 次压缩，frontier 三次均 83.3；晚启用门控回到 86.7。（注意该子集方差 ±13 点，nar5 自身也跑出过 83.3 与 96.7。）
+5. **尚未验证的关键变体**：目前 NEEDED_BY 只用于**保护与排序**，还没有用作**删除准则**（"frontier 不需要的证据就丢掉"）。这可能才是 plan-conditioned retention 与 nar5 的真正分界点，也是下一步最值得做的单一实验。
