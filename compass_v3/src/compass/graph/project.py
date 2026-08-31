@@ -150,3 +150,31 @@ def focus_tokens(*texts: str) -> set[str]:
                 if w.endswith("s"):
                     toks.add(w[:-1])
     return toks
+
+
+def extract_fields(text: str | None, fields: list[str], max_items: int = 12) -> list[tuple[str, str]]:
+    """Needs-conditioned extraction from a JSON-like observation: every (path, value) whose key
+    matches one of ``fields`` (case-insensitive substring both ways). Values are rendered short."""
+    obj = parse(text)
+    if obj is None or not fields:
+        return []
+    want = [f.lower() for f in fields if f]
+    out: list[tuple[str, str]] = []
+
+    def walk(node, path):
+        if len(out) >= max_items:
+            return
+        if isinstance(node, dict):
+            for k, v in node.items():
+                kl = str(k).lower()
+                if any(w in kl or kl in w for w in want) and _scalar(v):
+                    out.append((f"{path}.{k}".lstrip("."), _fmt(v, 60)))
+                    if len(out) >= max_items:
+                        return
+                walk(v, f"{path}.{k}")
+        elif isinstance(node, list):
+            for idx, v in enumerate(node[:20]):
+                walk(v, f"{path}[{idx}]")
+
+    walk(obj, "")
+    return out

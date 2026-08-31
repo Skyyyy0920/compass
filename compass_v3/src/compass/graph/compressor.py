@@ -25,6 +25,7 @@ from .build import Graph
 from .refine import refine_graph
 from .flow import attach_to_frontier, narrate, prune_evidence, render_flow_to_budget
 from .render import live_variable_line, render_to_budget
+from .requirements import ReqGraph
 
 
 def _h(text: str | None) -> str:
@@ -38,7 +39,8 @@ class CompassCompressor(Compressor):
                  use_llm: bool = True, hide_sections: tuple[str, ...] = (), det_needs: bool = True,
                  adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
                  narrate: bool = False, proj: bool = False, mem: bool = False,
-                 narrative: bool = False, narrative_tokens: int = 450, nar_prompts: str = "progress"):
+                 narrative: bool = False, narrative_tokens: int = 450, nar_prompts: str = "progress",
+                 frontier: bool = False, needs_extract: bool = False, frontier_after: int = 0):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.flow = flow
@@ -55,6 +57,12 @@ class CompassCompressor(Compressor):
         self.narrative = narrative and llm is not None   # OpenClaw-style progress note above the evidence layer
         self.narrative_tokens = narrative_tokens
         self.nar_prompts = nar_prompts
+        self.frontier_mode = frontier and llm is not None
+        # plan state costs a decompose + ops call and note budget at every boundary; on short
+        # episodes that never pays for itself, so it can be switched on only once the episode
+        # has already survived ``frontier_after`` compactions
+        self.frontier_after = frontier_after
+        self.needs_extract = needs_extract
 
     def compress(self, task: str, prev_summary: str | None, turns: list[dict]) -> str:
         key = _h(prev_summary)
@@ -70,6 +78,11 @@ class CompassCompressor(Compressor):
             g.graph_budget = 0 if (self.mem or self.proj) else GRAPH_BUDGET_CHARS
             g.legacy_summary = prev_summary
             rebuilt = prev_summary is not None
+        rg = (ReqGraph.from_dict(g.req_graph)
+              if (self.frontier_mode and len(g.bytes_log) >= self.frontier_after) else None)
+        req_tree = rg.render() if rg is not None else ""
+        if self.needs_extract and rg is not None:
+            g.extract_specs = [f for spec in rg.frontier_needs() for f in spec["fields"]]
         new_ids = []
         for t in clip_turns(turns):
             if f"s{t['step']}" in g.steps:
@@ -85,6 +98,19 @@ class CompassCompressor(Compressor):
                 g.log.append({"drop": "refine_call_failed", "err": str(e)[:200]})
         if self.det_needs:
             g.augment_needs(new_ids[-3:])
+        req_stats: dict = {}
+        if rg is not None and new_ids:
+            try:
+                req_stats = frontier_update(rg, task, g, self.llm,
+                                            [t for t in clip_turns(turns) if f"s{t['step']}" in new_ids])
+            except Exception as e:  # noqa: BLE001
+                req_stats = {"error": str(e)[:200]}
+                g.log.append({"drop": "frontier_update_failed", "err": str(e)[:200]})
+            g.req_graph = rg.to_dict()
+            g.protect_steps = {e for n in rg.frontier() for e in n["evidence"]} | \
+                              {e for n in rg.frontier() for a in rg.ancestors(n) for e in a["evidence"]}
+            g.protect_infos = set(rg.needed_infos(g.infos))
+            req_tree = rg.render()
         note_tokens = 0
         if self.narrative and new_ids:
             try:
@@ -122,14 +148,23 @@ class CompassCompressor(Compressor):
                 except Exception:  # noqa: BLE001
                     text = structured
         else:
+            # the requirement graph renders the requirement section; the note keeps its
+            # handled / not-yet-done / next-steps content
+            head = req_tree.strip()
+            if g.narrative:
+                body = strip_requirements(g.narrative) if head else g.narrative.strip()
+                head = (head + "\n\n" + body) if (head and body) else (head or body)
+            if head:
+                note_tokens = count_tokens(head)
             text, level = render_to_budget(g, max(400, self.summary_budget - note_tokens), new_ids[-3:],
                                            proj=self.proj, fill=self.proj)
-            if g.narrative:
+            if head:
                 text = ("PROGRESS NOTE (written at the last compaction; advisory -- before completing the task, "
                         "check its remaining items against the exact evidence below"
                         + ("; do only what the task asks -- no extra modifications, and pass an answer to "
-                           "complete_task only if the task asks for one" if self.nar_prompts in ("progress4", "progress5") else "")
-                        + ")\n") + g.narrative.strip() + "\n\n" + text
+                           "complete_task only if the task asks for one"
+                           if (rg is not None or self.nar_prompts in ("progress4", "progress5")) else "")
+                        + ")\n") + head + "\n\n" + text
         degraded = False
         if level == 4 and self.llm is not None and self.use_llm:
             user = Template(load_prompt("openclaw_first.jinja")).render(history=text)
@@ -149,7 +184,9 @@ class CompassCompressor(Compressor):
                            "attached": attached, "pruned_steps": pruned,
                            "refine": stats, "drops": g.log[-10:],
                            "graph_bytes": budget_stats["after"], "graph_evicted": budget_stats["evicted"],
-                           "n_requirements": len(g.requirements)}
+                           "n_requirements": len(g.requirements),
+                           "req": req_stats, "frontier": (len(rg.frontier()) if rg is not None else None),
+                           "protected": [len(g.protect_steps), len(g.protect_infos)]}
         return text
 
     def render_context(self, summary: str) -> str:
@@ -187,6 +224,37 @@ STATUS_RE = re.compile(r"(?<!NOT )(?<!NOT_)\b(DONE|PARTIAL)\b")
 
 
 OBS_KEEP_CHARS = 600          # bounded extraction: raw observation kept in the graph after Apply
+
+
+def frontier_update(rg, task: str, g, llm, new_turns: list[dict]) -> dict:
+    """One decompose call on the first boundary, then one local-ops call per boundary."""
+    stats: dict = {}
+    if not rg.nodes:
+        user = Template(load_prompt("decompose.jinja")).render(task=task)
+        out = llm.chat([{"role": "user", "content": user}], tag="decompose").strip()
+        clauses = _loads_ops(out).get("clauses", [])
+        stats["decomposed"] = rg.decompose(task, clauses if isinstance(clauses, list) else [])
+    hist = turns_to_text(new_turns)
+    user = Template(load_prompt("frontier_ops.jinja")).render(task=task, tree=rg.render(), history=hist)
+    out = llm.chat([{"role": "user", "content": user}], tag="frontier_ops").strip()
+    ops = _loads_ops(out).get("ops", [])
+    stats.update(rg.apply_ops(ops if isinstance(ops, list) else [], g.steps))
+    return stats
+
+
+def _loads_ops(text: str) -> dict:
+    import json as _json
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]
+        t = t[4:] if t[:4].lower() == "json" else t
+    i, j = t.find("{"), t.rfind("}")
+    if i < 0 or j <= i:
+        return {}
+    try:
+        return _json.loads(t[i:j + 1])
+    except Exception:  # noqa: BLE001
+        return {}
 GRAPH_BUDGET_CHARS = 65536    # B_G: serialized private graph, ~16k tokens (4x the 4096 window)
 REQ_RE = re.compile(r'^\s*-\s*"(?P<text>[^"]{3,}?)"\s*(?:--|-|:)\s*(?P<status>DONE|PARTIAL|NOT DONE)(?P<rest>.*)$')
 
@@ -247,6 +315,17 @@ def ground_note(note: str, g) -> tuple[str, int]:
                 n += 1
         out.append(line)
     return "\n".join(out), n
+
+
+def strip_requirements(note: str) -> str:
+    """Drop the note's own requirement section: the requirement graph renders it instead."""
+    out, skip = [], False
+    for line in (note or "").splitlines():
+        if line.startswith("## "):
+            skip = "requirement" in line.lower()
+        if not skip:
+            out.append(line)
+    return "\n".join(out).strip()
 
 
 def _worth_saving(step: dict) -> bool:
@@ -319,6 +398,16 @@ VARIANTS = {
                              "narrative_tokens": 420},
     "compass_det_nar4": {"use_llm": False, "narrative": True, "nar_prompts": "progress4", "narrative_tokens": 420},
     "compass_det_nar5": {"use_llm": False, "narrative": True, "nar_prompts": "progress5", "narrative_tokens": 450},
+    # v4: frontier-conditioned compaction (requirement engine + NEEDED_BY protection [+ needs extraction])
+    "compass_frontier": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                         "narrative_tokens": 450, "frontier": True},
+    "compass_frontier_ex": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                            "narrative_tokens": 450, "frontier": True, "needs_extract": True},
+    # the requirement graph only once the episode has proven long (2 compactions already done)
+    "compass_frontier_late": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                              "narrative_tokens": 450, "frontier": True, "frontier_after": 2},
+    # first wiring: the tree replaced the note entirely (kept so its runs stay interpretable)
+    "compass_frontier_noteless": {"use_llm": False, "frontier": True},
     "compass_det_mem_nar5": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress5",
                              "narrative_tokens": 450},
     "compass_det_mem_nar3": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress3",

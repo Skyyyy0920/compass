@@ -171,6 +171,10 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
                 i = g.infos.get(n)
                 if i and i.value_hint and i.kind == "runtime_reference" and not i.superseded and i not in needed:
                     needed.append(i)
+        for iid in g.protect_infos:
+            i = g.infos.get(iid)
+            if i and i.value_hint and i not in needed:
+                needed.append(i)
         recent = set(recent_ids)
         for i in g.infos.values():
             if i.kind == "runtime_reference" and not i.superseded and i.value_hint and i not in needed \
@@ -182,6 +186,7 @@ def render(g: Graph, level: int, recent_ids: list[str], *, proj: bool = False, s
                 L.append(f"- {M(i)}{i.name} = {V(i, 160)}")
 
     results = [i for i in g.infos.values() if i.kind == "api_result" and i.value_hint]
+    results.sort(key=lambda i: i.id not in g.protect_infos)   # NEEDED_BY the frontier first
     if results and level <= 2:
         keep, chars = (20, 160) if level <= 1 else (12, 90)
         L += ["", "RESULTS ALREADY OBSERVED (printed, not stored in a variable; do not call again"
