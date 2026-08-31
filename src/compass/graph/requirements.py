@@ -278,6 +278,13 @@ class ReqGraph:
 
         for rid in self.order:
             emit(rid, 0)
+        short = [n for n in self.nodes.values()
+                 if n["expect"] and n["count"] < n["expect"] and not n["children"]]
+        if short:
+            gaps = "; ".join(f"{n['id']} at {n['count']} of {n['expect']}" for n in short[:4])
+            lines.append(f"COMPLETION CHECK: {gaps}. The counts come from executed calls, so before "
+                         f"completing the task either finish the remaining items or re-read the "
+                         f"current state to confirm they are already done.")
         return "\n".join(lines)
 
     def to_dict(self) -> dict:
