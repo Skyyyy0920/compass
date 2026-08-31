@@ -202,39 +202,62 @@ class Graph:
         import json as _json
         return len(_json.dumps(self.to_dict(), ensure_ascii=False))
 
+    def approx_bytes(self) -> int:
+        """Cheap size estimate used while evicting: serializing the whole graph on every candidate
+        turned eviction into an O(n^2) json.dumps loop (5.7s per boundary at 300 info nodes)."""
+        n = len(self.goal) + 400 + len(self.narrative or "")
+        for s in self.steps.values():
+            n += len(s.get("code", "")) + len(s.get("observation", "")) + 420
+        for i in self.infos.values():
+            n += len(i.value_hint or "") + len(i.value_full or "") + len(i.name or "") + 200
+        n += sum(len(k) + 12 for k in self.calls_ok) + sum(len(k) + len(v) + 8 for k, v in self.calls_failed.items())
+        n += sum(len(str(f)) for f in self.facts) + 120 * len(self.requirements)
+        if self.req_graph:
+            n += 300 * len(self.req_graph.get("nodes", {}))
+        return n
+
     def enforce_budget(self) -> dict:
         """Hold the serialized graph under graph_budget chars: oldest steps lose their observation
-        excerpt and code first, then the oldest result hints shrink, then superseded infos go."""
+        excerpt and code first, then the oldest result hints shrink, then superseded infos go, and
+        finally the oldest unprotected results are dropped outright (needs-conditioned extraction
+        can create hundreds of small result nodes that none of the earlier levers can shrink)."""
         before = self.payload_bytes()
         if not self.graph_budget or before <= self.graph_budget:
             self.bytes_log.append({"n_steps": len(self.steps), "bytes": before, "evicted": 0})
             return {"before": before, "after": before, "evicted": 0}
+        # evict against the estimate, scaled so that it agrees with the real size right now
+        scale = before / max(1, self.approx_bytes())
+        budget = self.graph_budget / max(scale, 0.2)
         evicted = 0
-        for s in list(self.steps.values()):
+        for s in self.steps.values():
+            if self.approx_bytes() <= budget:
+                break
             if s["id"] in self.protect_steps:
                 continue
-            if self.payload_bytes() <= self.graph_budget:
-                break
             if s.get("observation") or len(s.get("code", "")) > 200:
                 s["observation"] = ""
                 s["code"] = s.get("code", "")[:200]
                 evicted += 1
-        if self.payload_bytes() > self.graph_budget:
-            for i in list(self.infos.values()):
-                if self.payload_bytes() <= self.graph_budget:
-                    break
-                if i.id in self.protect_infos:
-                    continue
-                if i.kind == "api_result" and i.value_hint and len(i.value_hint) > 90:
-                    i.value_hint = i.value_hint[:90] + "..."
-                    evicted += 1
-        if self.payload_bytes() > self.graph_budget:
-            for k, i in list(self.infos.items()):
-                if self.payload_bytes() <= self.graph_budget:
-                    break
-                if i.superseded and k not in self.protect_infos:
-                    del self.infos[k]
-                    evicted += 1
+        for i in self.infos.values():
+            if self.approx_bytes() <= budget:
+                break
+            if i.id in self.protect_infos:
+                continue
+            if i.kind == "api_result" and i.value_hint and len(i.value_hint) > 90:
+                i.value_hint = i.value_hint[:90] + "..."
+                evicted += 1
+        for k, i in list(self.infos.items()):
+            if self.approx_bytes() <= budget:
+                break
+            if i.superseded and k not in self.protect_infos:
+                del self.infos[k]
+                evicted += 1
+        for k, i in list(self.infos.items()):
+            if self.approx_bytes() <= budget:
+                break
+            if i.kind == "api_result" and k not in self.protect_infos:
+                del self.infos[k]
+                evicted += 1
         after = self.payload_bytes()
         self.bytes_log.append({"n_steps": len(self.steps), "bytes": after, "evicted": evicted})
         return {"before": before, "after": after, "evicted": evicted}
