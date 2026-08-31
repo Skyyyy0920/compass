@@ -40,7 +40,7 @@ class CompassCompressor(Compressor):
                  adapter: str = "codeact", summary_frac: float = 0.4, flow: bool = False,
                  narrate: bool = False, proj: bool = False, mem: bool = False,
                  narrative: bool = False, narrative_tokens: int = 450, nar_prompts: str = "progress",
-                 frontier: bool = False, needs_extract: bool = False):
+                 frontier: bool = False, needs_extract: bool = False, frontier_after: int = 0):
         super().__init__(llm, budget)
         self.summary_budget = summary_budget or max(600, int(budget * summary_frac))
         self.flow = flow
@@ -58,6 +58,10 @@ class CompassCompressor(Compressor):
         self.narrative_tokens = narrative_tokens
         self.nar_prompts = nar_prompts
         self.frontier_mode = frontier and llm is not None
+        # plan state costs a decompose + ops call and note budget at every boundary; on short
+        # episodes that never pays for itself, so it can be switched on only once the episode
+        # has already survived ``frontier_after`` compactions
+        self.frontier_after = frontier_after
         self.needs_extract = needs_extract
 
     def compress(self, task: str, prev_summary: str | None, turns: list[dict]) -> str:
@@ -74,7 +78,8 @@ class CompassCompressor(Compressor):
             g.graph_budget = 0 if (self.mem or self.proj) else GRAPH_BUDGET_CHARS
             g.legacy_summary = prev_summary
             rebuilt = prev_summary is not None
-        rg = ReqGraph.from_dict(g.req_graph) if self.frontier_mode else None
+        rg = (ReqGraph.from_dict(g.req_graph)
+              if (self.frontier_mode and len(g.bytes_log) >= self.frontier_after) else None)
         req_tree = rg.render() if rg is not None else ""
         if self.needs_extract and rg is not None:
             g.extract_specs = [f for spec in rg.frontier_needs() for f in spec["fields"]]
@@ -398,6 +403,9 @@ VARIANTS = {
                          "narrative_tokens": 450, "frontier": True},
     "compass_frontier_ex": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
                             "narrative_tokens": 450, "frontier": True, "needs_extract": True},
+    # the requirement graph only once the episode has proven long (2 compactions already done)
+    "compass_frontier_late": {"use_llm": False, "narrative": True, "nar_prompts": "progress5",
+                              "narrative_tokens": 450, "frontier": True, "frontier_after": 2},
     # first wiring: the tree replaced the note entirely (kept so its runs stay interpretable)
     "compass_frontier_noteless": {"use_llm": False, "frontier": True},
     "compass_det_mem_nar5": {"use_llm": False, "mem": True, "narrative": True, "nar_prompts": "progress5",
