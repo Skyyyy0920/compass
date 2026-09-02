@@ -9,7 +9,7 @@ This branch (`compass-v3-requirement-state`) is a complete, self-contained rewri
 |---|---|
 | Method + full results + answers to both review rounds | [`docs/METHOD_v3.2_requirement_state_compaction.md`](docs/METHOD_v3.2_requirement_state_compaction.md) |
 | Chronological research log (every experiment, every negative result, §3.5–3.17) | [`docs/PLAN.md`](docs/PLAN.md) |
-| Advisor report, current (method, results, three review rounds, next steps) | [`docs/MEETING_NOTE_2026-08-31.md`](docs/MEETING_NOTE_2026-08-31.md) |
+| Advisor report, current (method, results, three review rounds, next steps) | [`docs/MEETING_NOTE_2026-08-31_EN.md`](docs/MEETING_NOTE_2026-08-31_EN.md) (English) / [`docs/MEETING_NOTE_2026-08-31.md`](docs/MEETING_NOTE_2026-08-31.md) (Chinese) |
 | Advisor report, previous week | [`docs/MEETING_NOTE_2026-08-26.md`](docs/MEETING_NOTE_2026-08-26.md) |
 | Raw episode / boundary outputs (JSON per task, logs) | `artifacts/` (see map below) |
 
