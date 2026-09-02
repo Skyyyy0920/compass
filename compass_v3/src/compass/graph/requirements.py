@@ -16,7 +16,13 @@ The model judges semantics; this engine owns structure and constraints:
 """
 from __future__ import annotations
 
+import json
 import re
+
+from jinja2 import Template
+
+from ..harness.compressors import turns_to_text
+from ..harness.prompt import load_prompt
 
 STATUSES = ("NOT_STARTED", "IN_PROGRESS", "PARTIAL", "DONE", "BLOCKED")
 _WS = re.compile(r"\s+")
@@ -249,8 +255,8 @@ class ReqGraph:
         # Lower-bound semantics: a status only ever states what evidence already confirmed at the
         # last compaction. Everything else is rendered as open rather than as "not started", so a
         # stale line can never contradict work the agent did after that boundary.
-        lines = ["TASK REQUIREMENTS (confirmed progress as of the last compaction -- a LOWER BOUND; "
-                 "anything you did since is simply not recorded here yet; [>] = still open, do next)"]
+        lines = [("TASK REQUIREMENTS (confirmed progress as of the last compaction -- a LOWER BOUND; "
+                  "anything you did since is simply not recorded here yet; [>] = still open, do next)")]
         shown = 0
 
         def emit(rid: str, depth: int) -> None:
@@ -291,10 +297,40 @@ class ReqGraph:
         return {"nodes": self.nodes, "order": self.order, "log": self.log[-30:]}
 
     @classmethod
-    def from_dict(cls, d: dict | None) -> "ReqGraph":
+    def from_dict(cls, d: dict | None) -> ReqGraph:
         rg = cls()
         if d:
             rg.nodes = d.get("nodes", {})
             rg.order = d.get("order", [])
             rg.log = d.get("log", [])
         return rg
+
+
+def frontier_update(rg: ReqGraph, task: str, g, llm, new_turns: list[dict]) -> dict:
+    """One decompose call on the first boundary, then one local-ops call per boundary."""
+    stats: dict = {}
+    if not rg.nodes:
+        user = Template(load_prompt("decompose.jinja")).render(task=task)
+        out = llm.chat([{"role": "user", "content": user}], tag="decompose").strip()
+        clauses = _loads_ops(out).get("clauses", [])
+        stats["decomposed"] = rg.decompose(task, clauses if isinstance(clauses, list) else [])
+    hist = turns_to_text(new_turns)
+    user = Template(load_prompt("frontier_ops.jinja")).render(task=task, tree=rg.render(), history=hist)
+    out = llm.chat([{"role": "user", "content": user}], tag="frontier_ops").strip()
+    ops = _loads_ops(out).get("ops", [])
+    stats.update(rg.apply_ops(ops if isinstance(ops, list) else [], g.steps))
+    return stats
+
+
+def _loads_ops(text: str) -> dict:
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]
+        t = t[4:] if t[:4].lower() == "json" else t
+    i, j = t.find("{"), t.rfind("}")
+    if i < 0 or j <= i:
+        return {}
+    try:
+        return json.loads(t[i:j + 1])
+    except Exception:  # noqa: BLE001
+        return {}

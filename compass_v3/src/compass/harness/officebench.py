@@ -183,7 +183,7 @@ def run_officebench_episode(task_id: str, subtask_id: str, agent: LLM, compresso
             window = (window + [action])[-5:]
             if len(window) == 5 and all(w == window[0] for w in window):
                 action = json.dumps({"app": "system", "action": "got_stuck"})
-            obs, reward, done, info = env.step(action)
+            obs, reward, done, _info = env.step(action)
             obs = obs or ""
             sig, parsed = ob_signature(action)
             refetch = sig is not None and sig in seen and (parsed or {}).get("action") != "switch_app"

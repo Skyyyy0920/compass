@@ -22,6 +22,9 @@ from dataclasses import asdict, dataclass, field
 
 from .parse import parse_step
 
+OBS_KEEP_CHARS = 600          # bounded extraction: raw observation kept in the graph after Apply
+GRAPH_BUDGET_CHARS = 65536    # B_G: serialized private graph, ~16k tokens (4x the 4096 window)
+
 STATUSES = ("pending", "active", "done", "blocked", "invalidated")
 
 
@@ -72,7 +75,7 @@ class Graph:
         # bounded private state: raw observations are cut to obs_keep chars once extraction is done
         # (0 = keep whole, only for the externalization / projection variants), and the whole graph
         # payload is held under graph_budget chars (0 = unbounded) by evicting the oldest evidence first
-        self.obs_keep: int = 600
+        self.obs_keep: int = OBS_KEEP_CHARS
         self.graph_budget: int = 0
         self.requirements: list[dict] = []       # V^requirement: {id, text, status, supports: [step ids]}
         self.req_graph: dict | None = None       # serialized ReqGraph (frontier-conditioned variants)
@@ -344,9 +347,7 @@ class Graph:
             if i.kind != "runtime_reference" or i.superseded:
                 continue
             n = i.name.lower()
-            if re.search(r"token|password|login|session|auth|cred", n):
-                cand.append(i.id)
-            elif any(c in recent for c in i.consumers):
+            if re.search(r"token|password|login|session|auth|cred", n) or any(c in recent for c in i.consumers):
                 cand.append(i.id)
         added = 0
         for it in open_intents:
@@ -356,7 +357,7 @@ class Graph:
         return added
 
     NEGATIVE = re.compile(r"\b(no|not|cannot|can't|missing|unavailable|does not exist|doesn't exist|impossible|"
-                          r"unsupported|lack|absent|none)\b", re.I)
+                          r"unsupported|lack|absent|none)\b", re.IGNORECASE)
 
     def complete_listing_seen(self, text: str = "") -> bool:
         """True if the app(s) the text talks about had a complete (untruncated)
@@ -370,14 +371,14 @@ class Graph:
                 apps.add(app)
                 if not st.get("api_list_truncated"):
                     complete.add(app)
-        named = {a for a in apps if re.search(rf"\b{re.escape(a)}\b", text, re.I)}
+        named = {a for a in apps if re.search(rf"\b{re.escape(a)}\b", text, re.IGNORECASE)}
         if named:
             return named <= complete
         return bool(complete)
 
     def ungrounded_negative(self, text: str | None) -> bool:
         return bool(text) and bool(self.NEGATIVE.search(text)) \
-            and bool(re.search(r"\bapi|endpoint|function|feature|way to|capabilit", text, re.I)) \
+            and bool(re.search(r"\bapi|endpoint|function|feature|way to|capabilit", text, re.IGNORECASE)) \
             and not self.complete_listing_seen(text)
 
     def produced_by_intent(self, it: Intent, limit: int = 4) -> list[Info]:
@@ -432,9 +433,7 @@ class Graph:
         for i in self.infos.values():
             if i.kind == "runtime_reference" and i.superseded:
                 continue
-            if any(n in open_intents for n in i.needed_by) or any(c in last for c in i.consumers):
-                out.append(i)
-            elif i.kind == "runtime_reference":
+            if any(n in open_intents for n in i.needed_by) or any(c in last for c in i.consumers) or i.kind == "runtime_reference":
                 out.append(i)
         return out
 
@@ -449,7 +448,7 @@ class Graph:
                 "counters": [self._n_info, self._n_intent, self._n_fact], "log": self.log}
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Graph":
+    def from_dict(cls, d: dict) -> Graph:
         g = cls(d["goal"])
         g.steps = d["steps"]
         g.infos = {k: Info(**v) for k, v in d["infos"].items()}
@@ -464,7 +463,7 @@ class Graph:
         g.call_prefix = d.get("call_prefix", "")
         g.requirements = d.get("requirements", [])
         g.req_graph = d.get("req_graph")
-        g.obs_keep = d.get("obs_keep", 600)
+        g.obs_keep = d.get("obs_keep", OBS_KEEP_CHARS)
         g.graph_budget = d.get("graph_budget", 0)
         g.bytes_log = d.get("bytes_log", [])
         g._n_info, g._n_intent, g._n_fact = d["counters"]
@@ -530,7 +529,7 @@ def _value_hint(step: dict, name: str) -> str | None:
     if step["status"] != "ok" or not obs.strip() or obs.strip() == "Execution successful.":
         return None
     p = step["printed"]
-    if (name.endswith("token") or name.endswith("login")) and p.get("tokens"):
+    if name.endswith(("token", "login")) and p.get("tokens"):
         j = p.get("json")
         if isinstance(j, dict) and "access_token" in j:
             # a login *response*, not the token itself: say so, or the agent passes the dict as a token

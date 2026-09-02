@@ -26,7 +26,7 @@ from ..harness.prompt import count_tokens
 from .build import Graph, Intent, _excerpt
 
 API_MENTION = re.compile(r"\b([a-z_]+\.[a-z_]+)\b")
-CRED = re.compile(r"token|password|login|session|auth|cred", re.I)
+CRED = re.compile(r"token|password|login|session|auth|cred", re.IGNORECASE)
 STOP = {"the", "and", "for", "with", "from", "that", "this", "each", "all", "into", "then", "their", "them",
         "have", "has", "are", "was", "were", "use", "using", "get", "list", "find", "make", "check", "which"}
 

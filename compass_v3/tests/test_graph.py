@@ -6,11 +6,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from compass.eval.signatures import canon, is_error, sigs  # noqa: E402
-from compass.graph.build import Graph  # noqa: E402
-from compass.graph.parse import defs_uses, error_class  # noqa: E402
-from compass.graph.render import render_to_budget  # noqa: E402
-from compass.harness.prompt import count_tokens  # noqa: E402
+from compass.eval.signatures import canon, is_error, sigs
+from compass.graph.build import Graph
+from compass.graph.parse import defs_uses, error_class
+from compass.graph.render import render_to_budget
+from compass.harness.prompt import count_tokens
 
 ERR = "Execution failed. Traceback:\n  File \"<python-input>\", line 1\nNameError: name 'tok' is not defined"
 
@@ -85,7 +85,7 @@ def test_flow_render_all_levels():
     g = Graph("Update the playlist with the siblings' suggestions")
     for k in range(1, 12):
         g.add_turn({"step": k, "code": f"r{k} = apis.spotify.search_songs(query='q{k}', page_limit=3)\nprint(r{k})",
-                    "observation": "[{\"song_id\": %d, \"title\": \"Song %d\"}]" % (k, k)})
+                    "observation": f'[{{"song_id": {k}, "title": "Song {k}"}}]'})
     g.add_turn({"step": 12, "code": "tok = apis.spotify.login(username=u, password=p)['access_token']",
                 "observation": "Execution successful."})
     a = g.add_intent("Search release dates on Spotify")
@@ -146,7 +146,7 @@ def test_projection_keeps_fields_not_prefixes():
 
 
 def test_proj_render_and_mem_setup():
-    from compass.graph.compressor import mem_setup_code
+    from compass.graph.externalize import mem_setup_code
     from compass.graph.render import render
     g = Graph("Add release month for every liked song")
     g.obs_keep = 0     # externalization / projection variants keep the raw observation
@@ -168,10 +168,10 @@ def test_proj_render_and_mem_setup():
 
 
 def test_bounded_private_graph_and_requirements():
-    from compass.graph.compressor import parse_requirements, splice_requirements
+    from compass.graph.note import parse_requirements, splice_requirements
     g = Graph("Send $20 to each coworker")
     g.obs_keep, g.graph_budget = 100, 7000
-    big = "[" + ", ".join('{"id": %d, "name": "user%d"}' % (i, i) for i in range(200)) + "]"
+    big = "[" + ", ".join(f'{{"id": {i}, "name": "user{i}"}}' for i in range(200)) + "]"
     for k in range(1, 8):
         g.add_turn({"step": k, "code": f"r{k} = apis.phone.search_contacts(page_index={k})\nprint(r{k})", "observation": big})
     assert all(len(s["observation"]) <= 104 for s in g.steps.values())   # raw observation gone after Apply

@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 MUTATING = re.compile(r"^(create|send|add|delete|remove|update|pay|transfer|post|move|complete|like|approve|deny)_?")
-ANSWER_RE = re.compile(r"complete_task\((.*)\)", re.S)
+ANSWER_RE = re.compile(r"complete_task\((.*)\)", re.DOTALL)
 
 
 def episode_metrics(e: dict) -> dict:

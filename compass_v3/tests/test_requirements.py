@@ -6,8 +6,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from compass.graph.build import Graph  # noqa: E402
-from compass.graph.requirements import ReqGraph  # noqa: E402
+from compass.graph.build import Graph
+from compass.graph.requirements import ReqGraph
 
 INSTR = "Send $20 to each of my 5 coworkers via venmo with a note, 'For Lunch'. Refill venmo balance if you need to."
 
@@ -16,7 +16,7 @@ def make_steps():
     g = Graph(INSTR)
     for k in (1, 2, 3):
         g.add_turn({"step": k, "code": f"print(apis.venmo.create_transaction(amount=20, receiver_email='u{k}@x.com'))",
-                    "observation": '{"message": "Sent money.", "transaction_id": %d}' % (8000 + k)})
+                    "observation": f'{{"message": "Sent money.", "transaction_id": {8000 + k}}}'})
     g.add_turn({"step": 4, "code": "print(apis.venmo.show_balance())",
                 "observation": "Execution failed. Traceback:\nNameError: x"})
     return g
@@ -87,7 +87,7 @@ def test_needs_extraction_and_protected_eviction():
     g = Graph("t")
     g.obs_keep, g.graph_budget = 100, 7000
     g.extract_specs = ["email"]
-    big = "[" + ", ".join('{"contact_id": %d, "email": "u%d@x.com", "pad": "%s"}' % (i, i, "p" * 40) for i in range(60)) + "]"
+    big = "[" + ", ".join(f'{{"contact_id": {i}, "email": "u{i}@x.com", "pad": "{"p" * 40}"}}' for i in range(60)) + "]"
     s1 = g.add_turn({"step": 1, "code": "print(apis.phone.search_contacts())", "observation": big})
     extracted = [g.infos[i] for i in s1["produces"] if "email" in (g.infos[i].value_hint or "")]
     assert extracted and len(s1["observation"]) <= 104
@@ -100,7 +100,7 @@ def test_needs_extraction_and_protected_eviction():
 
 
 def test_strip_requirements_keeps_the_rest_of_the_note():
-    from compass.graph.compressor import strip_requirements
+    from compass.graph.note import strip_requirements
     note = ('## Task requirements (quoted from the instruction) and verified status\n'
             '- r1: "send $20" -- PARTIAL (3 of 5) [s1]\n\n'
             '## Handled so far\n- 3 of 5 transactions sent (ids 8216, 8217, 8218)\n\n'

@@ -108,7 +108,7 @@ class OpenClawMem(OpenClaw):
 
     def compress(self, task, prev_summary, turns):
         from ..eval.signatures import is_error, sigs
-        from ..graph.compressor import mem_setup_code, mem_value
+        from ..graph.externalize import mem_setup_code
         from ..graph.project import parse
         self.last_setup_code = None
         base = prev_summary.split(NL_MARK, 1)[0].strip() if prev_summary and NL_MARK in prev_summary else prev_summary
