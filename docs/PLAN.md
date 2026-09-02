@@ -514,3 +514,22 @@ boundary（109 边界，Δ@k5）：nar5 −0.56\*，nar5+需求图 −0.50\*，n
 **结论 B（对师兄方案的回答）**：把 plan 编译成可执行 frontier 并用它保护/优先证据，确实修好了"树替代笔记"版本的所有病症（步数耗尽 19→11、refetch 7.9→6.3、boundary −0.31→−0.50），也把长任务从 55.8 拉到 61.5，**高于 OpenClaw**；但**仍未超过已冻结的 nar5（68.3 / −0.56\*）**。即：在当前实现下，"requirement frontier 控制保留"没有比"证据层 + 已核验的需求状态笔记"带来额外收益；plan→retention 这条因果链的收益被 nar5 的笔记（同样带覆盖计数、同样由证据核验）大部分已经吃掉了。
 修正：arm (c) 已跑完，**63.5**（详见上表）——按 Needs(F_k) 提升字段确实是 frontier 里最有效的一环，与 nar5 最差一次仅差 1 题，但仍低于其均值 68.3。
 剩余可查方向：(1) (2) frontier 目前只保护/排序证据，尚未真正"丢弃 frontier 不需要的证据"——把 NEEDED_BY 用作**删除**准则而非仅优先级，可能才是差异所在；(3) 每边界两次额外 LLM 调用的成本（长任务每题 ~6 次边界 = 12 次调用）未计入收益核算。
+
+### 4.9 跨模型：MiniMax-M3（2026-09-02）
+
+`minimax-m3` 通过 Ollama Cloud 直接可用（无需新 key）。30 题，agent 与压缩模型均为 minimax-m3，B=4096（`artifacts/devMM`）：
+
+| 方法 | acc | 边界/题 | blocked/题 | refetch/题 | 跑满 50 步 |
+|---|---|---|---|---|---|
+| Full context | 86.7 | – | – | – | 2 |
+| OpenClaw | 66.7 | 2.9 | 8.1 | 7.5 | 3 |
+| COMPASS 主方法（`compass_det_nar5`） | 66.7 | 2.0 | 4.4 | 4.6 | 4 |
+
+逐题配对：OpenClaw 赢 8 题、主方法赢 6 题，均值持平（该子集运行间方差约 ±13 点，见 §4.7）。压缩后的 blocked / refetch 主方法约为 OpenClaw 的一半，但没有转化成任务级优势。
+
+失败分析：
+1. MiniMax-M3 常输出散文而非代码——full context 下 16% 的步骤是语法错误（763 步中 125），OpenClaw 22%，主方法 12%；这是模型特性，与压缩无关。
+2. 主方法输掉的 8 题里，`fd1f8fa_3` 是 harness 缺陷：边界后模型连续 36 步只输出一行注释（"# Let me start the player now."），沙箱对只含注释的 cell 返回 "Execution successful."，模型得不到"没执行"的信号，直到 50 步耗尽。已修（commit `b9319a80`，`episode.py`：cell 无语句时 observation 改为 "nothing was executed, write the Python code"，对所有方法一致）；复跑该题 19 步完成、0 次注释空转。
+3. 其余输掉的题（`6f4b9a5_2/3`、`634f342_1/3`）都是边界后模型改用散文/泄露 `<tool_call>` 标记或在 playlist 匹配上反复重试，属于第 1 类。
+
+带修复的第二轮（`artifacts/devMM_r2`）启动两次都被终止，只跑出 8 题 OpenClaw，未计入。结论：在 MiniMax-M3 上主方法与 OpenClaw 持平、明显低于 full（−20 点），与 DeepSeek 上"与 full 持平"的结果不同；差距的主要来源是模型在边界后的输出格式退化，需要更多轮次才能判断方法本身的差异。
