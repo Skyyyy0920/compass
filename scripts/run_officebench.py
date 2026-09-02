@@ -39,9 +39,10 @@ def resolve(spec: str | None, split: str | None) -> list[tuple[str, str]]:
 def one(args):
     (task, sub, method, agent_model, agent_provider, comp_model, comp_provider, budget, max_steps,
      out_dir, work_root, temp) = args
+    from run_episodes import make_compressor
+
     from compass.harness.llm import LLM
     from compass.harness.officebench import run_officebench_episode
-    from run_episodes import make_compressor
     out_path = Path(out_dir) / method / f"{task}_{sub}.json"
     if out_path.exists():
         return json.loads(out_path.read_text(encoding="utf-8"))

@@ -230,7 +230,7 @@ def api_specs(observation: str) -> tuple[list[str], dict[str, list[str]]]:
                     s += "?"
                 d = str(p.get("description") or "")
                 m = re.search(r"(between \d+ and \d+|max(?:imum)? (?:of )?\d+|at most \d+|one of [^.]+|"
-                              r"in (?:the )?format[^.]*|e\.g\.[^.]*)", d, re.I)
+                              r"in (?:the )?format[^.]*|e\.g\.[^.]*)", d, re.IGNORECASE)
                 cons = [str(c) for c in (p.get("constraints") or []) if c]
                 if m or cons:
                     s += "[" + "; ".join(([m.group(1).strip()[:50]] if m else []) + cons[:3])[:80] + "]"

@@ -12,7 +12,8 @@ from __future__ import annotations
 import os
 import sys
 import threading
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def _thread_timeout_call(function: Callable[..., Any], timeout_seconds: int | None = None,
@@ -47,7 +48,7 @@ def install() -> None:
     os.environ.setdefault("PYTHONIOENCODING", "utf-8")
     if not sys.platform.startswith("win"):
         return
-    import appworld.environment as env_mod
     import appworld.common.utils as utils_mod
+    import appworld.environment as env_mod
     env_mod.timeout_call = _thread_timeout_call
     utils_mod.timeout_call = _thread_timeout_call

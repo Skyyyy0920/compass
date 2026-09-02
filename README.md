@@ -42,19 +42,27 @@ Claims are scoped to CodeAct / structure-rich tool-use agents; the generic-ReAct
 ```
 src/compass/graph/parse.py       adapter tiers: turn -> bounded event (generic / schema / codeact)
 src/compass/graph/build.py       Graph: evidence + information nodes, dataflow, byte budget (enforce_budget)
-src/compass/graph/compressor.py  CompassCompressor, VARIANTS, progress_note, ground_note, parse_requirements
+src/compass/graph/compressor.py  CompassCompressor (the boundary protocol Q_k -> G_k -> N_k -> C_k) and VARIANTS
+src/compass/graph/note.py        requirement-state note: progress_note, ground_note (verifier), parse/splice_requirements
+src/compass/graph/requirements.py ReqGraph engine (v4 frontier line) + frontier_update
+src/compass/graph/externalize.py +ExternalMemory variant (_mem setup code)
 src/compass/graph/render.py      fold ladder + checkpoint rendering
 src/compass/harness/             AppWorld / OfficeBench episode loops, LLM client, baselines (openclaw, hermes, acon_ut, fifo, openclaw_mem)
 src/compass/eval/                Trace-style boundary verifier (replay, burden, signatures)
 scripts/run_episodes.py          end-to-end runs        scripts/verify_boundaries.py   boundary-level verification
 scripts/report_episodes.py       tables                 scripts/report_phase2.py       boundary tables
 prompts/progress5_*.jinja        the requirement-state note prompts (main method)
-tests/test_graph.py              13 unit tests (pytest)
+tests/                           17 unit tests (pytest)
 ```
 
-Variants (`VARIANTS` in `compressor.py`): `compass_det_nar5` (main), `compass_det_nar4` (prompt-grounded ablation),
-`compass_det` (evidence layer only), `compass_v2` (old structured plan layer), `compass_det_mem_nar4`
-(+ExternalMemory, upper-bound variant), `openclaw_mem` (fairness control), adapter tiers `compass_generic` / `compass_schema`.
+Variants (`VARIANTS` in `compressor.py`, grouped in the file the same way):
+
+| tier | names |
+|---|---|
+| main | `compass_det_nar5` (bounded evidence layer + verified requirement-state note) |
+| ablations | `compass_det` (evidence layer only), `compass_det_nar4` (note grounded by prompt only), `compass_det_nar3` / `_nar2` / `_nar` (earlier note designs), `compass_wide` |
+| variants | `compass_det_mem_nar5` (+ExternalMemory; control: `openclaw_mem`), `compass_frontier` / `_ex` / `_late` / `_noteless` (v4 frontier line), adapter tiers `compass_generic` / `compass_schema` / `compass_codeaware` |
+| legacy | `compass_v2` and its section ablations, `compass_v3*` (flow graph), `compass_proj` / `_mem` / `_pm` families (negative results; kept so recorded artifacts stay reproducible) |
 
 ## Artifacts map
 

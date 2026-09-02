@@ -15,8 +15,8 @@ already called (the refetch guard v1 lacked).
 from __future__ import annotations
 
 from ..harness.prompt import count_tokens
-from .project import focus_tokens, parse, project
 from .build import Graph, Info, Intent, compact_step_view
+from .project import focus_tokens, parse, project
 
 
 def _short(text: str | None, n: int) -> str:
@@ -241,7 +241,6 @@ def render_bounded(g: Graph, recent_ids: list[str], *, max_items: int = 8, hint_
     if cons:
         L += ["", "CONSTRAINTS"] + [f"- {_short(f['text'], 160)}" for f in cons[-6:]]
     front = g.frontier()
-    open_ids = {it.id for it in front}
     tree = _tree(g)
     if tree:
         L += ["", "PLAN ([x] done  [>] active  [ ] pending  [!] blocked  [-] invalidated)"]
