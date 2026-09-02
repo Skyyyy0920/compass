@@ -34,6 +34,14 @@ compat.install()
 OBS_STORE_LIMIT = int(os.environ.get("COMPASS_OBS_LIMIT", "10000"))
 
 
+def _no_statements(code: str) -> bool:
+    import ast
+    try:
+        return not ast.parse(code).body
+    except SyntaxError:
+        return False
+
+
 def extract_code(response: str) -> str:
     """ACON's extraction: strip <think>, strip fences, else first fenced block."""
     text = re.sub(r"<\s*think[^>]*>", "", response, flags=re.IGNORECASE)
@@ -136,6 +144,11 @@ def run_episode(task_id: str, agent: LLM, compressor: Compressor | None, *, budg
                 reason = "no_code"
                 break
             obs = world.execute(code) or ""
+            if _no_statements(code):
+                # a comments-only cell "succeeds" silently; some agents (MiniMax-M3) then repeat
+                # the announcement for the rest of the episode. Say what happened instead.
+                obs = ("Execution successful, but the cell contained no statements (comments only): "
+                       "nothing was executed. Write the Python code for this step.")
             ex = sigs(code)
             refetch = any(s in seen_exact for s in ex[:1])
             seen_exact.update(ex)
