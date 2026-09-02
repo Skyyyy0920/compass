@@ -88,7 +88,7 @@ Defaults: agent and compressor = `deepseek-v4-flash:0731` on Ollama Cloud; `--ag
 ## Open items for the next plan
 
 1. Future-conditioned extraction of large observations (promote only the fields the requirement nodes need; NEEDED_BY edges).
-2. Bounded main method on glm-5.2 / kimi (only the +ExternalMemory variant was run there), and on OfficeBench with nar5.
+2. Bounded main method on glm-5.2 / kimi (only the +ExternalMemory variant was run there), and on OfficeBench with nar5. MiniMax-M3 (dev-30, `artifacts/devMM`): full 86.7 / OpenClaw 66.7 / main 66.7, one run; the model often answers in prose instead of code after a boundary (PLAN §4.9).
 3. The remaining long-task gap to full context (68.3 vs 69.2) is a doc-reading → compaction loop on multi-app tasks.
 4. Paper §4 / §5b on Overleaf still describe the `_mem` version; needs the bounded reframing.
 5. GPT-4.1 runs for the paper (not started; policy: ask first).
